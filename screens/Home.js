@@ -5,6 +5,10 @@ import CodeModal from '../components/CodeModal';
 
 
 const Home = ({navigation}) => {
+  const authenticated = false;
+  const verifyCode = (code) => {
+    (code === '1234') ? console.log(true) : console.log(false)
+  }
   return (
     <View style={{
       backgroundColor: "white",
@@ -12,15 +16,16 @@ const Home = ({navigation}) => {
       // borderWidth: 4,
       // borderColor: "red"
     }}>
-      <SafeAreaView>
+      {/* <SafeAreaView>
         <Text>Welcome to the Home page!</Text>
-      </SafeAreaView>
+      </SafeAreaView> */}
       <KeyboardAvoidingView
       style={styles.bottomView}
       behavior='padding'
       >
-        <CodeModal  botLabel={'verify'} topLabel={'Auth Code'}></CodeModal>
-      </KeyboardAvoidingView>
+        <CodeModal  botLabel={'verify'} topLabel={'Auth Code'} verify={verifyCode}></CodeModal>
+      </KeyboardAvoidingView> 
+      
     </View>
   )
 }
@@ -40,7 +45,6 @@ let styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
     bottom: 0,
-    // overflow: 'hidden'
   },
   bottomView: {
     position: 'absolute', //Here is the trick

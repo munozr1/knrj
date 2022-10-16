@@ -1,31 +1,58 @@
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
-import react from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable } from 'react-native';
+import react ,{useState, useRef}from 'react';
 
 
-const codemodal = ({ navigation , topLabel, botLabel} ) => {
+
+const codemodal = (props) => {
+  const CODE_LENGTH = 4;
+  const [code, setCode] = useState('');
+  const codeDigitsArray = new Array(CODE_LENGTH).fill(0);
+  const ref = useRef();
+
+  const focusHiddenInput= () => {
+    console.log('focusing hidden input...');
+    ref?.current?.focus();
+  };
+
+  const toDigitInput = (_value, idx) => {
+    const emptyInputChar = ' ';
+    const digit = code[idx] || emptyInputChar;
+    return (
+      <View key={idx}> 
+        <Text style={[ styles.input, styles.shadow]} >{digit}</Text>
+      </View>
+    );
+  };
+
   return (
     <View  style={[styles.container, styles.shadow]}>
       <View >
-        <Text style={[styles.label]}>{topLabel}</Text>
+        <Text style={[styles.label]}>{props.topLabel}</Text>
       </View>
-        <View style={{
-          flex:1,
+        <View> 
+        <Pressable style={{
+          flex: 1,
           flexDirection: 'row',
           justifyContent: 'center',
           maxHeight: 100,
-          marginTop: 10
-          }}> 
-          <TextInput keyboardType='number-pad' enablesReturnKeyAutomatically maxLength={1} style={[styles.shadow, styles.input]}></TextInput>
-          <TextInput maxLength={1} style={[styles.shadow, styles.input]}></TextInput>
-          <TextInput maxLength={1} style={[styles.shadow, styles.input]}></TextInput>
-          <TextInput maxLength={1} style={[styles.shadow, styles.input]}></TextInput>
+          marginTop: 10,
+        }} onPress={focusHiddenInput}>
+            {codeDigitsArray.map(toDigitInput)}
+          </Pressable>
+        <TextInput
+          ref={ref}
+          value={code}
+          onChangeText={setCode}
+          keyboardType="number-pad"
+          returnKeyType="done"
+          textContentType="oneTimeCode"
+          maxLength={CODE_LENGTH}
+          style={styles.hiddenCodeInput}
+        />
         </View> 
-      <View >
-        <TouchableOpacity onPress={()=>{console.log('bot label pressed')}}>
-          <Text style={[styles.label, styles.botLabel]}>{botLabel}</Text>
+        <TouchableOpacity onPress={()=>{props.verify(code)}} style={styles.botLabel}>
+          <Text style={styles.label}>{props.botLabel}</Text>
         </TouchableOpacity>
-      </View>
     </View>
   )
 }
@@ -33,28 +60,26 @@ const codemodal = ({ navigation , topLabel, botLabel} ) => {
 
 let styles = StyleSheet.create({
   input:{
-    // borderWidth: 1,
     padding:15,
     height: 80,
     margin: 12,
     width: 55,
     textAlign: 'center',
     fontSize:35 ,
-    borderRadius: 15
+    borderRadius: 15,
   },
   shadow:{
     shadowOffset: { width: 1, height: 1 },
     shadowColor: 'black',
     shadowOpacity: 1/3,
     elevation: 1,
-    // background color must be set
-    backgroundColor: "white" // invisible color
+    backgroundColor: "white", // invisible color
   }
   ,
   container:{
     backgroundColor: "white",
     borderRadius: 37,
-    height: 250
+    height: 250,
   },
   label: {
       textAlign: "center",
@@ -62,8 +87,15 @@ let styles = StyleSheet.create({
       fontWeight: '800'
     },
   botLabel: {
-    marginTop: 10
-  }
+    marginTop: 120,
+    width: '100%',
+  },
+  hiddenCodeInput: {
+    position: 'absolute',
+    height: 0,
+    width: 0,
+    opacity: 0,
+  },
 })
 
 
