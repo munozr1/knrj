@@ -13,12 +13,7 @@ const Home = ({navigation}) => {
     <View style={{
       backgroundColor: "white",
       flex: 1,
-      // borderWidth: 4,
-      // borderColor: "red"
     }}>
-      {/* <SafeAreaView>
-        <Text>Welcome to the Home page!</Text>
-      </SafeAreaView> */}
       <KeyboardAvoidingView
       style={styles.bottomView}
       behavior='padding'
@@ -35,9 +30,6 @@ let styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
     backgroundColor: 'white',
-    // height: '100%',
-    // justifyContent: 'center',
-    // flex: 1
   },
   bot: {
     backgroundColor: "white",

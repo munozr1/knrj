@@ -19,7 +19,7 @@ const codemodal = (props) => {
     const digit = code[idx] || emptyInputChar;
     return (
       <View key={idx}> 
-        <Text style={[ styles.input, styles.shadow]} >{digit}</Text>
+        <Text style={[styles.input, { borderWidth: 1, borderColor: '#9ea9ba'}]} >{digit}</Text>
       </View>
     );
   };
