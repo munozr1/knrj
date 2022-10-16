@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity , StyleSheet} from 'react-native';
+import { View, Text, TouchableOpacity , StyleSheet, KeyboardAvoidingView} from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CodeModal from '../components/CodeModal';
@@ -15,9 +15,12 @@ const Home = ({navigation}) => {
       <SafeAreaView>
         <Text>Welcome to the Home page!</Text>
       </SafeAreaView>
-      <View style={styles.bottomView}>
+      <KeyboardAvoidingView
+      style={styles.bottomView}
+      behavior='padding'
+      >
         <CodeModal  botLabel={'verify'} topLabel={'Auth Code'}></CodeModal>
-      </View>
+      </KeyboardAvoidingView>
     </View>
   )
 }
@@ -40,11 +43,12 @@ let styles = StyleSheet.create({
     // overflow: 'hidden'
   },
   bottomView: {
-    // position: 'absolute', //Here is the trick
-    // bottom: 0, //Here is the trick
-    marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
+    position: 'absolute', //Here is the trick
+    bottom: 0, //Here is the trick
+    // marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
     marginLeft: 2,
     marginRight:2,
+    width:'100%'
   }
 
 })
