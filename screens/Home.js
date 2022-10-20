@@ -74,6 +74,8 @@ const Home = (props) => {
           : null
       }
       </Modal>
+
+      
     </View>
   )
 }
