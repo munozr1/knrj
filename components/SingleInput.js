@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Modal } from 'react-native';
 import React, { useState } from 'react';
 
 
@@ -75,6 +75,11 @@ let styles = StyleSheet.create({
     width: 0,
     opacity: 0,
   },
+  modalView: {
+    flex: 1,
+    alignContent: 'center',
+    justifyContent: 'center'
+  }
 })
 
 

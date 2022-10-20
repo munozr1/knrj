@@ -1,4 +1,4 @@
-import { View,  StyleSheet, KeyboardAvoidingView, Keyboard} from 'react-native';
+import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal} from 'react-native';
 import React from 'react';
 import CodeModal from '../components/CodeModal';
 import LoginModal from '../components/LoginModal'
@@ -31,14 +31,27 @@ const Home = (props) => {
     Keyboard.dismiss();
   }
 
+  const [modalVisible, setModalVisible] = React.useState(false);
 
 
+  const animationTimeout = async () => {
+    return new Promise((resolve, reject)=>{
+      setTimeout(() => {
+        setModalVisible(true);
+        resolve();
+      }, 2000);
+    })
+  }
+
+  //timeout for modal animation slide up
+  animationTimeout();
 
   return (
     <View style={{
       backgroundColor: "white",
       flex: 1,
     }}>
+      <Modal animationType='slide' visible={modalVisible} >
       {
         ($authState.authenticated && !$event.joined)?
         <KeyboardAvoidingView
@@ -60,6 +73,7 @@ const Home = (props) => {
           </KeyboardAvoidingView>
           : null
       }
+      </Modal>
     </View>
   )
 }

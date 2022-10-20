@@ -1,4 +1,4 @@
-import { View,  StyleSheet} from 'react-native';
+import { View,  StyleSheet, Modal} from 'react-native';
 import React from 'react';
 import CodeModal from './CodeModal'
 import SingleInput from './SingleInput'
@@ -14,14 +14,14 @@ const loginmodal= (props) => {
   }
 
   return (
-    <View style={[styles.container, styles.shadow]}>
-      {
-        ($authState.codeSent) ? 
-        <CodeModal topLabel={'Auth Code'} botLabel={'Verify'} verify={props.verifyAuthCode}></CodeModal>
-        :<SingleInput topLabel={'Phone Number'} botLabel={'Send Code'} submit={verifyPhone}></SingleInput>
+      <View style={[styles.container, styles.shadow]}>
+        {
+          ($authState.codeSent) ? 
+          <CodeModal topLabel={'Auth Code'} botLabel={'Verify'} verify={props.verifyAuthCode}></CodeModal>
+          :<SingleInput topLabel={'Phone Number'} botLabel={'Send Code'} submit={verifyPhone}></SingleInput>
 
-      }
-    </View>
+        }
+      </View>
   )
 }
 
