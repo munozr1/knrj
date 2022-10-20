@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable } from 'react-native';
-import react ,{useState, useRef}from 'react';
+import {useState, useRef}from 'react';
 
 
 
@@ -44,7 +44,7 @@ const codemodal = (props) => {
           value={code}
           onChangeText={setCode}
           keyboardType="number-pad"
-          returnKeyType="done"
+          // returnKeyType="done"
           textContentType="oneTimeCode"
           maxLength={CODE_LENGTH}
           style={styles.hiddenCodeInput}

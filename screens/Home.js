@@ -1,26 +1,65 @@
-import { View, Text, TouchableOpacity , StyleSheet, KeyboardAvoidingView} from 'react-native';
+import { View,  StyleSheet, KeyboardAvoidingView, Keyboard} from 'react-native';
 import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import CodeModal from '../components/CodeModal';
+import LoginModal from '../components/LoginModal'
+import { AuthStateContext } from '../providers/AuthProvider';
 
 
-const Home = ({navigation}) => {
-  const authenticated = false;
-  const verifyCode = (code) => {
-    (code === '1234') ? console.log(true) : console.log(false)
+const Home = (props) => {
+  const { $authState, $setAuthState } = React.useContext(AuthStateContext);
+  const [ $event, $setEvent] = React.useState({});
+
+  const verifyAuthCode = (code) => {
+    if(code === '1234')
+    {
+      $setAuthState({...$authState, ...{authenticated: true}});
+    }
+    Keyboard.dismiss();
   }
+
+  const verifyEventCode = (code) => {
+    if(code === '1234')
+    {
+      $setEvent({...$event, ...{joined: true}})
+    }
+    console.log($event)
+    Keyboard.dismiss();
+  }
+
+  const verifyPhone= (phone) => {
+    $setAuthState({...$authState, user: phone});
+    Keyboard.dismiss();
+  }
+
+
+
+
   return (
     <View style={{
       backgroundColor: "white",
       flex: 1,
     }}>
-      <KeyboardAvoidingView
-      style={styles.bottomView}
-      behavior='padding'
-      >
-        <CodeModal  botLabel={'verify'} topLabel={'Auth Code'} verify={verifyCode}></CodeModal>
-      </KeyboardAvoidingView> 
-      
+      {
+        ($authState.authenticated && !$event.joined)?
+        <KeyboardAvoidingView
+        style={styles.bottomView}
+        behavior='padding'
+        >
+          <CodeModal topLabel={'Event Code'} botLabel={'Join'} verify={verifyEventCode}></CodeModal>
+        </KeyboardAvoidingView>
+
+        : null
+      }
+      {
+        (!$authState.authenticated) ?
+          <KeyboardAvoidingView
+          style={styles.bottomView}
+          behavior='padding'
+          >
+            <LoginModal verifyPhone={verifyPhone} verifyAuthCode={verifyAuthCode}></LoginModal>
+          </KeyboardAvoidingView>
+          : null
+      }
     </View>
   )
 }

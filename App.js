@@ -1,23 +1,18 @@
-import { StyleSheet,Text, View} from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import Home from './screens/Home';
-import Test from './screens/Test';
+import { useState } from 'react';
+import { AuthStateProvider } from './providers/AuthProvider';
 
-const Stack = createStackNavigator();
+
+
+
 
 export default function App() {
+  
+  const [$event, $setEvent] = useState({});
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Test" component={Test}  />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthStateProvider>
+      <Home></Home>
+    </AuthStateProvider>
   );
 }
 
