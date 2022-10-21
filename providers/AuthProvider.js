@@ -1,6 +1,8 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useRef, useState } from "react";
 import { initializeApp} from 'firebase/app'
 import { getAuth, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
+import { FirebaseRecaptchaVerifierModal} from 'expo-firebase-recaptcha';
+
 // create context
 const AuthStateContext= createContext();
 
@@ -19,6 +21,45 @@ const auth = getAuth();
 const AuthStateProvider = ({ children }) => {
   // the value that will be given to the context
   const [$authState, $setAuthState] = useState({});
+  const [verificationId, setVerificationId] = React.useState();
+  const [message, showMessage] = React.useState();
+
+  // const [verificationCode, setVerificationCode] = React.useState();
+
+
+
+  const sendVerificationCode = async (phoneNumber, ref) => {
+    // The FirebaseRecaptchaVerifierModal ref implements the
+    // FirebaseAuthApplicationVerifier interface and can be
+    // passed directly to `verifyPhoneNumber`.
+    phoneNumber = '+1'+phoneNumber;
+    console.log(phoneNumber);
+    try {
+      const phoneProvider = new PhoneAuthProvider(auth);
+      const verificationId = await phoneProvider.verifyPhoneNumber(
+        phoneNumber,
+        ref.current
+      );
+      setVerificationId(verificationId);
+      $setAuthState({...$authState, ...{phoneNumber, codeSent: true}});
+      console.log('Successfully sent code to user: ', phoneNumber);
+    } catch (err) {
+      console.log(`err with ${phoneNumber} :`,err);
+    }
+  }
+
+
+  const confirmVerificationCode = async (verificationCode) => {
+    console.log("......Confirming Verification Code")
+    try {
+      const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
+      const user = await signInWithCredential(auth, credential);
+      console.log({ text: 'Phone authentication successful 👍', user });
+    } catch (err) {
+      console.log({ text: `Error: ${err.message}`, color: 'red' });
+    }
+  }
+
 
   //Authenticate using firebase
   // useEffect((phone) => {
@@ -28,10 +69,12 @@ const AuthStateProvider = ({ children }) => {
 
   return (
     // the Provider gives access to the context to its children
-    <AuthStateContext.Provider value={{$authState, $setAuthState}}>
+    <AuthStateContext.Provider
+      value={{$authState, $setAuthState, sendVerificationCode, confirmVerificationCode}}>
+      
       {children}
     </AuthStateContext.Provider>
   );
 };
 
-export { AuthStateContext, AuthStateProvider };
+export { AuthStateContext, AuthStateProvider, firebaseConfig };

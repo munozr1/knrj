@@ -9,13 +9,7 @@ const Home = (props) => {
   const { $authState, $setAuthState } = React.useContext(AuthStateContext);
   const [ $event, $setEvent] = React.useState({});
 
-  const verifyAuthCode = (code) => {
-    if(code === '1234')
-    {
-      $setAuthState({...$authState, ...{authenticated: true}});
-    }
-    Keyboard.dismiss();
-  }
+
 
   const verifyEventCode = (code) => {
     if(code === '1234')
@@ -26,10 +20,6 @@ const Home = (props) => {
     Keyboard.dismiss();
   }
 
-  const verifyPhone= (phone) => {
-    $setAuthState({...$authState, user: phone});
-    Keyboard.dismiss();
-  }
 
   const [modalVisible, setModalVisible] = React.useState(false);
 
@@ -69,7 +59,7 @@ const Home = (props) => {
           style={styles.bottomView}
           behavior='padding'
           >
-            <LoginModal verifyPhone={verifyPhone} verifyAuthCode={verifyAuthCode}></LoginModal>
+            <LoginModal ></LoginModal>
           </KeyboardAvoidingView>
           : null
       }

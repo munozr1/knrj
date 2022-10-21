@@ -1,23 +1,43 @@
-import { View,  StyleSheet, Modal} from 'react-native';
+import { View,  StyleSheet, Modal, Keyboard} from 'react-native';
 import React from 'react';
 import CodeModal from './CodeModal'
 import SingleInput from './SingleInput'
 import { AuthStateContext } from '../providers/AuthProvider';
+import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
+import { firebaseConfig } from '../providers/AuthProvider';
 
 
 
 const loginmodal= (props) => {
-  const { $authState, $setAuthState } = React.useContext(AuthStateContext);
+  const { $authState,
+          $setAuthState,
+          sendVerificationCode,
+          confirmVerificationCode,
+        } = React.useContext(AuthStateContext);
+  const recaptchaRef = React.useRef(null);
 
   const verifyPhone = (phone) =>{
-    $setAuthState({...$authState, ...{phone, codeSent: true}});
+    sendVerificationCode(phone, recaptchaRef);
+  }
+
+  const verifyAuthCode = (code) => {
+    if (code.length === 6) {
+      $setAuthState({ ...$authState, ...{ authenticated: true } });
+      confirmVerificationCode(code)
+    }
+    Keyboard.dismiss();
   }
 
   return (
       <View style={[styles.container, styles.shadow]}>
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaRef}
+        firebaseConfig={firebaseConfig}
+        attemptInvisibleVerification={true}
+      ></FirebaseRecaptchaVerifierModal>
         {
           ($authState.codeSent) ? 
-          <CodeModal topLabel={'Auth Code'} botLabel={'Verify'} verify={props.verifyAuthCode}></CodeModal>
+          <CodeModal topLabel={'Auth Code'} botLabel={'Verify'} verify={verifyAuthCode}></CodeModal>
           :<SingleInput topLabel={'Phone Number'} botLabel={'Send Code'} submit={verifyPhone}></SingleInput>
 
         }

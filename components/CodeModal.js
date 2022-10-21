@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable, Keyboard} from 'react-native';
 import {useState, useRef}from 'react';
 
 
 
 const codemodal = (props) => {
-  const CODE_LENGTH = 4;
+  const CODE_LENGTH = 6;
   const [code, setCode] = useState('');
   const codeDigitsArray = new Array(CODE_LENGTH).fill(0);
   const ref = useRef();
@@ -62,7 +62,10 @@ let styles = StyleSheet.create({
   input:{
     padding:15,
     height: 80,
-    margin: 12,
+    marginTop: 12,
+    marginBottom:12,
+    marginLeft: 5,
+    marginRight: 5,
     width: 55,
     textAlign: 'center',
     fontSize:35 ,
