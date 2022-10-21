@@ -1,5 +1,6 @@
 import React, { createContext, useState } from "react";
-
+import { initializeApp} from 'firebase/app'
+import { getAuth, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
 // create context
 const AuthStateContext= createContext();
 
@@ -11,6 +12,9 @@ const firebaseConfig = {
   messagingSenderId: "831155633837",
   appId: "1:831155633837:web:22232270f4d4c3cad39024"
 };
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
 
 const AuthStateProvider = ({ children }) => {
   // the value that will be given to the context
