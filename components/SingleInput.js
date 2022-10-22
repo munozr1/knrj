@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 
 
 const singleinput = (props) => {
-  const [phone, setPhone] = useState('');
+  //stores the user input
+  const [input, setInput] = useState('');
 
   return (
     <View style={[styles.container, styles.shadow]}>
@@ -23,13 +24,16 @@ const singleinput = (props) => {
             style={[styles.input, { borderWidth: 1, borderColor: '#9ea9ba' }]}
             maxLength={10}
             keyboardType={'number-pad'}
-            onChangeText={setPhone}
-            value={phone}
+
+            //update variable with user input
+            onChangeText={setInput}
+            //default value of input before user types anything
+            value={input}
           >
           </TextInput>
         </View>
       </View>
-      <TouchableOpacity onPress={() => { props.submit(phone) }} style={styles.botLabel}>
+      <TouchableOpacity onPress={() => { props.submit(input) }} style={styles.botLabel}>
         <Text style={styles.label}>{props.botLabel}</Text>
       </TouchableOpacity>
     </View>
