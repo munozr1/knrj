@@ -1,5 +1,6 @@
 import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal} from 'react-native';
 import React from 'react';
+import SpotifyLogin from '../components/SpotifyLogin';
 import CodeModal from '../components/CodeModal';
 import LoginModal from '../components/LoginModal'
 import AlbumCover from '../components/AlbumCover'
@@ -48,6 +49,13 @@ const Home = (props) => {
         visible={modalVisible}
         transparent
         > 
+          {
+          ($authState.authenticated && $event.joined) ?
+            <KeyboardAvoidingView style={styles.bottomView} behavior='padding'>
+              <SpotifyLogin topLabel={'Login with Spotify'} botLabel={'Tap to login'}></SpotifyLogin>
+            </KeyboardAvoidingView>
+            : null
+          }
           {
           ($authState.authenticated && !$event.joined)?
           <KeyboardAvoidingView
