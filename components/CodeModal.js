@@ -4,7 +4,7 @@ import {useState, useRef}from 'react';
 
 
 const codemodal = (props) => {
-  const CODE_LENGTH = 6;
+  const CODE_LENGTH = props.length || 6;
   const [code, setCode] = useState('');
   const codeDigitsArray = new Array(CODE_LENGTH).fill(0);
   const ref = useRef();

@@ -1,5 +1,6 @@
-import { View,  StyleSheet, Image } from 'react-native';
+import { View,  StyleSheet, Image , StatusBar, Animated} from 'react-native';
 import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const albumcover = (props) => {
@@ -7,32 +8,37 @@ const albumcover = (props) => {
 
   const [modalVisible, setModalVisible] = React.useState(false);
 
+
+  let state = {
+    opacity: new Animated.Value(0),
+  }
+  let fadeIn = () => {
+    Animated.timing(state.opacity, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }
+
   return (
     <View style={[styles.container, styles.shadow]}>
-      <View>
-        <View style={{
-          flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          maxHeight: 100,
-          marginTop: 10,
-        }}>
           <Image
-            style={styles.image}
-            source={'https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228'}
+            style={[styles.image]}
+            source={{uri: 'https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228'}}
           ></Image>
-        </View>
-      </View>
-    </View>  )
+    </View>
+    )
 }
 
 let styles = StyleSheet.create({
   container:{
-    borderWidth: 1,
-    borderColor: "black",
+    // borderWidth: 1,
+    // borderColor: "red",
     backgroundColor: 'white',
-    height: 100,
-    width: 100,
+    alignSelf: 'center',
+    marginTop: '50%',
+    height: 250,
+    width: 250,
   },
   shadow: {
     shadowOffset: { width: 1, height: 1 },
@@ -44,6 +50,7 @@ let styles = StyleSheet.create({
   image: {
     height: '100%',
     width: '100%',
+    
   }
 
 })

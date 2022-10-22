@@ -65,9 +65,10 @@ let styles = StyleSheet.create({
   }
   ,
   container: {
-    backgroundColor: "white",
     borderRadius: 37,
     height: 250,
+    // borderWidth: 1,
+    // borderColor: 'red'
   },
   label: {
     textAlign: "center",

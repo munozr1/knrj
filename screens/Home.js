@@ -2,6 +2,7 @@ import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal} from 'react-n
 import React from 'react';
 import CodeModal from '../components/CodeModal';
 import LoginModal from '../components/LoginModal'
+import AlbumCover from '../components/AlbumCover'
 import { AuthStateContext } from '../providers/AuthProvider';
 
 
@@ -38,33 +39,36 @@ const Home = (props) => {
 
   return (
     <View style={{
-      backgroundColor: "white",
       flex: 1,
+      flexDirection: 'column'
     }}>
-      <Modal animationType='slide' visible={modalVisible} >
-      {
-        ($authState.authenticated && !$event.joined)?
-        <KeyboardAvoidingView
-        style={styles.bottomView}
-        behavior='padding'
-        >
-          <CodeModal topLabel={'Event Code'} botLabel={'Join'} verify={verifyEventCode}></CodeModal>
-        </KeyboardAvoidingView>
-
-        : null
-      }
-      {
-        (!$authState.authenticated) ?
+      <AlbumCover></AlbumCover>
+        <Modal 
+        animationType='slide' 
+        visible={modalVisible}
+        transparent
+        > 
+          {
+          ($authState.authenticated && !$event.joined)?
           <KeyboardAvoidingView
           style={styles.bottomView}
           behavior='padding'
           >
-            <LoginModal ></LoginModal>
+            <CodeModal length={4} topLabel={'Event Code'} botLabel={'Join'} verify={verifyEventCode}></CodeModal>
           </KeyboardAvoidingView>
           : null
-      }
-      </Modal>
-
+          }
+          {
+            (!$authState.authenticated) ?
+              <KeyboardAvoidingView
+              style={styles.bottomView}
+              behavior='padding'
+              >
+                <LoginModal ></LoginModal>
+              </KeyboardAvoidingView>
+              : null
+          }
+        </Modal>
       
     </View>
   )

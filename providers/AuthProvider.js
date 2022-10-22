@@ -29,11 +29,10 @@ const AuthStateProvider = ({ children }) => {
 
 
   const sendVerificationCode = async (phoneNumber, ref) => {
-    // The FirebaseRecaptchaVerifierModal ref implements the
-    // FirebaseAuthApplicationVerifier interface and can be
-    // passed directly to `verifyPhoneNumber`.
+    //add phone number extenstion -> only in the us for now
     phoneNumber = '+1'+phoneNumber;
     console.log(phoneNumber);
+
     try {
       const phoneProvider = new PhoneAuthProvider(auth);
       const verificationId = await phoneProvider.verifyPhoneNumber(
@@ -59,13 +58,6 @@ const AuthStateProvider = ({ children }) => {
       console.log({ text: `Error: ${err.message}`, color: 'red' });
     }
   }
-
-
-  //Authenticate using firebase
-  // useEffect((phone) => {
-  //   //TODO authenticate with firebase logic goes in here
-  //   $setAuthState({ ...$authState, ...{ phone, codeSent: true } });
-  //   }, []);
 
   return (
     // the Provider gives access to the context to its children
