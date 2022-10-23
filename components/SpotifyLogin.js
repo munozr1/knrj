@@ -3,13 +3,16 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 const spotifylogin = (props) => {
     return (
         <View style={[styles.container, styles.shadow]}>
-            <View >
+            {/* <View >
                 <Text style={[styles.label]} >{props.topLabel}</Text>
-            </View>
-            <View>
-            </View>
-            <TouchableOpacity style={styles.botLabel}>
-                <Text style={styles.label}>{props.botLabel}</Text>
+            </View> */}
+            {/* <View>
+            </View> */}
+            <TouchableOpacity style={{
+              // borderWidth: 1,
+              width: 170
+            }}>
+                <Text style={styles.label}>{props.label}</Text>
             </TouchableOpacity>
         </View>
     )
@@ -37,11 +40,15 @@ let styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 37,
         height: 250,
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center'
       },
       label: {
           textAlign: "center",
           padding: "3%",
-          fontWeight: '800'
+          fontWeight: '800',
+          color: '#1DB954'
       },
       botLabel: {
         marginTop: 100,

@@ -27,6 +27,7 @@ const Home = (props) => {
 
   const hostInstead = ()=>{
     setEvent({...event, hosting:true})
+    console.log('Show Hosting Modal');
   }
 
 
@@ -74,13 +75,16 @@ const Home = (props) => {
         transparent
         > 
           {
-            ($authState.authenticated && event.hosting && !$spotifyState.user) ?
-            <KeyboardAvoidingView>
-              <SpotifyLogin topLabel={'Login with Spotify'} botLabel={'Tap to login'}></SpotifyLogin>
+            // ($authState.authenticated && event.hosting && !$spotifyState.user) ?
+            (true) ?
+            <KeyboardAvoidingView
+            style={styles.bottomView}
+            >
+              <SpotifyLogin  label={'Connect with Spotify'}></SpotifyLogin>
             </KeyboardAvoidingView>
             :null
           }
-          {
+          {/* {
           ($authState.authenticated && !event.joined && !event.hosting)?
           <KeyboardAvoidingView
           style={styles.bottomView}
@@ -105,7 +109,7 @@ const Home = (props) => {
                 <LoginModal ></LoginModal>
               </KeyboardAvoidingView>
               : null
-          }
+          } */}
         </Modal>
       
       </ImageBackground>

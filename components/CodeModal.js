@@ -32,7 +32,7 @@ const codemodal = (props) => {
       {
         (props.secondLabel) ?
         <View style={{ alignItems: 'center'}}>
-          <TouchableOpacity onPress={() => { props.secondAction }}
+          <TouchableOpacity onPress={() => { props.secondAction() }}
             style={[{
               width: 150,
             }]}
