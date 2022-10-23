@@ -8,7 +8,7 @@ import { AuthStateContext } from '../providers/AuthProvider';
 
 
 const Home = (props) => {
-  const { $authState, $setAuthState } = React.useContext(AuthStateContext);
+  const { $authState, $setAuthState, $spotifyState, $setSpotifyAuthState } = React.useContext(AuthStateContext);
   const [ event, setEvent] = React.useState({});
   const [backgroundImage, setBackgroundImage] =React.useState('https://www.google.com/url?sa=i&url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3ASpotify_icon.svg&psig=AOvVaw35U5Uf0iphZzBxJLqsDp_M&ust=1666561502134000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCKiMt8Tn9PoCFQAAAAAdAAAAABAJ');
   const [bgColor, setbgColor] = React.useState('');
@@ -23,6 +23,10 @@ const Home = (props) => {
     }
     console.log(event)
     Keyboard.dismiss();
+  }
+
+  const hostInstead = ()=>{
+    setEvent({...event, hosting:true})
   }
 
 
@@ -70,19 +74,25 @@ const Home = (props) => {
         transparent
         > 
           {
-          ($authState.authenticated && !event.joined) ?
-            <KeyboardAvoidingView style={styles.bottomView} behavior='padding'>
+            ($authState.authenticated && event.hosting && !$spotifyState.user) ?
+            <KeyboardAvoidingView>
               <SpotifyLogin topLabel={'Login with Spotify'} botLabel={'Tap to login'}></SpotifyLogin>
             </KeyboardAvoidingView>
-            : null
+            :null
           }
           {
-          ($authState.authenticated && !event.joined)?
+          ($authState.authenticated && !event.joined && !event.hosting)?
           <KeyboardAvoidingView
           style={styles.bottomView}
           behavior='padding'
           >
-            <CodeModal length={4} topLabel={'Event Code'} botLabel={'Join'} verify={verifyEventCode}></CodeModal>
+            <CodeModal length={4} 
+            topLabel={'Event Code'} 
+            botLabel={'Join'} 
+            verify={verifyEventCode}
+            secondAction={hostInstead}
+            secondLabel={'Host Instead'}
+            ></CodeModal>
           </KeyboardAvoidingView>
           : null
           }

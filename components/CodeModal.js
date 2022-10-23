@@ -18,7 +18,7 @@ const codemodal = (props) => {
     const emptyInputChar = ' ';
     const digit = code[idx] || emptyInputChar;
     return (
-      <View key={idx}> 
+      <View key={idx} style={{marginTop: 0}}> 
         <Text style={[styles.input, { borderWidth: 1, borderColor: '#9ea9ba'}]} >{digit}</Text>
       </View>
     );
@@ -29,13 +29,27 @@ const codemodal = (props) => {
       <View >
         <Text style={[styles.label]}>{props.topLabel}</Text>
       </View>
+      {
+        (props.secondLabel) ?
+        <View style={{ alignItems: 'center'}}>
+          <TouchableOpacity onPress={() => { props.secondAction }}
+            style={[{
+              width: 150,
+            }]}
+          >
+            <Text style={styles.secondLabel}>{props.secondLabel}</Text>
+          </TouchableOpacity>
+          </View>
+          : null
+      }
         <View> 
+          
         <Pressable style={{
           flex: 1,
           flexDirection: 'row',
           justifyContent: 'center',
           maxHeight: 100,
-          marginTop: 10,
+          marginTop: 0,
         }} onPress={focusHiddenInput}>
             {codeDigitsArray.map(toDigitInput)}
           </Pressable>
@@ -88,6 +102,16 @@ let styles = StyleSheet.create({
       padding: "3%",
       fontWeight: '800'
     },
+  secondLabel: {
+      textAlign: "center",
+      padding: "3%",
+      fontWeight: '500',
+      // color: 'grey',
+      opacity: 0.2
+    },
+  optionalLable:{
+    borderWidth: 1
+  },
   botLabel: {
     marginTop: 120,
     width: '100%',

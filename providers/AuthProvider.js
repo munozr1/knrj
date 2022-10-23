@@ -63,7 +63,12 @@ const AuthStateProvider = ({ children }) => {
   return (
     // the Provider gives access to the context to its children
     <AuthStateContext.Provider
-      value={{$authState, $setAuthState, sendVerificationCode, confirmVerificationCode}}>
+      value={{$authState,
+      $setAuthState,
+      sendVerificationCode,
+      confirmVerificationCode,
+      $spotifyState,
+      $setSpotifyState}}>
       
       {children}
     </AuthStateContext.Provider>
