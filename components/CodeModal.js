@@ -44,7 +44,6 @@ const codemodal = (props) => {
           value={code}
           onChangeText={setCode}
           keyboardType="number-pad"
-          // returnKeyType="done"
           textContentType="oneTimeCode"
           maxLength={CODE_LENGTH}
           style={styles.hiddenCodeInput}

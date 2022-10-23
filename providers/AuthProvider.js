@@ -1,10 +1,10 @@
-import React, { createContext, useRef, useState } from "react";
+import React  from "react";
 import { initializeApp} from 'firebase/app'
 import { getAuth, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
 import { FirebaseRecaptchaVerifierModal} from 'expo-firebase-recaptcha';
 
 // create context
-const AuthStateContext= createContext();
+const AuthStateContext= React.createContext()
 
 const firebaseConfig = {
   apiKey: "AIzaSyDGVCC1ZHzrkqpMlwKOlOyoxdTp0h2ReOA",
@@ -20,9 +20,10 @@ const auth = getAuth();
 
 const AuthStateProvider = ({ children }) => {
   // the value that will be given to the context
-  const [$authState, $setAuthState] = useState({});
+  const [$authState, $setAuthState] = React.useState({});
   const [verificationId, setVerificationId] = React.useState();
   const [message, showMessage] = React.useState();
+  const [$spotifyState, $setSpotifyState] = React.useState({});
 
   // const [verificationCode, setVerificationCode] = React.useState();
 

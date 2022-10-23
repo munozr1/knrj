@@ -4,10 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const albumcover = (props) => {
-  const [ $event, $setEvent] = React.useState({});
-
-  const [modalVisible, setModalVisible] = React.useState(false);
-
+  const [ event, setEvent] = React.useState({});
 
   let state = {
     opacity: new Animated.Value(0),
