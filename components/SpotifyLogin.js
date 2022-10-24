@@ -38,6 +38,16 @@ const spotifylogin = (props) => {
 
   return (
     <View style={[styles.container, styles.shadow]}>
+        <View>
+          <TouchableOpacity onPress={() => { props.back() }}
+            style={[{
+              width: 150,
+              marginBottom: 1
+            }]}
+          >
+            <Text style={styles.secondLabel}>{'Join Instead'}</Text>
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity style={{ width: 170 }} onPress={() => { promptAsync(); }}>
           <Text style={styles.label}>{props.label}</Text>
         </TouchableOpacity>
@@ -86,6 +96,13 @@ let styles = StyleSheet.create({
         width: 0,
         opacity: 0,
       },
+  secondLabel: {
+    textAlign: "center",
+    padding: "3%",
+    fontWeight: '500',
+    // color: 'grey',
+    opacity: 0.2,
+  },
 })
 
 

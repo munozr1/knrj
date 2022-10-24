@@ -1,4 +1,4 @@
-import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground} from 'react-native';
+import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity} from 'react-native';
 import React from 'react';
 import SpotifyLogin from '../components/SpotifyLogin';
 import CodeModal from '../components/CodeModal';
@@ -15,6 +15,9 @@ const Home = (props) => {
 
 
 
+  const joinInstead = ()=>{
+    setEvent({...event, ...{hosting: false}});
+  }
 
   const verifyEventCode = (code) => {
     if(code === '1234')
@@ -26,7 +29,7 @@ const Home = (props) => {
   }
 
   const hostInstead = ()=>{
-    setEvent({...event, hosting:true})
+    setEvent({...event, hosting: true})
     console.log('Show Hosting Modal');
   }
 
@@ -39,7 +42,7 @@ const Home = (props) => {
       setTimeout(() => {
         setModalVisible(true);
         resolve();
-      }, 1300);
+      }, 1000);
     })
   }
 
@@ -57,8 +60,8 @@ const Home = (props) => {
 
   return (
     <View style={{
-      flex: 1,
-      flexDirection: 'column'
+      // flex: 1,
+      // flexDirection: 'column'
     }}
     >
       <ImageBackground
@@ -68,8 +71,8 @@ const Home = (props) => {
         source={{uri: backgroundImage}}
         blurRadius={10}
       >
-      <AlbumCover></AlbumCover>
-        <Modal 
+        <AlbumCover></AlbumCover>
+        {/* <Modal 
         animationType='slide' 
         visible={modalVisible}
         transparent
@@ -80,7 +83,7 @@ const Home = (props) => {
             <KeyboardAvoidingView
             style={styles.bottomView}
             >
-              <SpotifyLogin  label={'Connect with Spotify'}></SpotifyLogin>
+              <SpotifyLogin back={joinInstead}  label={'Connect with Spotify'}></SpotifyLogin>
             </KeyboardAvoidingView>
             :null
           }
@@ -110,7 +113,7 @@ const Home = (props) => {
               </KeyboardAvoidingView>
               : null
           }
-        </Modal>
+        </Modal> */}
       
       </ImageBackground>
     </View>
