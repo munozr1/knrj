@@ -10,7 +10,7 @@ import { AuthStateContext } from '../providers/AuthProvider';
 const Home = (props) => {
   const { $authState, $setAuthState, $spotifyState, $setSpotifyAuthState } = React.useContext(AuthStateContext);
   const [ event, setEvent] = React.useState({});
-  const [backgroundImage, setBackgroundImage] =React.useState('https://www.google.com/url?sa=i&url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3ASpotify_icon.svg&psig=AOvVaw35U5Uf0iphZzBxJLqsDp_M&ust=1666561502134000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCKiMt8Tn9PoCFQAAAAAdAAAAABAJ');
+  const [backgroundImage, setBackgroundImage] =React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [bgColor, setbgColor] = React.useState('');
 
 
@@ -65,7 +65,7 @@ const Home = (props) => {
         style={[styles.background,{
           backgroundColor: bgColor
         }]}
-        source={{uri: 'https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228'}}
+        source={{uri: backgroundImage}}
         blurRadius={10}
       >
       <AlbumCover></AlbumCover>
@@ -75,8 +75,8 @@ const Home = (props) => {
         transparent
         > 
           {
-            // ($authState.authenticated && event.hosting && !$spotifyState.user) ?
-            (true) ?
+            ($authState.authenticated && event.hosting && !$spotifyState.user) ?
+            // (true) ?
             <KeyboardAvoidingView
             style={styles.bottomView}
             >
@@ -84,7 +84,7 @@ const Home = (props) => {
             </KeyboardAvoidingView>
             :null
           }
-          {/* {
+          {
           ($authState.authenticated && !event.joined && !event.hosting)?
           <KeyboardAvoidingView
           style={styles.bottomView}
@@ -109,7 +109,7 @@ const Home = (props) => {
                 <LoginModal ></LoginModal>
               </KeyboardAvoidingView>
               : null
-          } */}
+          }
         </Modal>
       
       </ImageBackground>

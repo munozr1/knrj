@@ -24,7 +24,7 @@ const spotifylogin = (props) => {
         'user-read-private',
       ],
       usePKCE: false,
-      redirectUri: 'exp://192.168.1.146:19000'
+      redirectUri: 'exp://192.168.1.101:19000'
     },
     discovery
   );
