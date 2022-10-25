@@ -1,5 +1,5 @@
 import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity, SafeAreaView} from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import SpotifyLogin from '../components/SpotifyLogin';
 import CodeModal from '../components/CodeModal';
 import LoginModal from '../components/LoginModal'
@@ -13,6 +13,7 @@ const Home = (props) => {
   const [ event, setEvent] = React.useState({});
   const [backgroundImage, setBackgroundImage] =React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [bgColor, setbgColor] = React.useState('');
+  const [done, setDone] = React.useState(false);
 
 
 
@@ -24,16 +25,30 @@ const Home = (props) => {
     if(code === '1234')
     {
       setEvent({...event, ...{joined: true}});
+      setDone(true);
       setModalVisible(false);
     }
     console.log(event)
     Keyboard.dismiss();
   }
 
-  const hostInstead = ()=>{
+    const hostInstead = ()=>{
     setEvent({...event, hosting: true})
     console.log('Show Hosting Modal');
   }
+
+  const voteSkip = ()=>{
+    console.log("voteSkip")
+  }
+
+  const search = () => {
+    console.log("search")
+  }
+
+  const voteBack = () => {
+    console.log("voteBack")
+  }
+
 
 
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -51,7 +66,8 @@ const Home = (props) => {
   //timeout for modal animation slide up
   React.useEffect(()=>{
     setModalVisible(false);
-    modalTimeout();
+    if(!done)
+      modalTimeout();
   }, [$authState,event])
   // modalTimeout();
 
@@ -83,29 +99,38 @@ const Home = (props) => {
             style={styles.bottomView}
             behavior='padding'
           >
-            <EventModal></EventModal>
+            <EventModal 
+            songName={'Rock and a Hard Place'}
+            artistName={'Bailey Zimmerman'}
+            voteSkip={voteSkip}
+            search={search}
+            voteBack={voteBack}
+            ></EventModal>
           </KeyboardAvoidingView >
         </SafeAreaView>
+
+        
         <Modal 
         animationType='slide' 
         visible={modalVisible}
-        transparent
+        // visible={false}
+        // transparent
         > 
         
-          {/*{
+          {
             ($authState.authenticated && event.hosting && !$spotifyState.user) ?
             // (true) ?
             <KeyboardAvoidingView
-            style={styles.bottomView}
+            style={styles.modalStyles}
             >
-              <SpotifyLogin back={joinInstead}  label={'Connect with Spotify'}></SpotifyLogin>
+              <SpotifyLogin  back={joinInstead}  label={'Connect with Spotify'}></SpotifyLogin>
             </KeyboardAvoidingView>
             :null
           }
           {
           ($authState.authenticated && !event.joined && !event.hosting)?
           <KeyboardAvoidingView
-          style={styles.bottomView}
+          style={styles.modalStyles}
           behavior='padding'
           >
             <CodeModal length={4} 
@@ -121,13 +146,13 @@ const Home = (props) => {
           {
             (!$authState.authenticated) ?
               <KeyboardAvoidingView
-              style={styles.bottomView}
+              style={styles.modalStyles}
               behavior='padding'
               >
                 <LoginModal ></LoginModal>
               </KeyboardAvoidingView>
               : null
-          }*/}
+          }
         </Modal>
       
       </ImageBackground>
@@ -156,6 +181,14 @@ let styles = StyleSheet.create({
     //marginRight:2,
     width:'97%'
   },
+  modalStyles: {
+  position: 'absolute', //Here is the trick
+  bottom: 0, //Here is the trick
+  // marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
+  // marginLeft: 2,
+  //marginRight:2,
+  width: '100%'
+}, 
   background: {
     // position: 'absolute',
     height:'100%' ,

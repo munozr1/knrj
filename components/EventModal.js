@@ -14,25 +14,40 @@ const eventmodal = (props) => {
       // borderWidth: 1
     }]}>
       <View>
-        <Text style={styles.label}>{"Rock and a Hard Place"}</Text>
-        <Text style={styles.secondLabel}>{"Bailey Zimmerman"}</Text>
+        <Text style={styles.label}>{props.songName}</Text>
+        <Text style={styles.secondLabel}>{props.artistName}</Text>
       </View>
       <View style={[
       styles.iconsCenter,
       styles.bottomView
       ]}>
-
+        <TouchableOpacity onPress={props.voteBack}
+          style={[{
+          }]}
+        >
         <Ionicons name="play-back" size={38} style={[{
             marginRight: 50,
             marginBottom: 5
           }]}/>
+          </TouchableOpacity>
+        <TouchableOpacity onPress={props.search}
+          style={[{
+          }]}
+        >
         <Ionicons name="search" size={38} style={[{
             marginRight: 50,
             marginBottom: 5
             }]} />
+            </TouchableOpacity>
+            
+          <TouchableOpacity onPress={props.voteSkip}
+            style={[{
+            }]}
+          >
         <Ionicons name="play-forward" size={38} style={[{
             marginBottom: 5
             }]} />
+            </TouchableOpacity>
       </View>
 
     </View>
