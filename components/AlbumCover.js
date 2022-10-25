@@ -1,12 +1,14 @@
-import { View,  StyleSheet, Image , StatusBar, Animated, TouchableOpacity, Vibration, TouchableHighlight} from 'react-native';
+import {Text, View,  StyleSheet, Image , StatusBar, Animated, TouchableOpacity, Vibration, TouchableHighlight, Modal, ImageBackground} from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import Menu from './Menu'
 
 
 
 const albumcover = (props) => {
   const [ event, setEvent] = React.useState({});
+  const [showMenu, setShowMenu] = React.useState(false);
 
   let state = {
     opacity: new Animated.Value(0),
@@ -19,23 +21,47 @@ const albumcover = (props) => {
     }).start();
   }
 
+
+  const exitMenu = () =>{
+    setShowMenu(false);
+  }
+
+  
+
   const menu = ()=> {
     console.log('long pressed');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    // Haptics.notificationAsync();``
-    // Vibration.vibrate(100);
+    setShowMenu(!showMenu);
   }
 
   return (
     <View style={[styles.container, styles.shadow]}>
-      <TouchableHighlight
-      onLongPress={menu}
+      <ImageBackground
+        source={{ uri: 'https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228' }}
+        style={{
+          height: '100%',
+          width: '100%'
+        }}
       >
+      {
+        (!showMenu) ? 
+        <TouchableHighlight
+          onLongPress={menu}
+        >
           <Image
             style={[styles.image]}
-            source={{uri: 'https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228'}}
-          ></Image>
-      </TouchableHighlight>
+            source={{ uri: 'https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228' }}
+          >
+          </Image>
+        </TouchableHighlight>
+        :null
+      }
+      {
+        (showMenu) ? 
+        <Menu exit={exitMenu}></Menu>
+        :null
+      }
+      </ImageBackground>
     </View>
     )
 }

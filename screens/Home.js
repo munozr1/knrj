@@ -22,7 +22,8 @@ const Home = (props) => {
   const verifyEventCode = (code) => {
     if(code === '1234')
     {
-      setEvent({...event, ...{joined: true}})
+      setEvent({...event, ...{joined: true}});
+      setModalVisible(false);
     }
     console.log(event)
     Keyboard.dismiss();
@@ -69,10 +70,10 @@ const Home = (props) => {
           backgroundColor: bgColor
         }]}
         source={{uri: backgroundImage}}
-        blurRadius={10}
+        blurRadius={3}
       >
         <AlbumCover></AlbumCover>
-        {/* <Modal 
+        <Modal 
         animationType='slide' 
         visible={modalVisible}
         transparent
@@ -113,7 +114,7 @@ const Home = (props) => {
               </KeyboardAvoidingView>
               : null
           }
-        </Modal> */}
+        </Modal>
       
       </ImageBackground>
     </View>
