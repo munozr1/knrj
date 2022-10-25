@@ -13,10 +13,14 @@ const menu = (props) => {
     intensity={70}
     opa
     >
-      <TouchableOpacity>
+      <TouchableOpacity
+      onPress={()=>{props.leave}}
+      >
         <Text style={[styles.label, {color: 'red'}]}>Leave Event</Text>
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity
+      onPress={() => {props.logout()}}
+      >
         <Text style={[styles.label, {color:'red'}]}>Log Out</Text>
       </TouchableOpacity>
       <TouchableOpacity

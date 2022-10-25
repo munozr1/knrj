@@ -9,19 +9,40 @@ import { AuthStateContext } from '../providers/AuthProvider';
 
 
 const Home = (props) => {
-  const { $authState, $setAuthState, $spotifyState, $setSpotifyAuthState } = React.useContext(AuthStateContext);
+  const { $authState,
+          $setAuthState,
+          $spotifyState,
+          $setSpotifyAuthState,
+        } = React.useContext(AuthStateContext);
   const [ event, setEvent] = React.useState({});
   const [backgroundImage, setBackgroundImage] =React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [bgColor, setbgColor] = React.useState('');
   const [done, setDone] = React.useState(false);
+  const [modalVisible, setModalVisible] = React.useState(false);
 
 
+
+  const resetAuth = ()=>{
+    console.log('reseting auth')
+    $setAuthState({});
+    setEvent({});
+    setDone(false);
+    setModalVisible(true)
+  }
+  
+  const resetEvent = ()=>{
+    setEvent({});
+    setDone(false);
+    setModalVisible(true)
+  }
 
   const joinInstead = ()=>{
     setEvent({...event, ...{hosting: false}});
   }
 
   const verifyEventCode = (code) => {
+    //TODO query firebase events collection for an event matching the 
+    //given code
     if(code === '1234')
     {
       setEvent({...event, ...{joined: true}});
@@ -51,7 +72,7 @@ const Home = (props) => {
 
 
 
-  const [modalVisible, setModalVisible] = React.useState(false);
+  
 
 
   const modalTimeout = async () => {
@@ -90,7 +111,7 @@ const Home = (props) => {
         source={{uri: backgroundImage}}
         blurRadius={3}
       >
-        <AlbumCover></AlbumCover>
+        <AlbumCover resetAuth={resetAuth} resetEvent={resetEvent}></AlbumCover>
         <SafeAreaView
         style={[{
           alignItems: 'center'
@@ -114,7 +135,7 @@ const Home = (props) => {
         animationType='slide' 
         visible={modalVisible}
         // visible={false}
-        // transparent
+        transparent
         > 
         
           {

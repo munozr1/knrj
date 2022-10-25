@@ -21,9 +21,15 @@ const albumcover = (props) => {
     }).start();
   }
 
-
-  const exitMenu = () =>{
+  const logout = () => {
+    console.log('loging out')
     setShowMenu(false);
+    props.resetAuth();
+  }
+  const leaveEvent = () =>{
+    console.log('leaving event')
+    setShowMenu(false);
+    props.resetEvent();
   }
   const shortPress = () =>{
     console.log("Short")
@@ -62,7 +68,12 @@ const albumcover = (props) => {
       }
       {
         (showMenu) ? 
-        <Menu exit={exitMenu}></Menu>
+        <Menu
+        logout={logout}
+        leave={leaveEvent}
+        exit={menu}
+        // setMenu={setShowMenu} 
+        ></Menu>
         :null
       }
       </ImageBackground>

@@ -24,7 +24,6 @@ const AuthStateProvider = ({ children }) => {
   const [verificationId, setVerificationId] = React.useState();
   const [message, showMessage] = React.useState();
   const [$spotifyState, $setSpotifyState] = React.useState({});
-
   // const [verificationCode, setVerificationCode] = React.useState();
 
 
