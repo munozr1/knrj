@@ -25,6 +25,9 @@ const albumcover = (props) => {
   const exitMenu = () =>{
     setShowMenu(false);
   }
+  const shortPress = () =>{
+    console.log("Short")
+  }
 
   
 
@@ -47,6 +50,7 @@ const albumcover = (props) => {
         (!showMenu) ? 
         <TouchableHighlight
           onLongPress={menu}
+          onPress={shortPress}
         >
           <Image
             style={[styles.image]}

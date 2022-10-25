@@ -1,9 +1,10 @@
-import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity} from 'react-native';
+import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity, SafeAreaView} from 'react-native';
 import React from 'react';
 import SpotifyLogin from '../components/SpotifyLogin';
 import CodeModal from '../components/CodeModal';
 import LoginModal from '../components/LoginModal'
 import AlbumCover from '../components/AlbumCover'
+import EventModal from '../components/EventModal'
 import { AuthStateContext } from '../providers/AuthProvider';
 
 
@@ -67,18 +68,31 @@ const Home = (props) => {
     >
       <ImageBackground
         style={[styles.background,{
-          backgroundColor: bgColor
+          backgroundColor: bgColor,
+          alignItems: 'center'
         }]}
         source={{uri: backgroundImage}}
         blurRadius={3}
       >
         <AlbumCover></AlbumCover>
+        <SafeAreaView
+        style={[{
+          alignItems: 'center'
+        },styles.bottomView]}>
+          <KeyboardAvoidingView
+            style={styles.bottomView}
+            behavior='padding'
+          >
+            <EventModal></EventModal>
+          </KeyboardAvoidingView >
+        </SafeAreaView>
         <Modal 
         animationType='slide' 
         visible={modalVisible}
         transparent
         > 
-          {
+        
+          {/*{
             ($authState.authenticated && event.hosting && !$spotifyState.user) ?
             // (true) ?
             <KeyboardAvoidingView
@@ -113,7 +127,7 @@ const Home = (props) => {
                 <LoginModal ></LoginModal>
               </KeyboardAvoidingView>
               : null
-          }
+          }*/}
         </Modal>
       
       </ImageBackground>
@@ -138,9 +152,9 @@ let styles = StyleSheet.create({
     position: 'absolute', //Here is the trick
     bottom: 0, //Here is the trick
     // marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
-    marginLeft: 2,
-    marginRight:2,
-    width:'100%'
+   // marginLeft: 2,
+    //marginRight:2,
+    width:'97%'
   },
   background: {
     // position: 'absolute',

@@ -19,7 +19,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "useFrameworks": "static"
+      "useFrameworks": "static",
+      "bundleIdentifier": "com.test.test"
     },
     "android": {
       "adaptiveIcon": {
