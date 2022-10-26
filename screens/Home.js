@@ -1,5 +1,5 @@
 import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity, SafeAreaView} from 'react-native';
-import React, { useEffect } from 'react';
+import React from 'react';
 import SpotifyLogin from '../components/SpotifyLogin';
 import CodeModal from '../components/CodeModal';
 import LoginModal from '../components/LoginModal'

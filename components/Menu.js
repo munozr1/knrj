@@ -14,7 +14,7 @@ const menu = (props) => {
     opa
     >
       <TouchableOpacity
-      onPress={()=>{props.leave}}
+      onPress={()=>{props.leave()}}
       >
         <Text style={[styles.label, {color: 'red'}]}>Leave Event</Text>
       </TouchableOpacity>
