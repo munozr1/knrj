@@ -149,6 +149,8 @@ const SpotifyProvider = ({ children }) => {
       setDone(true);
       setModalVisible(false);
       console.log('Token - ' + access_token);
+
+      currentlyPlaying()
       // console.log('Device ID - ' + deviceId)
     }
   }, [response]);
