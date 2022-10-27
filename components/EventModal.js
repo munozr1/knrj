@@ -30,8 +30,8 @@ const eventmodal = (props) => {
       alignItems: 'center',
     }]}>
       <View>
-        <Text style={styles.label}>{props.song.name}</Text>
-        <Text style={styles.secondLabel}>{props.song.album.artists[0].name}</Text>
+        <Text style={styles.label} numberOfLines={1}>{props.song.name}</Text>
+        <Text style={styles.secondLabel} numberOfLines={1}>{props.song.album.artists[0].name}</Text>
       </View>
       <View style={[
       styles.iconsCenter,
@@ -113,7 +113,8 @@ let styles = StyleSheet.create({
     opacity: .9,
     fontSize: 20,
     marginTop: 20,
-    marginBottom: 10
+    marginBottom: 10,
+    maxWidth: '80%'
   
   },
   secondLabel: {
