@@ -26,16 +26,22 @@ const FirestoreProvider = ({ children }) => {
 
   }
 
-
+  // Generate random 4 digit code
   const generateCode = () => {
-    //TODO return a random 4 digit code
+    var min = 1000;
+    var max = 9999;
+    return Math.floor(Math.random() * (max - min + 1) + min)
   }
 
   const createEvent = async () =>{
-    //TODO generate event code - rodrigo
+    var eventcode = generateCode();
+
+    while (findEvent(eventcode) ? 
+      eventcode = generateCode()
+      : null
+    );
     
     //TODO add event to events collection
-
   }
 
   const joinEvent = async () => {
