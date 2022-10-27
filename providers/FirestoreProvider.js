@@ -49,6 +49,8 @@ const FirestoreProvider = ({ children }) => {
     }
     
     const res = collection(db, 'event').doc(event_code).set(data);
+
+    //TODO: Update
   }
 
   const joinEvent = async (phonenumber, event_code) => {
