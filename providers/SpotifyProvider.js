@@ -94,7 +94,6 @@ const SpotifyProvider = ({ children }) => {
   }
 
   const skip = async () => {
-
     console.log('SpotifyProvider => skip()')
     await fetch(NEXT, {
       method: 'POST',
