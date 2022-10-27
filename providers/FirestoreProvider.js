@@ -26,6 +26,11 @@ const FirestoreProvider = ({ children }) => {
 
   }
 
+
+  const generateCode = () => {
+    //TODO return a random 4 digit code
+  }
+
   const createEvent = async () =>{
     //TODO generate event code - rodrigo
     
