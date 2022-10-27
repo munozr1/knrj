@@ -8,6 +8,38 @@ const PREVIOUS = 'https://api.spotify.com/v1/me/player/previous';
 const CURRENTLY_PLAYING = 'https://api.spotify.com/v1/me/player/currently-playing';
 
 const SEARCH = 'https://api.spotify.com/v1/search';
+const IMAGE = {
+  "album": {
+    "artists": [
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/0rJ0xlAQI0wLRucDRoQQbO"
+        },
+        "href": "https://api.spotify.com/v1/artists/0rJ0xlAQI0wLRucDRoQQbO",
+        "id": "0rJ0xlAQI0wLRucDRoQQbO",
+        "name": "Artist Name",
+        "type": "artist",
+        "uri": "spotify:artist:0rJ0xlAQI0wLRucDRoQQbO"
+      }
+    ],
+    "href": "https://api.spotify.com/v1/albums/2tyKrUxYAexhkXrL5TAxq3",
+    "id": "2tyKrUxYAexhkXrL5TAxq3",
+    "images": [
+      {
+        "height": 640,
+        "url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
+        "width": 640
+      }
+    ],
+    "name": "Track Name",
+    "release_date": "2017-03-17",
+    "release_date_precision": "day",
+    "total_tracks": 20,
+    "type": "album",
+    "uri": "spotify:album:2tyKrUxYAexhkXrL5TAxq3"
+  }
+
+}
 
 
 const SpotifyContext = React.createContext();
@@ -23,37 +55,7 @@ const SpotifyProvider = ({ children }) => {
   const [done, setDone] = React.useState(false);
   const [$spotifyState, $setSpotifyState] = React.useState({});
   const [token, setToken] = React.useState("");
-  const [song, setSong] = React.useState({
-    "album": {
-      "artists": [
-        {
-          "external_urls": {
-            "spotify": "https://open.spotify.com/artist/0rJ0xlAQI0wLRucDRoQQbO"
-          },
-          "href": "https://api.spotify.com/v1/artists/0rJ0xlAQI0wLRucDRoQQbO",
-          "id": "0rJ0xlAQI0wLRucDRoQQbO",
-          "name": "Artist Name",
-          "type": "artist",
-          "uri": "spotify:artist:0rJ0xlAQI0wLRucDRoQQbO"
-        }
-      ],
-      "href": "https://api.spotify.com/v1/albums/2tyKrUxYAexhkXrL5TAxq3",
-      "id": "2tyKrUxYAexhkXrL5TAxq3",
-      "images": [
-        {
-          "height": 640,
-          "url": "https://i.scdn.co/image/ab67616d0000b27323c6bf9a2c1b503e5ae8a6c4",
-          "width": 640
-        }
-      ],
-      "name": "Track Name",
-      "release_date": "2017-03-17",
-      "release_date_precision": "day",
-      "total_tracks": 20,
-      "type": "album",
-      "uri": "spotify:album:2tyKrUxYAexhkXrL5TAxq3"
-    }
-  })
+  const [song, setSong] = React.useState(IMAGE);
   const [request, response, promptAsync] = useAuthRequest(
     {
       responseType: ResponseType.Token,
@@ -137,9 +139,10 @@ const SpotifyProvider = ({ children }) => {
         'Authorization': 'Bearer ' + token
       }
     }).then(handleApiResponse);
-    let current = await currentlyPlaying()
+    setTimeout(async () => {
+      await currentlyPlaying()
+    }, 200);
 
-      console.log(JSON.stringify('currently playing: ',current));
   }
 
     React.useEffect(() => {
@@ -185,13 +188,21 @@ const SpotifyProvider = ({ children }) => {
         'Authorization': 'Bearer ' + token
       }
     }).then((response) => response.json()).then((response) => {
-      console.log('response =-=-=>',response);
+      console.log('response =-=-=>',response.progress_ms);
+      fetchNewSong(response.progress_ms, response.item.duration_ms)
       setBackgroundImage(response.item.album.images[0].url);
       setSong(response.item)
     }).catch(e=>{
       console.log('Error SpotifyProvider() => currentlyPlaying()')
       console.log(e);
     })
+  }
+
+  const fetchNewSong = (current_ms, duration_ms) => {
+    setTimeout(async () => {
+      console.log('SpotifyProvider() => fetchNewSong()')
+      await currentlyPlaying()
+    }, (duration_ms - current_ms)+100);
   }
 
   
@@ -220,4 +231,4 @@ const SpotifyProvider = ({ children }) => {
   );
 };
 
-export { SpotifyContext, SpotifyProvider };
+export { SpotifyContext, SpotifyProvider, IMAGE };

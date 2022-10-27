@@ -1,4 +1,4 @@
-import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity, SafeAreaView} from 'react-native';
+import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity, SafeAreaView, Animated} from 'react-native';
 import React from 'react';
 import SpotifyLogin from '../components/SpotifyLogin';
 import CodeModal from '../components/CodeModal';
@@ -7,7 +7,7 @@ import AlbumCover from '../components/AlbumCover'
 import EventModal from '../components/EventModal'
 import { AuthStateContext } from '../providers/AuthProvider';
 import { DBContext } from '../providers/FirestoreProvider';
-import { SpotifyContext } from '../providers/SpotifyProvider';
+import { IMAGE, SpotifyContext } from '../providers/SpotifyProvider';
 
 const Home = (props) => {
   const { $authState,
@@ -21,6 +21,7 @@ const Home = (props) => {
           modalVisible,
           setModalVisible,
           song,
+          setBackgroundImage,
         } = React.useContext(SpotifyContext);
   const {
     findEvent
@@ -37,13 +38,15 @@ const Home = (props) => {
 
   const resetAuth = ()=>{
     console.log('reseting auth')
+    setBackgroundImage(IMAGE);
     $setAuthState({});
     setEvent({});
     setDone(false);
-    setModalVisible(true)
+    setModalVisible(true);
   }
   
   const resetEvent = ()=>{
+    setBackgroundImage(IMAGE);
     setEvent({});
     setDone(false);
     setModalVisible(true)
@@ -116,12 +119,31 @@ const Home = (props) => {
 
   }, [song])
 
+  const backgroundFade= React.useRef(new Animated.Value(0)).current;
+
+  const backgroundFadeIn =() => {
+    Animated.timing(backgroundFade, {
+      toValue: 1,
+      duration: 2000
+    }).start()
+  }
+
+
+  const backgroundFadeOut = () => {
+    // Will change fadeAnim value to 0 in 3 seconds
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 2000
+    }).start();
+  };
+
   return (
     <View style={{
       // flex: 1,
       // flexDirection: 'column'
     }}
     >
+      
       <ImageBackground
         style={[styles.background,{
           backgroundColor: bgColor,

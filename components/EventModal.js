@@ -105,6 +105,7 @@ let styles = StyleSheet.create({
     borderRadius: 37,
     height: 130,
     marginBottom: 25,
+    opacity: .8
   },
   label: {
     textAlign: "center",
@@ -113,8 +114,9 @@ let styles = StyleSheet.create({
     opacity: .9,
     fontSize: 20,
     marginTop: 20,
-    marginBottom: 10,
-    maxWidth: '80%'
+    marginBottom: 2,
+    maxWidth: '80%',
+    // opacity: '100%'
   
   },
   secondLabel: {

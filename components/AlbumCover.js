@@ -1,4 +1,4 @@
-import {Text, View,  StyleSheet, Image , StatusBar, Animated, TouchableOpacity, Vibration, TouchableHighlight, Modal, ImageBackground} from 'react-native';
+import { PanResponder,Text, View,  StyleSheet, Image , StatusBar, Animated, TouchableOpacity, Vibration, TouchableHighlight, Modal, ImageBackground} from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -43,6 +43,8 @@ const albumcover = (props) => {
     setShowMenu(!showMenu);
   }
 
+  
+
   return (
     <View style={[styles.container, styles.shadow]}>
       <ImageBackground
@@ -54,11 +56,11 @@ const albumcover = (props) => {
       >
       {
         (!showMenu) ? 
-        <TouchableHighlight
+        <TouchableOpacity
           onLongPress={menu}
           onPress={shortPress}
-          activeOpacity={.9}
-          underlayColor="#DDDDDD"
+          // activeOpacity={.9}
+          // underlayColor="#DDDDDD"
 
         >
           <Image
@@ -66,7 +68,7 @@ const albumcover = (props) => {
             // source={{ uri: props.bgImage }}
           >
           </Image>
-        </TouchableHighlight>
+        </TouchableOpacity>
         :null
       }
       {
@@ -81,6 +83,7 @@ const albumcover = (props) => {
       }
       </ImageBackground>
     </View>
+    // </View>
     )
 }
 
