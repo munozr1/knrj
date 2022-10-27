@@ -30,22 +30,37 @@ const FirestoreProvider = ({ children }) => {
   const generateCode = () => {
     var min = 1000;
     var max = 9999;
-    return Math.floor(Math.random() * (max - min + 1) + min)
+    var code = Math.floor(Math.random() * (max - min + 1) + min);
+
+    console.log('Event Code - ' + code);
+    return code;
   }
 
-  const createEvent = async () =>{
-    var eventcode = generateCode();
+  const createEvent = async (phonenumber) =>{
+    const event_code = generateCode();
 
-    while (findEvent(eventcode) ? 
-      eventcode = generateCode()
-      : null
-    );
+    while (findEvent(event_code)) {
+      event_code = generateCode()
+    };
+
+    const data = {
+      eventcode: event_code,
+      host: phonenumber
+    }
     
-    //TODO add event to events collection
+    const res = collection(db, 'event').doc(event_code).set(data);
   }
 
-  const joinEvent = async () => {
-    //TODO add current user to event members list
+  const joinEvent = async (phonenumber, event_code) => {
+    if (!findEvent(event_code)) {
+      const eventRef = db.collection('event').doc(event_code);
+
+      const res = await eventRef.set({
+        members: {
+          phonenumber
+        }
+      }, { merge: true });
+    }
   }
 
   return (
