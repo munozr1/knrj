@@ -27,6 +27,8 @@ const FirestoreProvider = ({ children }) => {
   }
 
   const createEvent = async () =>{
+    //TODO generate event code - rodrigo
+    
     //TODO add event to events collection
 
   }
