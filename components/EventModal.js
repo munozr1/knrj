@@ -30,7 +30,7 @@ const eventmodal = (props) => {
       alignItems: 'center',
     }]}>
       <View>
-        <Text style={styles.label}>{props.song.album.name}</Text>
+        <Text style={styles.label}>{props.song.name}</Text>
         <Text style={styles.secondLabel}>{props.song.album.artists[0].name}</Text>
       </View>
       <View style={[
@@ -123,6 +123,7 @@ let styles = StyleSheet.create({
     // borderColor: 'red',
     // borderWidth: 1
     // color: 'grey',
+    // marginBottom: '%'
   },
   optionalLable: {
     borderWidth: 1

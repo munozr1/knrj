@@ -128,7 +128,7 @@ const Home = (props) => {
           alignItems: 'center'
         }]}
         source={{uri: song.album.images[0].url}}
-        blurRadius={3}
+        blurRadius={10}
       >
         <AlbumCover 
         resetAuth={resetAuth} 
@@ -161,8 +161,8 @@ const Home = (props) => {
         > 
         
           {
-            // ($authState.authenticated && event.hosting && !$spotifyState.user) ?
-            (!$spotifyState.user && !$spotifyState.token) ?
+            ($authState.authenticated && event.hosting && !$spotifyState.token) ?
+            // (!$spotifyState.user && !$spotifyState.token) ?
             // (true) ?
             <KeyboardAvoidingView
             style={styles.modalStyles}
@@ -176,7 +176,7 @@ const Home = (props) => {
             </KeyboardAvoidingView>
             :null
           }
-          {/* {
+          {
           ($authState.authenticated && !event.joined && !event.hosting)?
           <KeyboardAvoidingView
           style={styles.modalStyles}
@@ -201,7 +201,7 @@ const Home = (props) => {
                 <LoginModal ></LoginModal>
               </KeyboardAvoidingView>
               : null
-          } */}
+          }
         </Modal>
       
       </ImageBackground>

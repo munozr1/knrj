@@ -57,6 +57,9 @@ const albumcover = (props) => {
         <TouchableHighlight
           onLongPress={menu}
           onPress={shortPress}
+          activeOpacity={.9}
+          underlayColor="#DDDDDD"
+
         >
           <Image
             style={[styles.image]}
@@ -88,8 +91,8 @@ let styles = StyleSheet.create({
     backgroundColor: 'white',
     alignSelf: 'center',
     marginTop: '50%',
-    height: 250,
-    width: 250,
+    height: 370,
+    width: 370,
   },
   shadow: {
     shadowOffset: { width: 1, height: 1 },
