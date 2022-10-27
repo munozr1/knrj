@@ -26,6 +26,15 @@ const FirestoreProvider = ({ children }) => {
 
   }
 
+  const createEvent = async () =>{
+    //TODO add event to events collection
+
+  }
+
+  const joinEvent = async () => {
+    //TODO add current user to event members list
+  }
+
   return (
     // the Provider gives access to the context to its children
     <DBContext.Provider
