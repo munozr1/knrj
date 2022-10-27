@@ -113,11 +113,11 @@ const SpotifyProvider = ({ children }) => {
     }
   }, [response]);
 
-  const enqueue = (song) => {
+  const enqueue = async (song) => {
     //TODO add song to host queue
   }
   
-  const dequeue = (song) => {
+  const dequeue = async (song) => {
     //TODO remove song from host queue
   }
 
