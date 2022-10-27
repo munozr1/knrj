@@ -19,14 +19,14 @@ const Home = (props) => {
           $spotifyState,
           $setSpotifyAuthState,
           modalVisible,
-          setModalVisible
+          setModalVisible,
+          song,
         } = React.useContext(SpotifyContext);
   const {
     findEvent
   } = React.useContext(DBContext)
 
   const [event, setEvent] = React.useState({});
-  const [backgroundImage, setBackgroundImage] =React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [bgColor, setbgColor] = React.useState('');
 
 
@@ -112,6 +112,9 @@ const Home = (props) => {
   }, [event, $spotifyState])
   // modalTimeout();
 
+  React.useEffect(()=>{
+
+  }, [song])
 
   return (
     <View style={{
@@ -124,13 +127,13 @@ const Home = (props) => {
           backgroundColor: bgColor,
           alignItems: 'center'
         }]}
-        source={{uri: backgroundImage}}
+        source={{uri: song.album.images[0].url}}
         blurRadius={3}
       >
         <AlbumCover 
         resetAuth={resetAuth} 
         resetEvent={resetEvent}
-        bgImage={backgroundImage}
+        bgImage={song.album.images[0].url}
         ></AlbumCover>
         <SafeAreaView
         style={[{
@@ -141,8 +144,7 @@ const Home = (props) => {
             behavior='padding'
           >
             <EventModal 
-            songName={'Rock and a Hard Place'}
-            artistName={'Bailey Zimmerman'}
+            song={song}
             voteSkip={voteSkip}
             search={search}
             voteBack={voteBack}

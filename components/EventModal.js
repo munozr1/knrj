@@ -28,12 +28,10 @@ const eventmodal = (props) => {
   return (
     <View style={[styles.container, styles.shadow, {
       alignItems: 'center',
-      // borderColor: 'red',
-      // borderWidth: 1
     }]}>
       <View>
-        <Text style={styles.label}>{props.songName}</Text>
-        <Text style={styles.secondLabel}>{props.artistName}</Text>
+        <Text style={styles.label}>{props.song.album.name}</Text>
+        <Text style={styles.secondLabel}>{props.song.album.artists[0].name}</Text>
       </View>
       <View style={[
       styles.iconsCenter,
@@ -122,6 +120,8 @@ let styles = StyleSheet.create({
     textAlign: "center",
     padding: "0%",
     fontWeight: '500',
+    // borderColor: 'red',
+    // borderWidth: 1
     // color: 'grey',
   },
   optionalLable: {
@@ -143,7 +143,8 @@ let styles = StyleSheet.create({
     // marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
     // marginLeft: 2,
     //marginRight:2,
-    width: '97%'
+    width: '97%',
+    marginBottom: '3%'
   },
 })
 

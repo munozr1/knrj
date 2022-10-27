@@ -18,10 +18,42 @@ const discovery = {
 
 const SpotifyProvider = ({ children }) => {
 
+  const [backgroundImage, setBackgroundImage] =React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [modalVisible, setModalVisible] = React.useState(false);
   const [done, setDone] = React.useState(false);
   const [$spotifyState, $setSpotifyState] = React.useState({});
   const [token, setToken] = React.useState("");
+  const [song, setSong] = React.useState({
+    "album": {
+      "artists": [
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/0rJ0xlAQI0wLRucDRoQQbO"
+          },
+          "href": "https://api.spotify.com/v1/artists/0rJ0xlAQI0wLRucDRoQQbO",
+          "id": "0rJ0xlAQI0wLRucDRoQQbO",
+          "name": "Artist Name",
+          "type": "artist",
+          "uri": "spotify:artist:0rJ0xlAQI0wLRucDRoQQbO"
+        }
+      ],
+      "href": "https://api.spotify.com/v1/albums/2tyKrUxYAexhkXrL5TAxq3",
+      "id": "2tyKrUxYAexhkXrL5TAxq3",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b27323c6bf9a2c1b503e5ae8a6c4",
+          "width": 640
+        }
+      ],
+      "name": "Track Name",
+      "release_date": "2017-03-17",
+      "release_date_precision": "day",
+      "total_tracks": 20,
+      "type": "album",
+      "uri": "spotify:album:2tyKrUxYAexhkXrL5TAxq3"
+    }
+  })
   const [request, response, promptAsync] = useAuthRequest(
     {
       responseType: ResponseType.Token,
@@ -105,15 +137,7 @@ const SpotifyProvider = ({ children }) => {
         'Authorization': 'Bearer ' + token
       }
     }).then(handleApiResponse);
-    let current = await fetch(CURRENTLY_PLAYING, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
-    }).then(resp => {
-      console.log(JSON.stringify('currently playing: ', resp));
-    });
+    let current = await currentlyPlaying()
 
       console.log(JSON.stringify('currently playing: ',current));
   }
@@ -155,7 +179,14 @@ const SpotifyProvider = ({ children }) => {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       }
-    }).then(handleApiResponse)
+    }).then((response) => response.json()).then((response) => {
+      console.log('response =-=-=>',response);
+      setBackgroundImage(response.item.album.images[0].url);
+      setSong(response.item)
+    }).catch(e=>{
+      console.log('Error SpotifyProvider() => currentlyPlaying()')
+      console.log(e);
+    })
   }
 
   
@@ -173,7 +204,11 @@ const SpotifyProvider = ({ children }) => {
         done,
         setDone,
         setModalVisible,
-        modalVisible
+        modalVisible,
+        backgroundImage,
+        setBackgroundImage,
+        song,
+        setSong
       }}>
       {children}
     </SpotifyContext.Provider>
