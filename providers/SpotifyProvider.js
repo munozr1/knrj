@@ -42,49 +42,34 @@ const SpotifyProvider = ({ children }) => {
 
   const handleApiResponse = (resp) => {
     // console.log('handleApiResponse()=> resp: ',resp)
+    let response = JSON.stringify(resp);
     switch(resp.status)
     {
     case 200: 
       // console.log(resp.responseText);
-      console.log('200: ', resp)
+      console.log('200: ', response)
       // await setTimeout(currentlyPlaying, 2000);
       break;
     case 204: 
       // await setTimeout(currentlyPlaying, 2000);
-      console.log('204: ', resp)
+      console.log('204: ', response)
       break;
     case 401: 
-      console.log('401: ', resp)
+      console.log('401: ', response)
       // await refreshAccessToken()
       break;
     case 405: 
-      console.log('405: ', resp)
+      console.log('405: ', response)
       // await refreshAccessToken()
       break;
     case 404:
-        console.log('404: ', resp)
+        console.log('404: ', response)
         // await refreshAccessToken()
         break;
     default:
-      console.log(resp);
+      console.log(response);
       // alert(resp.responseText);
     }
-
-    // }
-    // if (resp.status == 200) {
-    //   console.log(resp.responseText);
-    //   setTimeout(currentlyPlaying, 2000);
-    // }
-    // else if (resp.status == 204) {
-    //   setTimeout(currentlyPlaying, 2000);
-    // }
-    // else if (resp.status == 401) {
-    //   refreshAccessToken()
-    // }
-    // else {
-    //   console.log(resp.responseText);
-    //   alert(resp.responseText);
-    // }
   }
 
   const play = async (token, song) => {
@@ -127,6 +112,18 @@ const SpotifyProvider = ({ children }) => {
       // console.log('Device ID - ' + deviceId)
     }
   }, [response]);
+
+  const enqueue = (song) => {
+    //TODO add song to host queue
+  }
+  
+  const dequeue = (song) => {
+    //TODO remove song from host queue
+  }
+
+  const search = async (term) => {
+    //TODO search spotify for term
+  }
 
   
 
