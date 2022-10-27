@@ -46,7 +46,7 @@ const albumcover = (props) => {
   return (
     <View style={[styles.container, styles.shadow]}>
       <ImageBackground
-        source={{ uri: 'https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228' }}
+        source={{ uri: props.bgImage }}
         style={{
           height: '100%',
           width: '100%'
@@ -60,7 +60,7 @@ const albumcover = (props) => {
         >
           <Image
             style={[styles.image]}
-            source={{ uri: 'https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228' }}
+            // source={{ uri: props.bgImage }}
           >
           </Image>
         </TouchableHighlight>

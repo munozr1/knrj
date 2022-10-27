@@ -34,7 +34,10 @@ const SpotifyProvider = ({ children }) => {
         'user-read-private',
       ],
       usePKCE: false,
-      redirectUri: 'exp://192.168.1.101:19000'
+      // redirectUri: 'exp://192.168.1.101:19000'
+      // redirectUri: 'https://google.com'
+      // redirectUri: 'https://munozcodes.com/.well-known/apple-app-site-association'
+      redirectUri: 'https://www.munozcodes.com',
     },
     discovery
   );

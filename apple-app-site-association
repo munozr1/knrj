@@ -1,0 +1,21 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "com.munozcreates.DemoDJ"
+        ],
+        "components": [
+          {
+            "/": "*"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "ABCDE12345.com.example.app"
+    ]
+  }
+}

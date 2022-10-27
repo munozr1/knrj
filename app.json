@@ -20,7 +20,8 @@
     "ios": {
       "supportsTablet": true,
       "useFrameworks": "static",
-      "bundleIdentifier": "com.test.test"
+      "bundleIdentifier": "com.munozcreates.DemoDJ",
+      "associatedDomains": ["applinks:munozcodes.com"]
     },
     "android": {
       "adaptiveIcon": {

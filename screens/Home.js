@@ -111,9 +111,6 @@ const Home = (props) => {
   }, [event, $spotifyState])
   // modalTimeout();
 
-  React.useEffect(()=>{
-    setbgColor()
-  },[bgColor])
 
   return (
     <View style={{
@@ -129,7 +126,11 @@ const Home = (props) => {
         source={{uri: backgroundImage}}
         blurRadius={3}
       >
-        <AlbumCover resetAuth={resetAuth} resetEvent={resetEvent}></AlbumCover>
+        <AlbumCover 
+        resetAuth={resetAuth} 
+        resetEvent={resetEvent}
+        bgImage={backgroundImage}
+        ></AlbumCover>
         <SafeAreaView
         style={[{
           alignItems: 'center'
@@ -153,7 +154,7 @@ const Home = (props) => {
         animationType='slide' 
         visible={modalVisible}
         // visible={false}
-        // transparent
+        transparent
         > 
         
           {
