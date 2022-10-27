@@ -34,6 +34,7 @@ const Home = (props) => {
     $setSpotifyAuthState({...$spotifyState, ...{token}})
   }
 
+
   const resetAuth = ()=>{
     console.log('reseting auth')
     $setAuthState({});

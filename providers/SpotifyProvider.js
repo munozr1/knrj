@@ -37,10 +37,10 @@ const SpotifyProvider = ({ children }) => {
         'user-read-private',
       ],
       usePKCE: false,
-      // redirectUri: 'exp://192.168.1.101:19000'
+      redirectUri: 'exp://192.168.1.101:19000'
       // redirectUri: 'https://google.com'
       // redirectUri: 'https://munozcodes.com/.well-known/apple-app-site-association'
-      redirectUri: 'https://www.munozcodes.com',
+      // redirectUri: 'https://www.munozcodes.com',
     },
     discovery
   );
@@ -104,7 +104,18 @@ const SpotifyProvider = ({ children }) => {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       }
-    }).then(handleApiResponse)
+    }).then(handleApiResponse);
+    let current = await fetch(CURRENTLY_PLAYING, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    }).then(resp => {
+      console.log(JSON.stringify('currently playing: ', resp));
+    });
+
+      console.log(JSON.stringify('currently playing: ',current));
   }
 
     React.useEffect(() => {
