@@ -7,6 +7,9 @@ const NEXT = 'https://api.spotify.com/v1/me/player/next';
 const PREVIOUS = 'https://api.spotify.com/v1/me/player/previous';
 const CURRENTLY_PLAYING = 'https://api.spotify.com/v1/me/player/currently-playing';
 
+const SEARCH = 'https://api.spotify.com/v1/search';
+
+
 const SpotifyContext = React.createContext();
 const discovery = {
   authorizationEndpoint: 'https://accounts.spotify.com/authorize',
@@ -96,7 +99,7 @@ const SpotifyProvider = ({ children }) => {
     await fetch(NEXT, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/josn',
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       }
     }).then(handleApiResponse)
@@ -122,7 +125,14 @@ const SpotifyProvider = ({ children }) => {
   }
 
   const search = async (term) => {
-    //TODO search spotify for term
+    console.log('SpotifyProvider => search()')
+    await fetch(SEARCH + "?q=" + encodeURI(term) + "&type=track&limit=1", {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    }).then(handleApiResponse)
   }
 
   
