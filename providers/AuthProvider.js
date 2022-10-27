@@ -1,7 +1,6 @@
 import React  from "react";
 import { initializeApp} from 'firebase/app'
-import { getAuth, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
-import { FirebaseRecaptchaVerifierModal} from 'expo-firebase-recaptcha';
+import { getAuth, PhoneAuthProvider, signInWithCredential, } from 'firebase/auth';
 
 // create context
 const AuthStateContext= React.createContext()
@@ -74,4 +73,4 @@ const AuthStateProvider = ({ children }) => {
   );
 };
 
-export { AuthStateContext, AuthStateProvider, firebaseConfig };
+export { AuthStateContext, AuthStateProvider, firebaseConfig, app };

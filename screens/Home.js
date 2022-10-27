@@ -6,7 +6,7 @@ import LoginModal from '../components/LoginModal'
 import AlbumCover from '../components/AlbumCover'
 import EventModal from '../components/EventModal'
 import { AuthStateContext } from '../providers/AuthProvider';
-
+import { DBContext } from '../providers/FirestoreProvider';
 
 const Home = (props) => {
   const { $authState,
@@ -14,6 +14,10 @@ const Home = (props) => {
           $spotifyState,
           $setSpotifyAuthState,
         } = React.useContext(AuthStateContext);
+  const {
+    findEvent
+  } = React.useContext(DBContext)
+
   const [ event, setEvent] = React.useState({});
   const [backgroundImage, setBackgroundImage] =React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [bgColor, setbgColor] = React.useState('');
@@ -40,10 +44,12 @@ const Home = (props) => {
     setEvent({...event, ...{hosting: false}});
   }
 
-  const verifyEventCode = (code) => {
+  const verifyEventCode = async (code) => {
     //TODO query firebase events collection for an event matching the 
     //given code
-    if(code === '1234')
+    const eventExists = await findEvent(code);
+    console.log('eventExists', eventExists);
+    if(eventExists)
     {
       setEvent({...event, ...{joined: true}});
       setDone(true);
@@ -76,9 +82,11 @@ const Home = (props) => {
 
 
   const modalTimeout = async () => {
+    console.log('modalTimeout() => done: ', done);
     return new Promise((resolve, reject)=>{
       setTimeout(() => {
-        setModalVisible(true);
+        if(!done)
+          setModalVisible(true);
         resolve();
       }, 1000);
     })
@@ -135,7 +143,7 @@ const Home = (props) => {
         animationType='slide' 
         visible={modalVisible}
         // visible={false}
-        transparent
+        // transparent
         > 
         
           {
