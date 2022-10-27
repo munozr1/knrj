@@ -148,6 +148,16 @@ const SpotifyProvider = ({ children }) => {
     }).then(handleApiResponse)
   }
 
+  const currentlyPlaying = async() => {
+    await fetch(CURRENTLY_PLAYING, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    }).then(handleApiResponse)
+  }
+
   
 
   return (

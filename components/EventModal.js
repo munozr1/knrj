@@ -8,7 +8,7 @@ import React from 'react'
 
 const eventmodal = (props) => {
 
-  const {play, skip, search} = React.useContext(SpotifyContext);
+  const {play, skip, search, currentlyPlaying} = React.useContext(SpotifyContext);
 
   const voteSkip = async () => {
     console.log('eventmodal => voteSkip()')
@@ -18,6 +18,11 @@ const eventmodal = (props) => {
   const searchConst = async() => {
     console.log('eventmodal => search()');
     await search();
+  }
+
+  const currentSongPlaying = async() => {
+    console.log('eventmodal() => currentSongPlaying()');
+    await currentlyPlaying();
   }
 
   return (
