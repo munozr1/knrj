@@ -1,11 +1,19 @@
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable, Keyboard } from 'react-native';
+import  {View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable, Keyboard } from 'react-native';
 import { useState, useRef } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { SpotifyContext } from '../providers/SpotifyProvider';
+import React from 'react'
 
 
 const eventmodal = (props) => {
-  
+
+  const {play, skip} = React.useContext(SpotifyContext);
+
+  const voteSkip = async () => {
+    console.log('eventmodal => voteSkip()')
+    await skip();
+  }
 
   return (
     <View style={[styles.container, styles.shadow, {
@@ -40,7 +48,7 @@ const eventmodal = (props) => {
             }]} />
             </TouchableOpacity>
             
-          <TouchableOpacity onPress={props.voteSkip}
+          <TouchableOpacity onPress={voteSkip}
             style={[{
             }]}
           >

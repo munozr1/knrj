@@ -2,6 +2,7 @@ import Home from './screens/Home';
 import { useState } from 'react';
 import { AuthStateProvider } from './providers/AuthProvider';
 import { FirestoreProvider } from './providers/FirestoreProvider';
+import { SpotifyProvider } from './providers/SpotifyProvider';
 
 
 export default function App() {
@@ -10,7 +11,9 @@ export default function App() {
   return (
     <AuthStateProvider>
       <FirestoreProvider>
-        <Home></Home>
+        <SpotifyProvider>
+          <Home></Home>
+        </SpotifyProvider>
       </FirestoreProvider>
     </AuthStateProvider>
   );

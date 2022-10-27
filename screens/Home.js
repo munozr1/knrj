@@ -7,24 +7,32 @@ import AlbumCover from '../components/AlbumCover'
 import EventModal from '../components/EventModal'
 import { AuthStateContext } from '../providers/AuthProvider';
 import { DBContext } from '../providers/FirestoreProvider';
+import { SpotifyContext } from '../providers/SpotifyProvider';
 
 const Home = (props) => {
   const { $authState,
           $setAuthState,
+        } = React.useContext(AuthStateContext);
+  const {
+          done,
+          setDone,
           $spotifyState,
           $setSpotifyAuthState,
-        } = React.useContext(AuthStateContext);
+          modalVisible,
+          setModalVisible
+        } = React.useContext(SpotifyContext);
   const {
     findEvent
   } = React.useContext(DBContext)
 
-  const [ event, setEvent] = React.useState({});
+  const [event, setEvent] = React.useState({});
   const [backgroundImage, setBackgroundImage] =React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [bgColor, setbgColor] = React.useState('');
-  const [done, setDone] = React.useState(false);
-  const [modalVisible, setModalVisible] = React.useState(false);
 
 
+  const spotifyToken = (token) => {
+    $setSpotifyAuthState({...$spotifyState, ...{token}})
+  }
 
   const resetAuth = ()=>{
     console.log('reseting auth')
@@ -76,6 +84,9 @@ const Home = (props) => {
     console.log("voteBack")
   }
 
+  const play = (song) => {
+
+  }
 
 
   
@@ -97,13 +108,12 @@ const Home = (props) => {
     setModalVisible(false);
     if(!done)
       modalTimeout();
-  }, [$authState,event])
+  }, [event, $spotifyState])
   // modalTimeout();
 
   React.useEffect(()=>{
     setbgColor()
   },[bgColor])
-
 
   return (
     <View style={{
@@ -147,16 +157,22 @@ const Home = (props) => {
         > 
         
           {
-            ($authState.authenticated && event.hosting && !$spotifyState.user) ?
+            // ($authState.authenticated && event.hosting && !$spotifyState.user) ?
+            (!$spotifyState.user && !$spotifyState.token) ?
             // (true) ?
             <KeyboardAvoidingView
             style={styles.modalStyles}
             >
-              <SpotifyLogin  back={joinInstead}  label={'Connect with Spotify'}></SpotifyLogin>
+              <SpotifyLogin  
+              back={joinInstead}  
+              label={'Connect with Spotify'}
+              setSpotifyToken={spotifyToken}
+              done={setDone}
+              ></SpotifyLogin>
             </KeyboardAvoidingView>
             :null
           }
-          {
+          {/* {
           ($authState.authenticated && !event.joined && !event.hosting)?
           <KeyboardAvoidingView
           style={styles.modalStyles}
@@ -181,7 +197,7 @@ const Home = (props) => {
                 <LoginModal ></LoginModal>
               </KeyboardAvoidingView>
               : null
-          }
+          } */}
         </Modal>
       
       </ImageBackground>
