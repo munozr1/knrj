@@ -53,7 +53,7 @@ const SpotifyProvider = ({ children }) => {
   const [backgroundImage, setBackgroundImage] =React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [modalVisible, setModalVisible] = React.useState(false);
   const [done, setDone] = React.useState(false);
-  const [$spotifyState, $setSpotifyState] = React.useState({});
+  const [$spotifyState, $setSpotifyState] = React.useState(false);
   const [token, setToken] = React.useState("");
   const [song, setSong] = React.useState(IMAGE);
   const [request, response, promptAsync] = useAuthRequest(
@@ -148,16 +148,15 @@ const SpotifyProvider = ({ children }) => {
     React.useEffect(() => {
     if (response?.type === 'success') {
       const { access_token } = response.params;
+      $setSpotifyState(true);
       setToken(access_token);
       setDone(true);
       setModalVisible(false);
-      currentlyPlaying();
       console.log('Token - ' + access_token);
 
-      if (token) {
+      if (access_token) {
         currentlyPlaying()
       }
-      // console.log('Device ID - ' + deviceId)
     }
   }, [response]);
 
