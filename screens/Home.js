@@ -24,7 +24,8 @@ const Home = (props) => {
           setBackgroundImage,
         } = React.useContext(SpotifyContext);
   const {
-    findEvent
+    findEvent,
+    createEvent
   } = React.useContext(DBContext)
 
   const [event, setEvent] = React.useState({});
@@ -57,8 +58,6 @@ const Home = (props) => {
   }
 
   const verifyEventCode = async (code) => {
-    //TODO query firebase events collection for an event matching the 
-    //given code
     const eventExists = await findEvent(code);
     console.log('eventExists', eventExists);
     if(eventExists)
@@ -71,7 +70,7 @@ const Home = (props) => {
     Keyboard.dismiss();
   }
 
-    const hostInstead = ()=>{
+  const hostInstead = ()=>{
     setEvent({...event, hosting: true})
     console.log('Show Hosting Modal');
   }
@@ -109,6 +108,16 @@ const Home = (props) => {
 
   //timeout for modal animation slide up
   React.useEffect(()=>{
+
+    async function startEventMaker() {
+      const event = await createEvent($authState.number);
+    }
+
+    if ($authState.authenticated && event.hosting && $spotifyState) {
+      startEventMaker();
+      console.log('Event created');
+    }
+
     setModalVisible(false);
     if(!done)
       modalTimeout();

@@ -23,7 +23,6 @@ const FirestoreProvider = ({ children }) => {
     console.log('count: ', count);
 
     return (count > 0) ? true : false;
-
   }
 
   // Generate random 4 digit code
@@ -37,11 +36,15 @@ const FirestoreProvider = ({ children }) => {
   }
 
   const createEvent = async (phonenumber) =>{
-    const event_code = generateCode();
+    let event_code = generateCode();
+    let question = React.useState(findEvent(event_code));
 
-    while (findEvent(event_code)) {
-      event_code = generateCode()
-    };
+    if (question) {
+      while (question) {
+        event_code = generateCode();
+        question = React.useState(findEvent(event_code));
+      }
+    }
 
     const data = {
       eventcode: event_code,
@@ -67,7 +70,8 @@ const FirestoreProvider = ({ children }) => {
     // the Provider gives access to the context to its children
     <DBContext.Provider
       value={{
-      findEvent 
+      findEvent,
+      createEvent
       }}>
       {children}
     </DBContext.Provider>
