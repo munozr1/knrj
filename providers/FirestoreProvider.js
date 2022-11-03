@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { app } from "./AuthProvider";
-import { getFirestore } from 'firebase/firestore'
+import { FieldValue, getFirestore } from 'firebase/firestore'
 import { collection, addDoc,  doc, getDoc, query, where, getDocs } from "firebase/firestore";
 
 
@@ -36,7 +36,7 @@ const FirestoreProvider = ({ children }) => {
   }
 
   async function createEvent(phonenumber) {
-    const [code, setCode] = useState(generateCode());
+    const [code, setCode] = generateCode();
 
     if (findEvent(code)) {
       while (findEvent(code)) {
@@ -44,24 +44,29 @@ const FirestoreProvider = ({ children }) => {
       }
     }
 
-    const data = {
+    // Add a new document with a generated id.
+    const res = await collection('event').add({
       event_code: code,
       host: phonenumber,
+      user_count: 1,
       skip_count: 0,
-      current_song: 'null'
-    }
-    
-    let res = db.collection('event').doc(code);
-    await res.set(data);
+      current_song: 'null',
+      timestamp: FieldValue.serverTimestamp()
+    });
+    console.log('Added document with ID: ', res.id);
   }
 
   const joinEvent = async (code) => {
     if (findEvent(code)) {
-      const doc = db.collection('event').doc(code);
-      const observer = doc.onSnapshot(docSnapshot => {
-        console.log('Received doc snapshot: ${docSnapshot}');
-      }, err => {
-        console.log('Encountered error: ${err}');
+      const snapshot = await collection('event').where('eventcode', '==', code).get();
+      
+      if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        console.log(doc.id, '=>', doc.data());
       });
     } else {
       console.log('Event ${code} not found');
@@ -70,7 +75,7 @@ const FirestoreProvider = ({ children }) => {
 
   const leaveEvent = async (host, code) => {
     if (host) {
-      const res = await collection('event').doc(code).delete();
+      const res = await collection('event').where('eventcode', '==', code).delete();
 
       console.log('Delete: ', res);
     } else {
