@@ -109,12 +109,8 @@ const Home = (props) => {
   //timeout for modal animation slide up
   React.useEffect(()=>{
 
-    async function startEventMaker() {
-      const event = await createEvent($authState.number);
-    }
-
     if ($authState.authenticated && event.hosting && $spotifyState) {
-      startEventMaker();
+      //createEvent($authState.number);
       console.log('Event created');
     }
 

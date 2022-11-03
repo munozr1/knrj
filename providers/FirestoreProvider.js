@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { app } from "./AuthProvider";
 import { getFirestore } from 'firebase/firestore'
-import {collection, addDoc,  doc, getDoc, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc,  doc, getDoc, query, where, getDocs } from "firebase/firestore";
 
 
-const db = getFirestore(app)
+const db = getFirestore(app);
 
 const DBContext = React.createContext();
 
@@ -35,34 +35,48 @@ const FirestoreProvider = ({ children }) => {
     return code;
   }
 
-  const createEvent = async (phonenumber) =>{
-    let event_code = generateCode();
-    let question = React.useState(findEvent(event_code));
+  async function createEvent(phonenumber) {
+    const [code, setCode] = useState(generateCode());
 
-    if (question) {
-      while (question) {
-        event_code = generateCode();
-        question = React.useState(findEvent(event_code));
+    if (findEvent(code)) {
+      while (findEvent(code)) {
+        setCode(generateCode());
       }
     }
 
     const data = {
-      eventcode: event_code,
-      host: phonenumber
+      event_code: code,
+      host: phonenumber,
+      skip_count: 0,
+      current_song: 'null'
     }
     
-    const res = collection(db, 'event').doc(event_code).set(data);
+    let res = db.collection('event').doc(code);
+    await res.set(data);
   }
 
-  const joinEvent = async (phonenumber, event_code) => {
-    if (!findEvent(event_code)) {
-      const eventRef = db.collection('event').doc(event_code);
+  const joinEvent = async (code) => {
+    if (findEvent(code)) {
+      const doc = db.collection('event').doc(code);
+      const observer = doc.onSnapshot(docSnapshot => {
+        console.log('Received doc snapshot: ${docSnapshot}');
+      }, err => {
+        console.log('Encountered error: ${err}');
+      });
+    } else {
+      console.log('Event ${code} not found');
+    }
+  }
 
-      const res = await eventRef.set({
-        members: {
-          phonenumber
-        }
-      }, { merge: true });
+  const leaveEvent = async (host, code) => {
+    if (host) {
+      const res = await collection('event').doc(code).delete();
+
+      console.log('Delete: ', res);
+    } else {
+      const unsub = db.collection('event').onSnapshot(() => {
+      });
+      unsub();
     }
   }
 
@@ -71,7 +85,9 @@ const FirestoreProvider = ({ children }) => {
     <DBContext.Provider
       value={{
       findEvent,
-      createEvent
+      createEvent,
+      joinEvent,
+      leaveEvent
       }}>
       {children}
     </DBContext.Provider>

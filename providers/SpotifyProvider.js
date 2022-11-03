@@ -79,6 +79,21 @@ const SpotifyProvider = ({ children }) => {
     discovery
   );
 
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      const { access_token } = response.params;
+      $setSpotifyState(true);
+      setToken(access_token);
+      setDone(true);
+      setModalVisible(false);
+      console.log('Token - ' + access_token);
+
+      if (access_token) {
+        currentlyPlaying();
+      }
+    }
+  }, [response]);
+
 
   const handleApiResponse = (resp) => {
     // console.log('handleApiResponse()=> resp: ',resp)
@@ -144,21 +159,6 @@ const SpotifyProvider = ({ children }) => {
     }, 200);
 
   }
-
-    React.useEffect(() => {
-    if (response?.type === 'success') {
-      const { access_token } = response.params;
-      $setSpotifyState(true);
-      setToken(access_token);
-      setDone(true);
-      setModalVisible(false);
-      console.log('Token - ' + access_token);
-
-      if (access_token) {
-        currentlyPlaying()
-      }
-    }
-  }, [response]);
 
   const enqueue = async (song) => {
     //TODO add song to host queue
