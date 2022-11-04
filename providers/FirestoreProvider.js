@@ -1,6 +1,6 @@
 import * as React from "react";
 import { app } from './AuthProvider';
-import { getFirestore, collection, query, where, getDocs, doc, addDoc } from "firebase/firestore";
+import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, addDoc, deleteDoc } from "firebase/firestore";
 
 
 const db = getFirestore(app);
@@ -16,13 +16,17 @@ const FirestoreProvider = ({ children }) => {
 
   */
 
-  //check if an event exists given a code
+  /*
+   *  Updated to Web version 9
+   */
   const findEvent = async (code) => {
     let count = 0;
 
     const q = query(collection(db, 'event'), where('eventcode', '==', code));
+
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
+      count++;
       console.log(doc.id, " => ", doc.data());
     })
 
@@ -40,6 +44,9 @@ const FirestoreProvider = ({ children }) => {
     return code;
   }
 
+  /*
+   *  Updated to Web version 9
+   */
   const createEvent = async (phonenumber) => {
     let code = generateCode();
 
@@ -52,7 +59,7 @@ const FirestoreProvider = ({ children }) => {
     */
 
     const docRef = await addDoc(collection(db, 'event'), {
-      eventcode: code,
+      event_code: code,
       host: phonenumber,
       user_count: 1,
       skip_count: 0,
@@ -64,28 +71,29 @@ const FirestoreProvider = ({ children }) => {
     );
   }
 
+  /*
+   *  Updated to Web version 9
+   */
   const joinEvent = async (code) => {
-    const snapshot = await collection(db, 'event').where('eventcode', '==', code).get();
-      
-    if (snapshot.empty) {
-      console.log('No matching documents.');
-      return;
-    }
-
-    snapshot.forEach(doc => {
-      console.log(doc.id, '=>', doc.data());
+    const sub = onSnapshot(doc(db, 'event'), where('event_code', '==', code), (doc) => {
+      console.log('Current data: ', doc.data());
     });
+
+    // Might not need this part
+    sub();
   }
 
+  /*
+   *  Updated to Web version 9
+   */
   const leaveEvent = async (host, code) => {
     if (host) {
-      const res = await collection(db, 'event').where('eventcode', '==', code).delete();
-
-      console.log('Delete: ', res);
+      await deleteDoc(doc(db, 'event'), where('eventcode', '==', code));
     } else {
-      const unsub = db.collection(db, 'event').onSnapshot(() => {
+      const unsubscribe = onSnapshot(collection(db, 'event'), () => {
+        // Respond to data
       });
-      unsub();
+      unsubscribe();
     }
   }
 

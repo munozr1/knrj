@@ -119,13 +119,8 @@ const Home = (props) => {
 
   //timeout for modal animation slide up
   React.useEffect(()=>{
-    /*
-    if ($authState.authenticated && event.hosting && $spotifyState) {
-      //createEvent($authState.number);
-      console.log('Event created');
-    }
-    */
-   if ($authState.authenticated && event.hosting) {
+    
+   if ($authState.authenticated && event.hosting && $spotifyState) {
     setEventCode(createEvent($authState.phoneNumber));
     console.log('Event created - ' + $authState.phoneNumber);
    }
