@@ -1,5 +1,5 @@
 import React  from "react";
-import { initializeApp} from 'firebase/app'
+import { initializeApp } from 'firebase-admin/lib/app'
 import { getAuth, PhoneAuthProvider, signInWithCredential, } from 'firebase/auth';
 
 // create context
@@ -21,7 +21,6 @@ const AuthStateProvider = ({ children }) => {
   // the value that will be given to the context
   const [$authState, $setAuthState] = React.useState({});
   const [verificationId, setVerificationId] = React.useState();
-  const [number, setNumber] = React.useState({});
   const [message, showMessage] = React.useState();
   // const [verificationCode, setVerificationCode] = React.useState();
 
@@ -38,7 +37,6 @@ const AuthStateProvider = ({ children }) => {
         phoneNumber,
         ref.current
       );
-      setNumber(phoneNumber);
       setVerificationId(verificationId);
       $setAuthState({...$authState, ...{phoneNumber, codeSent: true}});
       console.log('Successfully sent code to user: ', phoneNumber);
@@ -54,7 +52,6 @@ const AuthStateProvider = ({ children }) => {
       const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
       const user = await signInWithCredential(auth, credential);
       console.log({ text: 'Phone authentication successful 👍', user });
-      console.log('Number saved - ' + number);
     } catch (err) {
       console.log({ text: `Error: ${err.message}`, color: 'red' });
     }

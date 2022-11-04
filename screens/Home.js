@@ -25,10 +25,13 @@ const Home = (props) => {
         } = React.useContext(SpotifyContext);
   const {
     findEvent,
-    createEvent
+    createEvent,
+    joinEvent,
+    leaveEvent
   } = React.useContext(DBContext)
 
   const [event, setEvent] = React.useState({});
+  const [event_code, setEventCode] = React.useState('');
   const [bgColor, setbgColor] = React.useState('');
 
 
@@ -49,6 +52,9 @@ const Home = (props) => {
   const resetEvent = ()=>{
     setBackgroundImage(IMAGE);
     setEvent({});
+    // TODO FIND EVENT CODE
+    leaveEvent(event.hosting, event_code);
+
     setDone(false);
     setModalVisible(true)
   }
@@ -59,10 +65,15 @@ const Home = (props) => {
 
   const verifyEventCode = async (code) => {
     const eventExists = await findEvent(code);
-    console.log('eventExists', eventExists);
+    console.log('eventExists - ', eventExists);
+    console.log('Join Code - ', code);
+    console.log('Auth Number - ', $authState.phoneNumber);
     if(eventExists)
     {
       setEvent({...event, ...{joined: true}});
+      setEventCode(code);
+      joinEvent(code);
+
       setDone(true);
       setModalVisible(false);
     }
@@ -108,11 +119,16 @@ const Home = (props) => {
 
   //timeout for modal animation slide up
   React.useEffect(()=>{
-
+    /*
     if ($authState.authenticated && event.hosting && $spotifyState) {
       //createEvent($authState.number);
       console.log('Event created');
     }
+    */
+   if ($authState.authenticated && event.hosting) {
+    setEventCode(createEvent($authState.phoneNumber));
+    console.log('Event created - ' + $authState.phoneNumber);
+   }
 
     setModalVisible(false);
     if(!done)

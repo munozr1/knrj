@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { app } from "./AuthProvider";
-import { FieldValue, getFirestore } from 'firebase/firestore'
+import { getFirestore, FieldValue } from 'firebase-admin/lib/firestore'
 import { collection, addDoc,  doc, getDoc, query, where, getDocs } from "firebase/firestore";
 
 
@@ -10,15 +10,24 @@ const DBContext = React.createContext();
 
 const FirestoreProvider = ({ children }) => {
 
+  /*
+
+
+      DB FUNCTIONS FOR EVENTS
+
+
+  */
+
   //check if an event exists given a code
   const findEvent = async (code) => {
     let count = 0;
-    const q = query(collection(db, "event"), where("eventcode", "==", code));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
+    //const q = query(collection(db, 'event'), where('eventcode', '==', code));
+    const q = db.collection('event');
+    const querySnapshot = await q.get();
+    querySnapshot.forEach(doc => {
       // doc.data() is never undefined for query doc snapshots
       count++;
-      console.log(doc.id, " => ", doc.data());
+      console.log(doc.id, '=>', doc.data());
     });
     console.log('count: ', count);
 
@@ -35,18 +44,20 @@ const FirestoreProvider = ({ children }) => {
     return code;
   }
 
-  async function createEvent(phonenumber) {
-    const [code, setCode] = generateCode();
+  const createEvent = async (phonenumber) => {
+    let code = generateCode();
 
-    if (findEvent(code)) {
-      while (findEvent(code)) {
-        setCode(generateCode());
+    /*
+    if (!findEvent(code)) {
+      while (!findEvent(code)) {
+        code = generateCode();
       }
     }
+    */
 
     // Add a new document with a generated id.
     const res = await collection('event').add({
-      event_code: code,
+      eventcode: code,
       host: phonenumber,
       user_count: 1,
       skip_count: 0,
@@ -54,23 +65,22 @@ const FirestoreProvider = ({ children }) => {
       timestamp: FieldValue.serverTimestamp()
     });
     console.log('Added document with ID: ', res.id);
+    return(
+      code
+    );
   }
 
   const joinEvent = async (code) => {
-    if (findEvent(code)) {
-      const snapshot = await collection('event').where('eventcode', '==', code).get();
+    const snapshot = await collection('event').where('eventcode', '==', code).get();
       
-      if (snapshot.empty) {
-        console.log('No matching documents.');
-        return;
-      }
-
-      snapshot.forEach(doc => {
-        console.log(doc.id, '=>', doc.data());
-      });
-    } else {
-      console.log('Event ${code} not found');
+    if (snapshot.empty) {
+      console.log('No matching documents.');
+      return;
     }
+
+    snapshot.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+    });
   }
 
   const leaveEvent = async (host, code) => {
