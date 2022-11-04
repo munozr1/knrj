@@ -1,11 +1,9 @@
-import React from "react";
-import { app } from "./AuthProvider";
-import { getFirestore, FieldValue } from 'firebase-admin/lib/firestore'
-import { collection, addDoc,  doc, getDoc, query, where, getDocs } from "firebase/firestore";
+import * as React from "react";
+import { app } from './AuthProvider';
+import { getFirestore, collection, query, where, getDocs, doc, addDoc } from "firebase/firestore";
 
 
 const db = getFirestore(app);
-
 const DBContext = React.createContext();
 
 const FirestoreProvider = ({ children }) => {
@@ -21,16 +19,14 @@ const FirestoreProvider = ({ children }) => {
   //check if an event exists given a code
   const findEvent = async (code) => {
     let count = 0;
-    //const q = query(collection(db, 'event'), where('eventcode', '==', code));
-    const q = db.collection('event');
-    const querySnapshot = await q.get();
-    querySnapshot.forEach(doc => {
-      // doc.data() is never undefined for query doc snapshots
-      count++;
-      console.log(doc.id, '=>', doc.data());
-    });
-    console.log('count: ', count);
 
+    const q = query(collection(db, 'event'), where('eventcode', '==', code));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      console.log(doc.id, " => ", doc.data());
+    })
+
+    console.log('count: ', count);
     return (count > 0) ? true : false;
   }
 
@@ -55,23 +51,21 @@ const FirestoreProvider = ({ children }) => {
     }
     */
 
-    // Add a new document with a generated id.
-    const res = await collection('event').add({
+    const docRef = await addDoc(collection(db, 'event'), {
       eventcode: code,
       host: phonenumber,
       user_count: 1,
       skip_count: 0,
       current_song: 'null',
-      timestamp: FieldValue.serverTimestamp()
     });
-    console.log('Added document with ID: ', res.id);
+    console.log("Document written with ID: ", docRef.id);
     return(
       code
     );
   }
 
   const joinEvent = async (code) => {
-    const snapshot = await collection('event').where('eventcode', '==', code).get();
+    const snapshot = await collection(db, 'event').where('eventcode', '==', code).get();
       
     if (snapshot.empty) {
       console.log('No matching documents.');
@@ -85,11 +79,11 @@ const FirestoreProvider = ({ children }) => {
 
   const leaveEvent = async (host, code) => {
     if (host) {
-      const res = await collection('event').where('eventcode', '==', code).delete();
+      const res = await collection(db, 'event').where('eventcode', '==', code).delete();
 
       console.log('Delete: ', res);
     } else {
-      const unsub = db.collection('event').onSnapshot(() => {
+      const unsub = db.collection(db, 'event').onSnapshot(() => {
       });
       unsub();
     }

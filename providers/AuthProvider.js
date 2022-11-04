@@ -1,5 +1,5 @@
-import React  from "react";
-import { initializeApp } from 'firebase-admin/lib/app'
+import * as React from "react";
+import { initializeApp } from 'firebase/app'
 import { getAuth, PhoneAuthProvider, signInWithCredential, } from 'firebase/auth';
 
 // create context

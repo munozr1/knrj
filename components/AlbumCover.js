@@ -1,5 +1,5 @@
 import { PanResponder,Text, View,  StyleSheet, Image , StatusBar, Animated, TouchableOpacity, Vibration, TouchableHighlight, Modal, ImageBackground} from 'react-native';
-import React from 'react';
+import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import Menu from './Menu'

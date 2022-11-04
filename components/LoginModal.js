@@ -1,5 +1,5 @@
 import { View,  StyleSheet, Modal, Keyboard} from 'react-native';
-import React from 'react';
+import * as React from 'react';
 import CodeModal from './CodeModal'
 import SingleInput from './SingleInput'
 import { AuthStateContext } from '../providers/AuthProvider';

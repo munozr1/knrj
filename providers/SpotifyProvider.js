@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { ResponseType, useAuthRequest } from 'expo-auth-session';
 
 const PLAY = 'https://api.spotify.com/v1/me/player/play';

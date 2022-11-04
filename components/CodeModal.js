@@ -1,13 +1,13 @@
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable, Keyboard} from 'react-native';
-import {useState, useRef}from 'react';
+import * as React from 'react';
 
 
 
 const codemodal = (props) => {
   const CODE_LENGTH = props.length || 6;
-  const [code, setCode] = useState('');
+  const [code, setCode] = React.useState('');
   const codeDigitsArray = new Array(CODE_LENGTH).fill(0);
-  const ref = useRef();
+  const ref = React.useRef();
 
   const focusHiddenInput= () => {
     console.log('focusing hidden input...');
