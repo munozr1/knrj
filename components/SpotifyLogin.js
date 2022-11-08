@@ -1,9 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { SpotifyContext } from '../providers/SpotifyProvider';
-
-
-
 
 
 const spotifylogin = (props) => {
@@ -13,11 +10,6 @@ const spotifylogin = (props) => {
     promptAsync
   } = React.useContext(SpotifyContext);
   
-
-
-
-
-
   return (
     <View style={[styles.container, styles.shadow]}>
         <View>

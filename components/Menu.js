@@ -1,8 +1,7 @@
+import * as React from "react";
 import { BlurView } from "expo-blur"
 import { Text , View, StyleSheet} from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
-
-
 
 
 const menu = (props) => {

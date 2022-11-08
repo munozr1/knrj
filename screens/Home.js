@@ -1,5 +1,5 @@
 import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity, SafeAreaView, Animated} from 'react-native';
-import React from 'react';
+import * as React from "react";
 import SpotifyLogin from '../components/SpotifyLogin';
 import CodeModal from '../components/CodeModal';
 import LoginModal from '../components/LoginModal'
@@ -24,10 +24,14 @@ const Home = (props) => {
           setBackgroundImage,
         } = React.useContext(SpotifyContext);
   const {
-    findEvent
+    findEvent,
+    createEvent,
+    joinEvent,
+    leaveEvent
   } = React.useContext(DBContext)
 
   const [event, setEvent] = React.useState({});
+  const [event_code, setEventCode] = React.useState('');
   const [bgColor, setbgColor] = React.useState('');
 
 
@@ -48,6 +52,9 @@ const Home = (props) => {
   const resetEvent = ()=>{
     setBackgroundImage(IMAGE);
     setEvent({});
+    // TODO FIND EVENT CODE
+    leaveEvent(event.hosting, event_code);
+
     setDone(false);
     setModalVisible(true)
   }
@@ -57,13 +64,16 @@ const Home = (props) => {
   }
 
   const verifyEventCode = async (code) => {
-    //TODO query firebase events collection for an event matching the 
-    //given code
     const eventExists = await findEvent(code);
-    console.log('eventExists', eventExists);
+    console.log('eventExists - ', eventExists);
+    console.log('Join Code - ', code);
+    console.log('Auth Number - ', $authState.phoneNumber);
     if(eventExists)
     {
       setEvent({...event, ...{joined: true}});
+      setEventCode(code);
+      joinEvent(code);
+
       setDone(true);
       setModalVisible(false);
     }
@@ -71,7 +81,7 @@ const Home = (props) => {
     Keyboard.dismiss();
   }
 
-    const hostInstead = ()=>{
+  const hostInstead = ()=>{
     setEvent({...event, hosting: true})
     console.log('Show Hosting Modal');
   }
@@ -109,6 +119,12 @@ const Home = (props) => {
 
   //timeout for modal animation slide up
   React.useEffect(()=>{
+    
+   if ($authState.authenticated && event.hosting && $spotifyState) {
+    setEventCode(createEvent($authState.phoneNumber));
+    console.log('Event created - ' + $authState.phoneNumber);
+   }
+
     setModalVisible(false);
     if(!done)
       modalTimeout();

@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { ResponseType, useAuthRequest } from 'expo-auth-session';
 
 const PLAY = 'https://api.spotify.com/v1/me/player/play';
@@ -53,7 +53,7 @@ const SpotifyProvider = ({ children }) => {
   const [backgroundImage, setBackgroundImage] =React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [modalVisible, setModalVisible] = React.useState(false);
   const [done, setDone] = React.useState(false);
-  const [$spotifyState, $setSpotifyState] = React.useState({});
+  const [$spotifyState, $setSpotifyState] = React.useState(false);
   const [token, setToken] = React.useState("");
   const [song, setSong] = React.useState(IMAGE);
   const [request, response, promptAsync] = useAuthRequest(
@@ -71,13 +71,28 @@ const SpotifyProvider = ({ children }) => {
         'user-read-private',
       ],
       usePKCE: false,
-      redirectUri: 'exp://192.168.1.101:19000'
+      redirectUri: 'exp://192.168.1.146:19000'
       // redirectUri: 'https://google.com'
       // redirectUri: 'https://munozcodes.com/.well-known/apple-app-site-association'
       // redirectUri: 'https://www.munozcodes.com',
     },
     discovery
   );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      const { access_token } = response.params;
+      $setSpotifyState(true);
+      setToken(access_token);
+      setDone(true);
+      setModalVisible(false);
+      console.log('Token - ' + access_token);
+
+      if (access_token) {
+        currentlyPlaying();
+      }
+    }
+  }, [response]);
 
 
   const handleApiResponse = (resp) => {
@@ -144,22 +159,6 @@ const SpotifyProvider = ({ children }) => {
     }, 200);
 
   }
-
-    React.useEffect(() => {
-    if (response?.type === 'success') {
-      const { access_token } = response.params;
-      setToken(access_token);
-      setDone(true);
-      setModalVisible(false);
-      currentlyPlaying();
-      console.log('Token - ' + access_token);
-
-      if (token) {
-        currentlyPlaying()
-      }
-      // console.log('Device ID - ' + deviceId)
-    }
-  }, [response]);
 
   const enqueue = async (song) => {
     //TODO add song to host queue

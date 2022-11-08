@@ -1,9 +1,8 @@
 import  {View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable, Keyboard } from 'react-native';
-import { useState, useRef } from 'react';
+import * as React from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { SpotifyContext } from '../providers/SpotifyProvider';
-import React from 'react'
 
 
 const eventmodal = (props) => {

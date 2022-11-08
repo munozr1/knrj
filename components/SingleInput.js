@@ -1,11 +1,11 @@
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Modal } from 'react-native';
-import React, { useState } from 'react';
+import * as React from 'react';
 
 
 
 const singleinput = (props) => {
   //stores the user input
-  const [input, setInput] = useState('');
+  const [input, setInput] = React.useState('');
 
   return (
     <View style={[styles.container, styles.shadow]}>

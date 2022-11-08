@@ -1,8 +1,3 @@
-
-
-
-
-
 function requestApi(method, url, body, callback) {
   let xhr = new XMLHttpRequest();
 
