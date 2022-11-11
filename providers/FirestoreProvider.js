@@ -106,7 +106,7 @@ const FirestoreProvider = ({ children }) => {
     });
     console.log("Document written with ID: ", docRef.id);
 
-    return code;
+    return (code);
   }
 
   /*
@@ -153,6 +153,7 @@ const FirestoreProvider = ({ children }) => {
     // the Provider gives access to the context to its children
     <DBContext.Provider
       value={{
+        updateCurrentPlayingSong,
         addSkipCount,
         resetSkipCount,
         findEvent,
