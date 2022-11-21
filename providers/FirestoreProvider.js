@@ -131,12 +131,26 @@ const dequeue = async (songDeleteData,code) => {
     });
     console.log("Document written with ID: ", docRef.id);
 
-    const data = {
-      eventcode: event_code,
-      host: phonenumber
-    }
-    
-    const res = collection(db, 'event').doc(event_code).set(data);
+    return code;
+  }
+
+  /*
+   *  Updated to Web version 9
+   */
+  // Joins a event 
+  const joinEvent = async (code) => {
+    const eventDoc = doc(db, 'event', where('event_code', '==', code));
+
+    const sub = onSnapshot(eventDoc, (doc) => {
+      console.log('Current data: ', doc.data());
+    });
+
+    await updateDoc(eventDoc, {
+      user_count: increment(1)
+    });
+
+    // Might not need this part
+    sub();
   }
 
   /*
@@ -164,6 +178,7 @@ const dequeue = async (songDeleteData,code) => {
     // the Provider gives access to the context to its children
     <DBContext.Provider
       value={{
+        updateCurrentPlayingSong,
         addSkipCount,
         resetSkipCount,
         findEvent,
