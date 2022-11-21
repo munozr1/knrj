@@ -10,7 +10,32 @@ const FirestoreProvider = ({ children }) => {
 
 
   /*
+  const songAddData = (songName, songArtist) => {
+  artist:songArtist
+  songname:songName
+}
 
+
+const songDeleteData = (songName, songArtist) => {
+  artist:songArtist
+  songname:songName
+}
+
+
+const enqueue = async (songAddData, code) =>{
+  const eventEnqDoc=doc(db,'event', where('event_code', '==', code));
+  await updateDoc(eventEnqDoc, {
+    songs: arrayUnion(songAddData)
+  });
+}
+
+
+const dequeue = async (songDeleteData,code) => {
+  const eventDeqDoc=doc(db,'event', where('event_code', '==', code));
+  await updateDoc(eventDeqDoc, {
+      songs: arrayRemove(songDeleteData)
+    });
+}
 
       DB FUNCTIONS FOR PLAYER
 
