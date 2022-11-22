@@ -54,35 +54,40 @@ const eventmodal = (props) => {
       styles.iconsCenter,
       styles.bottomView
       ]}>
+
+        
         <TouchableOpacity onPress={props.voteBack}
           style={[{
           }]}
         >
         <Ionicons name="play-back" size={38} style={[{
-            marginRight: 50,
-            marginBottom: 5
-          }]}/>
-          </TouchableOpacity>
-        <TouchableOpacity onPress={props.search}
+          marginRight: 50,
+          marginBottom: 5
+          }]} />
+        </TouchableOpacity>
+
+        
+        <TouchableOpacity onPress={searchConst}
           style={[{
           }]}
         >
         <Ionicons name="search" size={38} style={[{
-            marginRight: 50,
-            marginBottom: 5
-            }]} />
-            </TouchableOpacity>
-            
-          <TouchableOpacity onPress={voteSkip}
-            style={[{
-            }]}
-          >
+          marginRight: 50,
+          marginBottom: 5
+          }]} />
+        </TouchableOpacity>
+        
+
+        <TouchableOpacity onPress={voteSkip}
+          style={[{
+          }]}
+        >
         <Ionicons name="play-forward" size={38} style={[{
             marginBottom: 5
             }]} />
-            </TouchableOpacity>
-      </View>
+        </TouchableOpacity>
 
+      </View>
     </View>
   )
 }
