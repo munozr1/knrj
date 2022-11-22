@@ -9,27 +9,20 @@ import { AuthStateContext } from '../providers/AuthProvider';
 import { DBContext } from '../providers/FirestoreProvider';
 import { IMAGE, SpotifyContext } from '../providers/SpotifyProvider';
 
-
 const Home = (props) => {
-
-  const { 
-    $authState,
-    $setAuthState,
-  } = React.useContext(AuthStateContext);
-
-  // TODO: Fix modalVisible, should not be controlled by spotify context
-  // TODO: Implement other music providers
+  const { $authState,
+          $setAuthState,
+        } = React.useContext(AuthStateContext);
   const {
-    done,
-    setDone,
-    $spotifyState,
-    $setSpotifyAuthState,
-    modalVisible,
-    setModalVisible,
-    song,
-    setBackgroundImage,
-  } = React.useContext(SpotifyContext);
-
+          done,
+          setDone,
+          $spotifyState,
+          $setSpotifyAuthState,
+          modalVisible,
+          setModalVisible,
+          song,
+          setBackgroundImage,
+        } = React.useContext(SpotifyContext);
   const {
     findEvent,
     createEvent,
@@ -38,42 +31,36 @@ const Home = (props) => {
   } = React.useContext(DBContext)
 
   const [event, setEvent] = React.useState({});
+  const [event_code, setEventCode] = React.useState('');
   const [bgColor, setbgColor] = React.useState('');
 
-  const hostInstead = ()=>{
-    setEvent({...event, hosting: true})
-    console.log('Showing Host Modal');
-  }
-
-  const joinInstead = () => {
-    setEvent({...event, ...{hosting: false}});
-    console.log('Showing Join Modal');
-  }
 
   const spotifyToken = (token) => {
     $setSpotifyAuthState({...$spotifyState, ...{token}})
   }
 
-  const resetAuth = () => {
+
+  const resetAuth = ()=>{
+    console.log('reseting auth')
     setBackgroundImage(IMAGE);
     $setAuthState({});
     setEvent({});
     setDone(false);
     setModalVisible(true);
-
-    console.log('Resetting auth');
   }
   
   const resetEvent = ()=>{
     setBackgroundImage(IMAGE);
-
-    leaveEvent(event.hosting, event.event_code);
     setEvent({});
+    // TODO FIND EVENT CODE
+    leaveEvent(event.hosting, event_code);
 
     setDone(false);
     setModalVisible(true)
+  }
 
-    console.log('Resetting event');
+  const joinInstead = ()=>{
+    setEvent({...event, ...{hosting: false}});
   }
 
   const verifyEventCode = async (code) => {
@@ -81,9 +68,10 @@ const Home = (props) => {
     console.log('eventExists - ', eventExists);
     console.log('Join Code - ', code);
     console.log('Auth Number - ', $authState.phoneNumber);
-
-    if(eventExists) {
-      setEvent({...event, ...{event_code: code}});
+    if(eventExists)
+    {
+      setEvent({...event, ...{joined: true}});
+      setEventCode(code);
       joinEvent(code);
 
       setDone(true);
@@ -93,19 +81,30 @@ const Home = (props) => {
     Keyboard.dismiss();
   }
 
-  // Might not need this either
-  const play = (song) => {
-    console.log('play');
+  const hostInstead = ()=>{
+    setEvent({...event, hosting: true})
+    console.log('Show Hosting Modal');
   }
 
-  // Might not need this
-  const voteBack = () => {
-    console.log("voteBack");
+  const voteSkip = ()=>{
+    console.log("voteSkip")
   }
 
   const search = () => {
-    console.log("search");
+    console.log("search")
   }
+
+  const voteBack = () => {
+    console.log("voteBack")
+  }
+
+  const play = (song) => {
+
+  }
+
+
+  
+
 
   const modalTimeout = async () => {
     console.log('modalTimeout() => done: ', done);
@@ -122,18 +121,15 @@ const Home = (props) => {
   React.useEffect(()=>{
     
    if ($authState.authenticated && event.hosting && $spotifyState) {
-    //setEvent({...event, ...{event_code: createEvent($authState.phoneNumber)}});
-    const code = createEvent($authState.phoneNumber);
-    event.event_code = code;
-
+    setEventCode(createEvent($authState.phoneNumber));
     console.log('Event created - ' + $authState.phoneNumber);
-    console.log('Event - ', event);
    }
 
     setModalVisible(false);
     if(!done)
       modalTimeout();
   }, [event, $spotifyState])
+  // modalTimeout();
 
   React.useEffect(()=>{
 
@@ -173,13 +169,10 @@ const Home = (props) => {
         blurRadius={10}
       >
         <AlbumCover 
-          resetAuth={resetAuth} 
-          resetEvent={resetEvent}
-          bgImage={song.album.images[0].url}
-        >
-          
-        </AlbumCover>
-
+        resetAuth={resetAuth} 
+        resetEvent={resetEvent}
+        bgImage={song.album.images[0].url}
+        ></AlbumCover>
         <SafeAreaView
         style={[{
           alignItems: 'center'
@@ -190,12 +183,9 @@ const Home = (props) => {
           >
             <EventModal 
             song={song}
-            event={event}
-            /*
-            voteBack={voteBack}
-            search={search}
             voteSkip={voteSkip}
-            */
+            search={search}
+            voteBack={voteBack}
             ></EventModal>
           </KeyboardAvoidingView >
         </SafeAreaView>

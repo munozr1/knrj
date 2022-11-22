@@ -188,7 +188,7 @@ const SpotifyProvider = ({ children }) => {
       }
     }).then((response) => response.json()).then((response) => {
       console.log('response =-=-=>',response.progress_ms);
-      fetchNewSong(response.progress_ms, response.item.album.duration_ms)
+      fetchNewSong(response.progress_ms, response.item.duration_ms)
       setBackgroundImage(response.item.album.images[0].url);
       setSong(response.item)
     }).catch(e=>{

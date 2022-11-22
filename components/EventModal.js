@@ -3,33 +3,15 @@ import * as React from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { SpotifyContext } from '../providers/SpotifyProvider';
-import { DBContext } from '../providers/FirestoreProvider';
 
 
 const eventmodal = (props) => {
 
-  const {
-    skip, 
-    search, 
-    currentlyPlaying
-  } = React.useContext(SpotifyContext);
-
-  const {
-    updateCurrentPlayingSong,
-    addSkipCount,
-    resetSkipCount
-  } = React.useContext(DBContext);
+  const {play, skip, search, currentlyPlaying} = React.useContext(SpotifyContext);
 
   const voteSkip = async () => {
     console.log('eventmodal => voteSkip()')
-
-    if (props.event.hosting) {
-      //addSkipCount(props.event.event_code);
-      await skip();
-    }
-    else if (props.event.joined) {
-      //addSkipCount(props.event.event_code);
-    }
+    await skip();
   }
 
   const searchConst = async() => {
