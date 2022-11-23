@@ -1,13 +1,21 @@
-import  {View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable, Keyboard } from 'react-native';
-import * as React from 'react';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { SpotifyContext } from '../providers/SpotifyProvider';
+import Search from './Search';
+import List from './List';
 
 
 const eventmodal = (props) => {
 
-  const {play, skip, search, currentlyPlaying} = React.useContext(SpotifyContext);
+  const [searchPhrase, setSearchPhrase] = useState("");
+  const [clicked, setClicked] = useState(false);
+
+  const {
+    skip,
+    search,
+    currentlyPlaying
+  } = React.useContext(SpotifyContext);
 
   const voteSkip = async () => {
     console.log('eventmodal => voteSkip()')
@@ -16,7 +24,6 @@ const eventmodal = (props) => {
 
   const searchConst = async() => {
     console.log('eventmodal => search()');
-    await search();
   }
 
   const currentSongPlaying = async() => {
@@ -33,8 +40,8 @@ const eventmodal = (props) => {
         <Text style={styles.secondLabel} numberOfLines={1}>{props.song.album.artists[0].name}</Text>
       </View>
       <View style={[
-      styles.iconsCenter,
-      styles.bottomView
+        styles.iconsCenter,
+        styles.bottomView
       ]}>
 
         
@@ -68,11 +75,18 @@ const eventmodal = (props) => {
             marginBottom: 5
             }]} />
         </TouchableOpacity>
-
       </View>
+      
+      {!clicked && <Text style={styles.title}>Type a song name...</Text>}
+      <Search
+        searchPhrase={searchPhrase}
+        setSearchPhrase={setSearchPhrase}
+        clicked={clicked}
+        setClicked={setClicked}
+      />
     </View>
-  )
-}
+  );
+};
 
 
 let styles = StyleSheet.create({
@@ -154,8 +168,14 @@ let styles = StyleSheet.create({
     width: '97%',
     marginBottom: '3%'
   },
+  title: {
+    width: "100%",
+    marginTop: 20,
+    fontSize: 25,
+    fontWeight: "bold",
+    marginLeft: "10%",
+  }
 })
-
 
 
 export default eventmodal;

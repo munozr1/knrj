@@ -170,13 +170,17 @@ const SpotifyProvider = ({ children }) => {
 
   const search = async (term) => {
     console.log('SpotifyProvider => search()')
-    await fetch(SEARCH + "?q=" + encodeURI(term) + "&type=track&limit=1", {
+    console.log('\nSearching for ' + term);
+
+    await fetch(SEARCH + "?q=" + encodeURI(term) + "&type=track&limit=5", {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       }
-    }).then(handleApiResponse)
+    })
+    .then(response => response.json())
+    .then(data => { return data.tracks.items })
   }
 
   const currentlyPlaying = async() => {
