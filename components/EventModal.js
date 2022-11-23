@@ -1,13 +1,45 @@
-import  {View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable, Keyboard } from 'react-native';
+import  {View, Text, TouchableOpacity, StyleSheet, TextInput, Pressable, Keyboard, ProgressViewIOSComponent, Easing } from 'react-native';
 import * as React from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { SpotifyContext } from '../providers/SpotifyProvider';
-
+import Progressbar from './Progressbar';
+import Animated from 'react-native-reanimated';
 
 const eventmodal = (props) => {
+  const {
+    play,
+    skip,
+    search,
+    currentlyPlaying,
+    duration,
+    progressMs,
+    song
+  } = React.useContext(SpotifyContext);
 
-  const {play, skip, search, currentlyPlaying} = React.useContext(SpotifyContext);
+  const progress = {
+    animation: new Animated.Value(0)
+  }
+
+  React.useEffect(()=>{
+    // console.log('START PROGRESS BAR');
+    // console.log('duration: ', duration)
+    // console.log('progressMs: ', progressMs)
+    // progressBar();
+    Animated.timing(progress.animation, {
+      toValue: 0,
+      duration: 0,
+      useNativeDriver: false
+    })
+
+
+    Animated.timing(progress.animation, {
+      toValue: 100,
+      duration: 20000,
+      useNativeDriver: false,
+      easing: Easing.ease
+    }).start();
+    // console.log('progress.current: ', progress.current)
+  }, [duration]);
 
   const voteSkip = async () => {
     console.log('eventmodal => voteSkip()')
@@ -30,7 +62,21 @@ const eventmodal = (props) => {
     }]}>
       <View>
         <Text style={styles.label} numberOfLines={1}>{props.song.name}</Text>
-        <Text style={styles.secondLabel} numberOfLines={1}>{props.song.album.artists[0].name}</Text>
+        <Text style={styles.secondLabel} numberOfLines={1}>
+          {props.song.album.artists[0].name}
+        </Text>
+      </View>
+      <View style={styles.Parentdiv}>
+        <Animated.View style={[styles.Childdiv, {
+          width:progress.animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: ['0%', '100%'],
+          })
+        }]}>
+          <Text style={[styles.progresstext]}></Text>
+        </Animated.View>
+      </View>
+      <View>
       </View>
       <View style={[
       styles.iconsCenter,
@@ -40,10 +86,11 @@ const eventmodal = (props) => {
           style={[{
           }]}
         >
-        <Ionicons name="play-back" size={38} style={[{
+        <Ionicons name="play-skip-back-outline" size={38} style={[{
             marginRight: 50,
             marginBottom: 5
           }]}/>
+          {/* <ion-icon name="play-skip-back-outline"></ion-icon> */}
           </TouchableOpacity>
         <TouchableOpacity onPress={props.search}
           style={[{
@@ -59,9 +106,10 @@ const eventmodal = (props) => {
             style={[{
             }]}
           >
-        <Ionicons name="play-forward" size={38} style={[{
+        <Ionicons name="play-skip-forward-outline" size={38} style={[{
             marginBottom: 5
             }]} />
+          {/* <ion-icon name="play-skip-forward-outline"></ion-icon> */}
             </TouchableOpacity>
       </View>
 
@@ -100,11 +148,10 @@ let styles = StyleSheet.create({
   }
   ,
   container: {
-    backgroundColor: "white",
-    borderRadius: 37,
+    borderRadius: 17,
     height: 130,
     marginBottom: 25,
-    opacity: .8
+    opacity: .7 
   },
   label: {
     textAlign: "center",
@@ -149,6 +196,29 @@ let styles = StyleSheet.create({
     width: '97%',
     marginBottom: '3%'
   },
+  Parentdiv : {
+    height: 5,
+    width: '90%',
+    backgroundColor: 'whitesmoke',
+    borderRadius: 40,
+    // margin: 80
+    marginLeft: 10,
+    marginRight: 10
+  },
+      
+  Childdiv : {
+    // width: '30%',
+    height: '100%',
+    backgroundColor: 'black',
+    borderRadius: 40,
+    textAlign: 'right'
+  },
+      
+  progresstext : {
+    padding: 10,
+    color: 'black',
+    // fontWeight: 900
+  }
 })
 
 

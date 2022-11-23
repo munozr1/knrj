@@ -56,6 +56,8 @@ const SpotifyProvider = ({ children }) => {
   const [$spotifyState, $setSpotifyState] = React.useState(false);
   const [token, setToken] = React.useState("");
   const [song, setSong] = React.useState(IMAGE);
+  const [duration, setDuration] = React.useState(0);
+  const [progressMs, setProgressMs] = React.useState(0);
   const [request, response, promptAsync] = useAuthRequest(
     {
       responseType: ResponseType.Token,
@@ -198,6 +200,8 @@ const SpotifyProvider = ({ children }) => {
   }
 
   const fetchNewSong = (current_ms, duration_ms) => {
+    setDuration(duration_ms);
+    setProgressMs(current_ms);
     setTimeout(async () => {
       console.log('SpotifyProvider() => fetchNewSong()')
       await currentlyPlaying()
@@ -223,7 +227,11 @@ const SpotifyProvider = ({ children }) => {
         backgroundImage,
         setBackgroundImage,
         song,
-        setSong
+        setSong,
+        progressMs,
+        duration,
+        setProgressMs,
+        setDuration
       }}>
       {children}
     </SpotifyContext.Provider>
