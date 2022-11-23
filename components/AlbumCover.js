@@ -38,8 +38,9 @@ const albumcover = (props) => {
   
 
   const menu = ()=> {
-    console.log('long pressed');
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    console.log('pressed menu');
+    if (!showMenu)
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setShowMenu(!showMenu);
   }
 
@@ -57,8 +58,8 @@ const albumcover = (props) => {
       {
         (!showMenu) ? 
         <TouchableOpacity
-          onLongPress={menu}
-          onPress={shortPress}
+          onPress={menu}
+          // onPress={shortPress}
           // activeOpacity={.9}
           // underlayColor="#DDDDDD"
 
@@ -66,7 +67,7 @@ const albumcover = (props) => {
           <Image
             style={[styles.image]}
             // source={{ uri: props.bgImage }}
-          >
+          > 
           </Image>
         </TouchableOpacity>
         :null
