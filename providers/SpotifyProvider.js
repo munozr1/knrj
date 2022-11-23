@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ResponseType, useAuthRequest } from 'expo-auth-session';
+import { createNavigationContainerRef } from "@react-navigation/native";
 
 const PLAY = 'https://api.spotify.com/v1/me/player/play';
 const PAUSE = 'https://api.spotify.com/v1/me/player/pause';
@@ -50,7 +51,7 @@ const discovery = {
 
 const SpotifyProvider = ({ children }) => {
 
-  const [backgroundImage, setBackgroundImage] =React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
+  const [backgroundImage, setBackgroundImage] = React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [modalVisible, setModalVisible] = React.useState(false);
   const [done, setDone] = React.useState(false);
   const [$spotifyState, $setSpotifyState] = React.useState(false);
@@ -139,14 +140,22 @@ const SpotifyProvider = ({ children }) => {
         'Authorization': 'Bearer ' + token
       },
       body: JSON.stringify({
-          "position_ms": 0,
-          "context_uri": song
+        "position_ms": 0,
+        "context_uri": song
       })
-    }).then(handleApiResponse).catch((e)=>{
+    }).then(handleApiResponse).catch((e) => {
       //TODO handle error
       console.log(e);
       throw new Error(e);
     })
+  }
+
+  const enqueue = async (song) => {
+    //TODO add song to host queue
+  }
+
+  const dequeue = async (song) => {
+    //TODO remove song from host queue
   }
 
   const skip = async () => {
@@ -164,17 +173,9 @@ const SpotifyProvider = ({ children }) => {
 
   }
 
-  const enqueue = async (song) => {
-    //TODO add song to host queue
-  }
-  
-  const dequeue = async (song) => {
-    //TODO remove song from host queue
-  }
-
   const search = async (term) => {
     console.log('SpotifyProvider => search()')
-    console.log('\nSearching for ' + term);
+    console.log('Searching for ' + term);
 
     await fetch(SEARCH + "?q=" + encodeURI(term) + "&type=track&limit=5", {
       method: 'GET',
@@ -183,11 +184,19 @@ const SpotifyProvider = ({ children }) => {
         'Authorization': 'Bearer ' + token
       }
     })
-    .then(response => response.json())
-    .then(data => { return data.tracks.items })
+      .then(response => response.json())
+      .then(response => {
+        console.log('Response - ', response.tracks);
+        console.log('Name - ' + response.tracks.items[0].name);
+        return response.tracks.items[0].name;
+      })
+      .catch(e => {
+        console.log('Error SpotifyProvider() => search()')
+        console.log(e);
+      })
   }
 
-  const currentlyPlaying = async() => {
+  const currentlyPlaying = async () => {
     await fetch(CURRENTLY_PLAYING, {
       method: 'GET',
       headers: {
@@ -199,7 +208,7 @@ const SpotifyProvider = ({ children }) => {
       fetchNewSong(response.progress_ms, response.item.duration_ms)
       setBackgroundImage(response.item.album.images[0].url);
       setSong(response.item)
-    }).catch(e=>{
+    }).catch(e => {
       console.log('Error SpotifyProvider() => currentlyPlaying()')
       console.log(e);
     })
@@ -211,10 +220,10 @@ const SpotifyProvider = ({ children }) => {
     setTimeout(async () => {
       console.log('SpotifyProvider() => fetchNewSong()')
       await currentlyPlaying()
-    }, (duration_ms - current_ms)+100);
+    }, (duration_ms - current_ms) + 100);
   }
 
-  
+
 
   return (
     // the Provider gives access to the context to its children
@@ -222,6 +231,7 @@ const SpotifyProvider = ({ children }) => {
       value={{
         play,
         skip,
+        search,
         token,
         promptAsync,
         $spotifyState,

@@ -1,11 +1,28 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ProgressViewIOSComponent, Easing } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ProgressViewIOSComponent, Easing, KeyboardAvoidingView, VirtualizedList } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SpotifyContext } from '../providers/SpotifyProvider';
 import Progressbar from './Progressbar';
-import Animated from 'react-native-reanimated'; t5y454
+import Animated from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const DATA = [];
+
+const getItem = (data, index) => ({
+
+});
+
+const getItemCount = (data) => 10;
+
+const Item = ({ title }) => (
+  <View style={styles.item}>
+    <Text style={styles.title}>{title}</Text>
+  </View>
+);
 
 const eventmodal = (props) => {
+
+  const [searchSong, setSearchSong] = useState("");
 
   const {
     play,
@@ -52,8 +69,25 @@ const eventmodal = (props) => {
 
   const searchConst = async () => {
     console.log('eventmodal => search()');
+    console.log('Song Entered - ', searchSong);
     setSearchClicked(!searchClicked);
+
+    if (searchSong != "") {
+      const results = await search(searchSong);
+      console.log('Song results - ', results);
+    }
   }
+
+  /*
+              <VirtualizedList
+              data={DATA}
+              initialNumToRender={5}
+              renderItem={({ item }) => <Item title={item.title} />}
+              keyExtractor={item => item.key}
+              getItemCount={getItemCount}
+              getItem={getItem}
+            />
+            */
 
   const currentSongPlaying = async () => {
     console.log('eventmodal() => currentSongPlaying()');
@@ -61,22 +95,39 @@ const eventmodal = (props) => {
   }
 
   return (
-    <View style={[searchClicked ? styles.searchContainer : styles.container, styles.shadow, {
+    <SafeAreaView style={[searchClicked ? styles.searchContainer : styles.container, styles.shadow, {
       alignItems: 'center',
     }]}>
       {
         (searchClicked) ?
           <>
-            <View>
-              <Text style={styles.label} numberOfLines={1}>Search</Text>
+            <View style={styles.searchInputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder='Enter a song'
+                value={searchSong}
+                onChangeText={setSearchSong} />
+
+              <TouchableOpacity onPress={() => console.log(searchSong)}
+                style={[
+                  styles.iconsCenter
+                ]}
+              >
+                <Ionicons name="search" size={20} style={[{
+                  marginRight: 25,
+                  marginBottom: 5
+                }]} />
+              </TouchableOpacity>
             </View>
+
+
             <View style={[
               styles.iconsCenter,
               styles.bottomView
             ]}>
 
               <TouchableOpacity onPress={searchConst}>
-                <Text style={styles.botLabel} numberOfLines={1}>Close</Text>
+                <Text style={styles.secondLabel} numberOfLines={1}>Close</Text>
               </TouchableOpacity>
 
             </View>
@@ -140,7 +191,7 @@ const eventmodal = (props) => {
             </View>
           </>
       }
-    </View>
+    </SafeAreaView>
   )
 };
 
@@ -154,17 +205,24 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     justifyContent: 'center',
   },
+  iconsRight: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "flex-end"
+  },
   input: {
-    padding: 15,
-    height: 80,
+    padding: 10,
+    height: 35,
     marginTop: 12,
-    marginBottom: 12,
     marginLeft: 5,
     marginRight: 5,
-    width: 55,
-    textAlign: 'center',
-    fontSize: 35,
+    width: 300,
+    textAlign: 'left',
+    fontSize: 20,
     borderRadius: 15,
+    backgroundColor: 'white',
+    opacity: 1
   },
   shadow: {
     shadowOffset: { width: 1, height: 1 },
@@ -180,10 +238,20 @@ const styles = StyleSheet.create({
     opacity: .9
   },
   searchContainer: {
+    backgroundColor: "",
     borderRadius: 17,
     height: 350,
     marginBottom: 25,
     opacity: .9
+  },
+  searchInputContainer: {
+    backgroundColor: "black",
+    borderRadius: 0,
+    borderWidth: 0,
+    height: 75,
+    marginTop: 5,
+    opacity: 1,
+    padding: 2
   },
   label: {
     textAlign: "center",
