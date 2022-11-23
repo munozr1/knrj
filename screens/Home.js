@@ -1,4 +1,4 @@
-import { View,  StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity, SafeAreaView, Animated} from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity, SafeAreaView, Animated } from 'react-native';
 import * as React from "react";
 import SpotifyLogin from '../components/SpotifyLogin';
 import CodeModal from '../components/CodeModal';
@@ -12,7 +12,7 @@ import { IMAGE, SpotifyContext } from '../providers/SpotifyProvider';
 
 const Home = (props) => {
 
-  const { 
+  const {
     $authState,
     $setAuthState,
   } = React.useContext(AuthStateContext);
@@ -40,18 +40,18 @@ const Home = (props) => {
   const [event, setEvent] = React.useState({});
   const [bgColor, setbgColor] = React.useState('');
 
-  const hostInstead = ()=>{
-    setEvent({...event, hosting: true})
+  const hostInstead = () => {
+    setEvent({ ...event, hosting: true })
     console.log('Showing Host Modal');
   }
 
   const joinInstead = () => {
-    setEvent({...event, ...{hosting: false}});
+    setEvent({ ...event, ...{ hosting: false } });
     console.log('Showing Join Modal');
   }
 
   const spotifyToken = (token) => {
-    $setSpotifyAuthState({...$spotifyState, ...{token}})
+    $setSpotifyAuthState({ ...$spotifyState, ...{ token } })
   }
 
   const resetAuth = () => {
@@ -63,8 +63,8 @@ const Home = (props) => {
 
     console.log('Resetting auth');
   }
-  
-  const resetEvent = ()=>{
+
+  const resetEvent = () => {
     setBackgroundImage(IMAGE);
 
     leaveEvent(event.hosting, event.event_code);
@@ -82,8 +82,8 @@ const Home = (props) => {
     console.log('Join Code - ', code);
     console.log('Auth Number - ', $authState.phoneNumber);
 
-    if(eventExists) {
-      setEvent({...event, ...{event_code: code}});
+    if (eventExists) {
+      setEvent({ ...event, ...{ event_code: code } });
       joinEvent(code);
 
       setDone(true);
@@ -95,9 +95,9 @@ const Home = (props) => {
 
   const modalTimeout = async () => {
     console.log('modalTimeout() => done: ', done);
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if(!done)
+        if (!done)
           setModalVisible(true);
         resolve();
       }, 1000);
@@ -105,29 +105,30 @@ const Home = (props) => {
   }
 
   //timeout for modal animation slide up
-  React.useEffect(()=>{
-    
-   if ($authState.authenticated && event.hosting && $spotifyState) {
-    //setEvent({...event, ...{event_code: createEvent($authState.phoneNumber)}});
-    const code = createEvent($authState.phoneNumber);
-    event.event_code = code;
+  React.useEffect(() => {
 
-    console.log('Event created - ' + $authState.phoneNumber);
-    console.log('Event - ', event);
-   }
+    if ($authState.authenticated && event.hosting && $spotifyState) {
+      //setEvent({...event, ...{event_code: createEvent($authState.phoneNumber)}});
+      const code = createEvent($authState.phoneNumber);
+      console.log('Code - ', code);
+      event.event_code = code;
+
+      console.log('Event created - ' + $authState.phoneNumber);
+      console.log('Event - ', event);
+    }
 
     setModalVisible(false);
-    if(!done)
+    if (!done)
       modalTimeout();
   }, [event, $spotifyState])
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
 
   }, [song])
 
-  const backgroundFade= React.useRef(new Animated.Value(0)).current;
+  const backgroundFade = React.useRef(new Animated.Value(0)).current;
 
-  const backgroundFadeIn =() => {
+  const backgroundFadeIn = () => {
     Animated.timing(backgroundFade, {
       toValue: 1,
       duration: 2000
@@ -149,97 +150,96 @@ const Home = (props) => {
       // flexDirection: 'column'
     }}
     >
-      
+
       <ImageBackground
-        style={[styles.background,{
+        style={[styles.background, {
           backgroundColor: bgColor,
           alignItems: 'center'
         }]}
-        source={{uri: song.album.images[0].url}}
+        source={{ uri: song.album.images[0].url }}
         blurRadius={10}
       >
-        <AlbumCover 
-          resetAuth={resetAuth} 
+        <AlbumCover
+          resetAuth={resetAuth}
           resetEvent={resetEvent}
           bgImage={song.album.images[0].url}
         >
-          
+
         </AlbumCover>
 
         <SafeAreaView
-        style={[{
-          alignItems: 'center'
-        },styles.bottomView]}>
+          style={[{
+            alignItems: 'center'
+          }, styles.bottomView]}>
           <KeyboardAvoidingView
             style={styles.bottomView}
             behavior='padding'
           >
-            <EventModal 
-            song={song}
-            event={event}
+            <EventModal
+              song={song}
+              event={event}
             ></EventModal>
           </KeyboardAvoidingView >
         </SafeAreaView>
 
-        
-        <Modal 
-        animationType='slide' 
-        visible={modalVisible}
-        // visible={false}
-        transparent
-        > 
-        
+
+        <Modal
+          animationType='slide'
+          visible={modalVisible}
+          // visible={false}
+          transparent
+        >
+
           {
             // ($authState.authenticated && event.hosting && !$spotifyState.token) ?
             // (!$spotifyState.user && !$spotifyState.token) ?
             (true) ?
-            <KeyboardAvoidingView
-            style={styles.modalStyles}
-            >
-              <SpotifyLogin  
-              back={joinInstead}  
-              label={'Connect with Spotify'}
-              setSpotifyToken={spotifyToken}
-              done={setDone}
-              ></SpotifyLogin>
-            </KeyboardAvoidingView>
-            :null
+              <KeyboardAvoidingView
+                style={styles.modalStyles}
+              >
+                <SpotifyLogin
+                  back={joinInstead}
+                  label={'Connect with Spotify'}
+                  setSpotifyToken={spotifyToken}
+                  done={setDone}
+                ></SpotifyLogin>
+              </KeyboardAvoidingView>
+              : null
           }
           {
-          ($authState.authenticated && !event.joined && !event.hosting)?
-          <KeyboardAvoidingView
-          style={styles.modalStyles}
-          behavior='padding'
-          >
-            <CodeModal length={4} 
-            topLabel={'Event Code'} 
-            botLabel={'Join'} 
-            verify={verifyEventCode}
-            secondAction={hostInstead}
-            secondLabel={'Host Instead'}
-            ></CodeModal>
-          </KeyboardAvoidingView>
-          : null
+            ($authState.authenticated && !event.joined && !event.hosting) ?
+              <KeyboardAvoidingView
+                style={styles.modalStyles}
+                behavior='padding'
+              >
+                <CodeModal length={4}
+                  topLabel={'Event Code'}
+                  botLabel={'Join'}
+                  verify={verifyEventCode}
+                  secondAction={hostInstead}
+                  secondLabel={'Host Instead'}
+                ></CodeModal>
+              </KeyboardAvoidingView>
+              : null
           }
           {
             (!$authState.authenticated) ?
               <KeyboardAvoidingView
-              style={styles.modalStyles}
-              behavior='padding'
+                style={styles.modalStyles}
+                behavior='padding'
               >
                 <LoginModal ></LoginModal>
               </KeyboardAvoidingView>
               : null
           }
         </Modal>
-      
       </ImageBackground>
     </View>
   )
 }
 
 let styles = StyleSheet.create({
-  container:{
+  container: {
     borderWidth: 1,
     borderColor: "black",
     backgroundColor: 'white',
@@ -255,26 +255,26 @@ let styles = StyleSheet.create({
     position: 'absolute', //Here is the trick
     bottom: 0, //Here is the trick
     // marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
-   // marginLeft: 2,
+    // marginLeft: 2,
     //marginRight:2,
-    width:'97%'
+    width: '97%'
   },
   modalStyles: {
-  position: 'absolute', //Here is the trick
-  bottom: 0, //Here is the trick
-  // marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
-  // marginLeft: 2,
-  //marginRight:2,
-  width: '100%'
-}, 
+    position: 'absolute', //Here is the trick
+    bottom: 0, //Here is the trick
+    // marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
+    // marginLeft: 2,
+    //marginRight:2,
+    width: '100%'
+  },
   background: {
     // position: 'absolute',
-    height:'100%' ,
-    width: '100%' ,
+    height: '100%',
+    width: '100%',
     resizeMode: 'stretch',
     // top:-100,
     // left:0
-    
+
   }
 })
 

@@ -3,9 +3,10 @@ import { View, Text, TouchableOpacity, StyleSheet, ProgressViewIOSComponent, Eas
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SpotifyContext } from '../providers/SpotifyProvider';
 import Progressbar from './Progressbar';
-import Animated from 'react-native-reanimated';
+import Animated from 'react-native-reanimated'; t5y454
 
 const eventmodal = (props) => {
+
   const {
     play,
     skip,
@@ -20,7 +21,7 @@ const eventmodal = (props) => {
     animation: new Animated.Value(0)
   }
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     // console.log('START PROGRESS BAR');
     // console.log('duration: ', duration)
     // console.log('progressMs: ', progressMs)
@@ -41,93 +42,110 @@ const eventmodal = (props) => {
     // console.log('progress.current: ', progress.current)
   }, [duration]);
 
+  // Should default to false 
+  const [searchClicked, setSearchClicked] = useState(false);
+
   const voteSkip = async () => {
     console.log('eventmodal => voteSkip()')
     await skip();
   }
 
-  const searchConst = async() => {
+  const searchConst = async () => {
     console.log('eventmodal => search()');
+    setSearchClicked(!searchClicked);
   }
 
-  const currentSongPlaying = async() => {
+  const currentSongPlaying = async () => {
     console.log('eventmodal() => currentSongPlaying()');
     await currentlyPlaying();
   }
 
   return (
-    <View style={[styles.container, styles.shadow, {
+    <View style={[searchClicked ? styles.searchContainer : styles.container, styles.shadow, {
       alignItems: 'center',
     }]}>
-      <View>
-        <Text style={styles.label} numberOfLines={1}>{props.song.name}</Text>
-        <Text style={styles.secondLabel} numberOfLines={1}>
-          {props.song.album.artists[0].name}
-        </Text>
-      </View>
-      <View style={styles.Parentdiv}>
-        <Animated.View style={[styles.Childdiv, {
-          width:progress.animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: ['0%', '100%'],
-          })
-        }]}>
-          <Text style={[styles.progresstext]}></Text>
-        </Animated.View>
-      </View>
-      <View>
-      </View>
-      <View style={[
-        styles.iconsCenter,
-        styles.bottomView
-      ]}>
+      {
+        (searchClicked) ?
+          <>
+            <View>
+              <Text style={styles.label} numberOfLines={1}>Search</Text>
+            </View>
+            <View style={[
+              styles.iconsCenter,
+              styles.bottomView
+            ]}>
 
-        
-        <TouchableOpacity onPress={props.voteBack}
-          style={[{
-          }]}
-        >
-        <Ionicons name="play-skip-back-outline" size={38} style={[{
-          marginRight: 50,
-          marginBottom: 5
-          }]} />
-        </TouchableOpacity>
+              <TouchableOpacity onPress={searchConst}>
+                <Text style={styles.botLabel} numberOfLines={1}>Close</Text>
+              </TouchableOpacity>
 
-        
-        <TouchableOpacity onPress={searchConst}
-          style={[{
-          }]}
-        >
-        <Ionicons name="search" size={38} style={[{
-          marginRight: 50,
-          marginBottom: 5
-          }]} />
-        </TouchableOpacity>
-        
+            </View>
+          </>
+          :
+          <>
+            <View>
+              <Text style={styles.label} numberOfLines={1}>{props.song.name}</Text>
+              <Text style={styles.secondLabel} numberOfLines={1}>
+                {props.song.album.artists[0].name}
+              </Text>
+            </View>
+            <View style={styles.Parentdiv}>
+              <Animated.View style={[styles.Childdiv, {
+                width: progress.animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0%', '100%'],
+                })
+              }]}>
+                <Text style={[styles.progresstext]}></Text>
+              </Animated.View>
+            </View>
+            <View>
+            </View>
+            <View style={[
+              styles.iconsCenter,
+              styles.bottomView
+            ]}>
 
-        <TouchableOpacity onPress={voteSkip}
-          style={[{
-          }]}
-        >
-        <Ionicons name="play-forward" size={38} style={[{
-            marginBottom: 5
-            }]} />
-        </TouchableOpacity>
-      </View>
-      
-      {!clicked && <Text style={styles.title}>Type a song name...</Text>}
-      <Search
-        searchPhrase={searchPhrase}
-        setSearchPhrase={setSearchPhrase}
-        clicked={clicked}
-        setClicked={setClicked}
-      />
+
+              <TouchableOpacity onPress={props.voteBack}
+                style={[{
+                }]}
+              >
+                <Ionicons name="play-skip-back-outline" size={38} style={[{
+                  marginRight: 50,
+                  marginBottom: 5
+                }]} />
+              </TouchableOpacity>
+
+
+              <TouchableOpacity onPress={searchConst}
+                style={[{
+                }]}
+              >
+                <Ionicons name="search" size={38} style={[{
+                  marginRight: 50,
+                  marginBottom: 5
+                }]} />
+              </TouchableOpacity>
+
+
+              <TouchableOpacity onPress={voteSkip}
+                style={[{
+                }]}
+              >
+                <Ionicons name="play-forward" size={38} style={[{
+                  marginBottom: 5
+                }]} />
+              </TouchableOpacity>
+            </View>
+          </>
+      }
     </View>
-  );
+  )
 };
 
 
-let styles = StyleSheet.create({
+const styles = StyleSheet.create({
   iconsCenter: {
     flex: 1,
     flexDirection: "row",
@@ -154,13 +172,18 @@ let styles = StyleSheet.create({
     shadowOpacity: 1 / 3,
     elevation: 1,
     backgroundColor: "white", // invisible color
-  }
-  ,
+  },
   container: {
     borderRadius: 17,
     height: 130,
     marginBottom: 25,
-    opacity: .7 
+    opacity: .9
+  },
+  searchContainer: {
+    borderRadius: 17,
+    height: 350,
+    marginBottom: 25,
+    opacity: .9
   },
   label: {
     textAlign: "center",
@@ -172,7 +195,6 @@ let styles = StyleSheet.create({
     marginBottom: 2,
     maxWidth: '80%',
     // opacity: '100%'
-  
   },
   secondLabel: {
     textAlign: "center",
@@ -205,7 +227,7 @@ let styles = StyleSheet.create({
     width: '97%',
     marginBottom: '3%'
   },
-  Parentdiv : {
+  Parentdiv: {
     height: 5,
     width: '90%',
     backgroundColor: 'whitesmoke',
@@ -214,16 +236,16 @@ let styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10
   },
-      
-  Childdiv : {
+
+  Childdiv: {
     // width: '30%',
     height: '100%',
     backgroundColor: 'black',
     borderRadius: 40,
     textAlign: 'right'
   },
-      
-  progresstext : {
+
+  progresstext: {
     padding: 10,
     color: 'black',
     // fontWeight: 900

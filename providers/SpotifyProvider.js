@@ -98,6 +98,7 @@ const SpotifyProvider = ({ children }) => {
 
 
   const handleApiResponse = (resp) => {
+    /*
     // console.log('handleApiResponse()=> resp: ',resp)
     let response = JSON.stringify(resp);
     switch(resp.status)
@@ -127,6 +128,7 @@ const SpotifyProvider = ({ children }) => {
       console.log(response);
       // alert(resp.responseText);
     }
+    */
   }
 
   const play = async (token, song) => {
@@ -193,7 +195,7 @@ const SpotifyProvider = ({ children }) => {
         'Authorization': 'Bearer ' + token
       }
     }).then((response) => response.json()).then((response) => {
-      console.log('response =-=-=>',response.progress_ms);
+      //console.log('response =-=-=>',response.progress_ms);
       fetchNewSong(response.progress_ms, response.item.duration_ms)
       setBackgroundImage(response.item.album.images[0].url);
       setSong(response.item)
