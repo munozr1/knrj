@@ -25,6 +25,10 @@ const eventmodal = (props) => {
   const [searchSong, setSearchSong] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [state, setState] = useState({
+      animationValue: new Animated.Value(100),
+      viewState: true
+  });
 
   const {
     play,
@@ -38,6 +42,26 @@ const eventmodal = (props) => {
 
   const progress = {
     animation: new Animated.Value(0)
+  }
+
+ 
+  const toggleAnimation = () => {
+
+    if (state.viewState == true) {
+      Animated.timing(this.state.animationValue, {
+        toValue: 300,
+        timing: 1500
+      }).start(() => {
+        setState({ viewState: false })
+      });
+    }
+    else {
+      Animated.timing(this.state.animationValue, {
+        toValue: 100,
+        timing: 1500
+      }).start(setState({ viewState: true })
+      );
+    }
   }
 
   React.useEffect(() => {
@@ -84,6 +108,11 @@ const eventmodal = (props) => {
     await currentlyPlaying();
   }
 
+  const showSearch= ()=>{
+    setSearchClicked(!searchClicked);
+    toggleAnimation();
+  }
+
   const renderItem = ({ item }) => {
     const backgroundColor = item.id === selectedId ? "transparent" : "white";
     const color = item.id === selectedId ? 'black' : 'black';
@@ -101,6 +130,11 @@ const eventmodal = (props) => {
     );
   };
 
+  const searchOnChange = (song) => {
+    setSearchSong(song);
+    searchConst();
+  }
+
   return (
     <SafeAreaView style={[searchClicked ? styles.searchContainer : styles.container, styles.shadow, {
       alignItems: 'center',
@@ -108,13 +142,17 @@ const eventmodal = (props) => {
       {
         (searchClicked) ?
           <>
-            <View style={styles.searchInputContainer}>
+            <Animated.View style={[
+              styles.searchInputContainer,
+              {height: state.animationValue}
+              ]}>
               <TextInput
                 style={styles.input}
                 placeholder='Enter a song'
                 value={searchSong}
-                onChangeText={setSearchSong} />
-            </View>
+                // onChangeText={setSearchSong} />
+                onChangeText={searchOnChange} />
+            </Animated.View>
 
             <SafeAreaView style={styles.searchResultsContainer}>
               <FlatList
@@ -128,7 +166,6 @@ const eventmodal = (props) => {
               styles.iconsCenter,
               styles.bottomView
             ]}>
-
               <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}>
                 <Ionicons name="close" size={30} style={[{
                   marginRight: 50,
