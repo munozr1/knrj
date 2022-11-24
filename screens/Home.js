@@ -107,6 +107,14 @@ const Home = (props) => {
   //timeout for modal animation slide up
   React.useEffect(() => {
 
+    /*
+    if (!$authState.authenticated) {
+      let code = createEvent('14692970295');
+      console.log('Code - ', code);
+      event.event_code = code;
+    }
+    */
+
     if ($authState.authenticated && event.hosting && $spotifyState) {
       //setEvent({...event, ...{event_code: createEvent($authState.phoneNumber)}});
       const code = createEvent($authState.phoneNumber);

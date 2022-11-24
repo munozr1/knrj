@@ -5,24 +5,19 @@ import { SpotifyContext } from '../providers/SpotifyProvider';
 import Progressbar from './Progressbar';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { FlatList } from 'react-native-gesture-handler';
 
-const DATA = [];
-
-const getItem = (data, index) => ({
-
-});
-
-const getItemCount = (data) => 10;
-
-const Item = ({ title }) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{title}</Text>
-  </View>
+const Item = ({ item, onPress, backgroundColor, textColor }) => (
+  <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
+    <Text style={[styles.title, textColor]}>{item.name} - {item.artist}</Text>
+  </TouchableOpacity>
 );
 
 const eventmodal = (props) => {
 
   const [searchSong, setSearchSong] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
 
   const {
     play,
@@ -70,29 +65,31 @@ const eventmodal = (props) => {
   const searchConst = async () => {
     console.log('eventmodal => search()');
     console.log('Song Entered - ', searchSong);
-    setSearchClicked(!searchClicked);
 
     if (searchSong != "") {
-      const results = await search(searchSong);
-      console.log('Song results - ', results);
+      const res = await search(searchSong);
+      setSearchResults(res.tracks.items);
     }
   }
-
-  /*
-              <VirtualizedList
-              data={DATA}
-              initialNumToRender={5}
-              renderItem={({ item }) => <Item title={item.title} />}
-              keyExtractor={item => item.key}
-              getItemCount={getItemCount}
-              getItem={getItem}
-            />
-            */
 
   const currentSongPlaying = async () => {
     console.log('eventmodal() => currentSongPlaying()');
     await currentlyPlaying();
   }
+
+  const renderItem = ({ item }) => {
+    const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
+    const color = item.id === selectedId ? 'white' : 'black';
+
+    return (
+      <Item
+        item={item}
+        onPress={() => setSelectedId(item.id)}
+        backgroundColor={{ backgroundColor }}
+        textColor={{ color }}
+      />
+    );
+  };
 
   return (
     <SafeAreaView style={[searchClicked ? styles.searchContainer : styles.container, styles.shadow, {
@@ -120,14 +117,24 @@ const eventmodal = (props) => {
               </TouchableOpacity>
             </View>
 
-
+            <SafeAreaView style={styles.searchResultsContainer}>
+              <FlatList
+                data={searchResults}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.uri}
+                extraData={selectedId}
+              />
+            </SafeAreaView>
             <View style={[
               styles.iconsCenter,
               styles.bottomView
             ]}>
 
+              <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}>
+                <Text style={styles.botLabel} >Close</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={searchConst}>
-                <Text style={styles.secondLabel} numberOfLines={1}>Close</Text>
+                <Text style={styles.botLabel} >Enter</Text>
               </TouchableOpacity>
 
             </View>
@@ -169,7 +176,7 @@ const eventmodal = (props) => {
               </TouchableOpacity>
 
 
-              <TouchableOpacity onPress={searchConst}
+              <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}
                 style={[{
                 }]}
               >
@@ -236,6 +243,10 @@ const styles = StyleSheet.create({
     height: 130,
     marginBottom: 25,
     opacity: .9
+  },
+  searchResultsContainer: {
+    flex: 1,
+    marginTop: 0
   },
   searchContainer: {
     backgroundColor: "",
@@ -317,7 +328,12 @@ const styles = StyleSheet.create({
     padding: 10,
     color: 'black',
     // fontWeight: 900
-  }
+  },
+  item: {
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
 })
 
 

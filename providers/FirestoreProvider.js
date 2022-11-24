@@ -10,17 +10,17 @@ const FirestoreProvider = ({ children }) => {
 
 
   const songAddData = (songName, songArtist) => {
-    artist:songArtist
-    songname:songName
+    artist: songArtist
+    songname: songName
   }
 
   const songDeleteData = (songName, songArtist) => {
-    artist:songArtist
-    songname:songName
+    artist: songArtist
+    songname: songName
   }
 
-  const enqueue = async (songAddData, code) =>{
-    const eventEnqDoc = doc(db,'event', where('event_code', '==', code));
+  const enqueue = async (songAddData, code) => {
+    const eventEnqDoc = doc(db, 'event', where('event_code', '==', code));
     await updateDoc(eventEnqDoc, {
       songs: arrayUnion(songAddData)
     });
@@ -110,6 +110,7 @@ const FirestoreProvider = ({ children }) => {
   // Creates event in database
   const createEvent = async (phonenumber) => {
     let code = generateCode();
+    console.log('Codep2 - ', code);
 
     /*
     if (!findEvent(code)) {
