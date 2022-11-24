@@ -9,7 +9,7 @@ import { FlatList } from 'react-native-gesture-handler';
 
 const Item = ({ item, onPress, backgroundColor, textColor }) => (
   <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
-    <Text style={[styles.title, textColor]}>{item.name} - {item.artist}</Text>
+    <Text style={[styles.title, textColor]}>{item.name}</Text>
   </TouchableOpacity>
 );
 
@@ -78,13 +78,16 @@ const eventmodal = (props) => {
   }
 
   const renderItem = ({ item }) => {
-    const backgroundColor = item.id === selectedId ? "#6e3b6e" : "white";
-    const color = item.id === selectedId ? 'white' : 'black';
+    const backgroundColor = item.id === selectedId ? "transparent" : "white";
+    const color = item.id === selectedId ? 'black' : 'black';
 
     return (
       <Item
         item={item}
-        onPress={() => setSelectedId(item.id)}
+        onPress={() => {
+          setSelectedId(item.id)
+          console.log('Song id - ', selectedId);
+        }}
         backgroundColor={{ backgroundColor }}
         textColor={{ color }}
       />
@@ -104,17 +107,6 @@ const eventmodal = (props) => {
                 placeholder='Enter a song'
                 value={searchSong}
                 onChangeText={setSearchSong} />
-
-              <TouchableOpacity onPress={() => console.log(searchSong)}
-                style={[
-                  styles.iconsCenter
-                ]}
-              >
-                <Ionicons name="search" size={20} style={[{
-                  marginRight: 25,
-                  marginBottom: 5
-                }]} />
-              </TouchableOpacity>
             </View>
 
             <SafeAreaView style={styles.searchResultsContainer}>
@@ -227,7 +219,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontSize: 20,
     borderRadius: 15,
-    backgroundColor: 'white',
+    backgroundColor: 'ghostwhite',
     opacity: 1
   },
   shadow: {
@@ -256,13 +248,14 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     height: 50,
     marginTop: 5,
-    marginBottom: 5,
+    marginBottom: 0,
     opacity: 1,
     padding: 0,
   },
   searchResultsContainer: {
     flex: 1,
-    marginTop: 0
+    marginTop: 0,
+    marginBottom: 50
   },
   label: {
     textAlign: "center",
