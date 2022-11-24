@@ -175,10 +175,10 @@ const Home = (props) => {
 
         </AlbumCover>
 
-        <SafeAreaView
+        {/* <SafeAreaView
           style={[{
             alignItems: 'center'
-          }, styles.bottomView]}>
+          }, styles.bottomView]}> */}
           <KeyboardAvoidingView
             style={styles.bottomView}
             behavior='padding'
@@ -188,7 +188,7 @@ const Home = (props) => {
               event={event}
             ></EventModal>
           </KeyboardAvoidingView >
-        </SafeAreaView>
+        {/* </SafeAreaView> */}
 
 
         <Modal
