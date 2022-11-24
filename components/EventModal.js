@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     // fontWeight: 900
   },
   item: {
-    padding: 20,
+    padding: 10,
     marginVertical: 8,
     marginHorizontal: 16,
     fontSize: 15,
