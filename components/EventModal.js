@@ -195,7 +195,7 @@ const eventmodal = (props) => {
                 style={[{
                 }]}
               >
-                <Ionicons name="play-forward" size={38} style={[{
+                <Ionicons name="play-skip-forward-outline" size={38} style={[{
                   marginBottom: 5
                 }]} />
               </TouchableOpacity>
