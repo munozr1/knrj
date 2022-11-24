@@ -78,7 +78,7 @@ const eventmodal = (props) => {
   }
 
   const renderItem = ({ item }) => {
-    const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
+    const backgroundColor = item.id === selectedId ? "#6e3b6e" : "white";
     const color = item.id === selectedId ? 'white' : 'black';
 
     return (
@@ -121,7 +121,7 @@ const eventmodal = (props) => {
               <FlatList
                 data={searchResults}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.uri}
+                keyExtractor={(item) => item.id}
                 extraData={selectedId}
               />
             </SafeAreaView>
@@ -131,12 +131,17 @@ const eventmodal = (props) => {
             ]}>
 
               <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}>
-                <Text style={styles.botLabel} >Close</Text>
+                <Ionicons name="close" size={30} style={[{
+                  marginRight: 50,
+                  marginBottom: 3
+                }]} />
               </TouchableOpacity>
               <TouchableOpacity onPress={searchConst}>
-                <Text style={styles.botLabel} >Enter</Text>
+                <Ionicons name="search" size={30} style={[{
+                  marginLeft: 50,
+                  marginBottom: 3
+                }]} />
               </TouchableOpacity>
-
             </View>
           </>
           :
@@ -208,15 +213,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: 'center',
-    // borderColor: 'red',
-    // borderWidth: 1,
     justifyContent: 'center',
-  },
-  iconsRight: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "flex-end"
+    paddingTop: 5,
+    opacity: 1,
   },
   input: {
     padding: 10,
@@ -244,25 +243,26 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     opacity: .9
   },
-  searchResultsContainer: {
-    flex: 1,
-    marginTop: 0
-  },
   searchContainer: {
-    backgroundColor: "",
+    backgroundColor: "white",
     borderRadius: 17,
     height: 350,
     marginBottom: 25,
     opacity: .9
   },
   searchInputContainer: {
-    backgroundColor: "black",
+    backgroundColor: "white",
     borderRadius: 0,
     borderWidth: 0,
-    height: 75,
+    height: 50,
     marginTop: 5,
+    marginBottom: 5,
     opacity: 1,
-    padding: 2
+    padding: 0,
+  },
+  searchResultsContainer: {
+    flex: 1,
+    marginTop: 0
   },
   label: {
     textAlign: "center",
@@ -315,7 +315,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10
   },
-
   Childdiv: {
     // width: '30%',
     height: '100%',
@@ -323,7 +322,6 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     textAlign: 'right'
   },
-
   progresstext: {
     padding: 10,
     color: 'black',
