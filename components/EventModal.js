@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ProgressViewIOSComponent, Easing, KeyboardAvoidingView, VirtualizedList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ProgressViewIOSComponent, Easing, KeyboardAvoidingView, Image } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SpotifyContext } from '../providers/SpotifyProvider';
 import Progressbar from './Progressbar';
@@ -9,7 +9,14 @@ import { FlatList } from 'react-native-gesture-handler';
 
 const Item = ({ item, onPress, backgroundColor, textColor }) => (
   <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
-    <Text style={[styles.title, textColor]}>{item.name}</Text>
+    <Image style={styles.tinyLogo} source={item.album.images[2]} />
+    <View style={[styles.itemTwo]}>
+      <Text style={[styles.title, textColor]}>{item.name}</Text>
+      <Text style={[styles.artists, textColor]}>{item.album.artists[0].name}</Text>
+    </View>
+    {
+      //console.log('Item - ', item.album.artists[0].name)
+    }
   </TouchableOpacity>
 );
 
@@ -255,7 +262,8 @@ const styles = StyleSheet.create({
   searchResultsContainer: {
     flex: 1,
     marginTop: 0,
-    marginBottom: 50
+    marginBottom: 50,
+    width: 325,
   },
   label: {
     textAlign: "center",
@@ -324,7 +332,29 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
+    fontSize: 15,
+    flexDirection: 'row',
   },
+  itemTwo: {
+    padding: 0,
+    marginVertical: 0,
+    marginHorizontal: 0,
+    fontSize: 15,
+    flexDirection: 'column',
+  },
+  tinyLogo: {
+    width: 50,
+    height: 50,
+    marginRight: 20
+  },
+  title: {
+    paddingTop: 7,
+    textAlign: 'left'
+  },
+  artists: {
+    paddingTop: 0,
+    textAlign: 'left'
+  }
 })
 
 
