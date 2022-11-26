@@ -2,12 +2,12 @@ import * as React from "react";
 import { app } from './AuthProvider';
 import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, addDoc, deleteDoc, updateDoc, increment, decrement } from "firebase/firestore";
 
-
 const db = getFirestore(app);
 const DBContext = React.createContext();
 
 const FirestoreProvider = ({ children }) => {
 
+  const [code, setCode] = React.useState(0);
 
   const songAddData = (songName, songArtist) => {
     artist: songArtist
@@ -100,7 +100,7 @@ const FirestoreProvider = ({ children }) => {
     var max = 9999;
     var code = Math.floor(Math.random() * (max - min + 1) + min);
 
-    console.log('Event Code - ' + code);
+    console.log('Event Code Generated: ' + code);
     return code;
   }
 
@@ -109,8 +109,9 @@ const FirestoreProvider = ({ children }) => {
    */
   // Creates event in database
   const createEvent = async (phonenumber) => {
-    let code = generateCode();
-    console.log('Codep2 - ', code);
+    const number = generateCode();
+
+    setCode(number);
 
     /*
     if (!findEvent(code)) {
@@ -118,7 +119,7 @@ const FirestoreProvider = ({ children }) => {
         code = generateCode();
       }
     }
-    */
+    
 
     const docRef = await addDoc(collection(db, 'event'), {
       event_code: code,
@@ -128,8 +129,7 @@ const FirestoreProvider = ({ children }) => {
       current_song: 'null',
     });
     console.log("Document written with ID: ", docRef.id);
-
-    return code;
+    */
   }
 
   /*
@@ -146,9 +146,6 @@ const FirestoreProvider = ({ children }) => {
     await updateDoc(eventDoc, {
       user_count: increment(1)
     });
-
-    // Might not need this part
-    sub();
   }
 
   /*
@@ -176,6 +173,8 @@ const FirestoreProvider = ({ children }) => {
     // the Provider gives access to the context to its children
     <DBContext.Provider
       value={{
+        code,
+        setCode,
         updateCurrentPlayingSong,
         addSkipCount,
         resetSkipCount,
