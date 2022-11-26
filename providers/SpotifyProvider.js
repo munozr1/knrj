@@ -90,9 +90,9 @@ const SpotifyProvider = ({ children }) => {
       setModalVisible(false);
       console.log('Token - ' + access_token);
 
-      if (access_token) {
-        currentlyPlaying();
-      }
+      setTimeout(async () => {
+        await currentlyPlaying()
+      }, 200);
     }
   }, [response]);
 
@@ -199,8 +199,8 @@ const SpotifyProvider = ({ children }) => {
       setBackgroundImage(response.item.album.images[0].url);
       setSong(response.item)
     }).catch(e => {
-      //console.log('Error SpotifyProvider() => currentlyPlaying()')
-      //console.log(e);
+      console.log('Error SpotifyProvider() => currentlyPlaying()')
+      console.log(e);
     })
   }
 
