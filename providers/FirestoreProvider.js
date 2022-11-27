@@ -1,35 +1,29 @@
 import * as React from "react";
 import { app } from './AuthProvider';
-import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, addDoc, deleteDoc, updateDoc, increment, decrement } from "firebase/firestore";
+import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, addDoc, deleteDoc, updateDoc, increment, decrement, arrayUnion, arrayRemove } from "firebase/firestore";
 
 const db = getFirestore(app);
 const DBContext = React.createContext();
 
 const FirestoreProvider = ({ children }) => {
 
+  const max_value = 5;
   const [code, setCode] = React.useState(0);
+  const [docId, setDocId] = React.useState(null);
 
-  const songAddData = (songName, songArtist) => {
-    artist: songArtist
-    songname: songName
-  }
+  const enqueue = async (song_id) => {
+    const eventDeqDoc = doc(db, 'event', docId);
 
-  const songDeleteData = (songName, songArtist) => {
-    artist: songArtist
-    songname: songName
-  }
-
-  const enqueue = async (songAddData, code) => {
-    const eventEnqDoc = doc(db, 'event', where('event_code', '==', code));
-    await updateDoc(eventEnqDoc, {
-      songs: arrayUnion(songAddData)
+    await updateDoc(eventDeqDoc, {
+      queue: arrayUnion(song_id)
     });
   }
 
-  const dequeue = async (songDeleteData, code) => {
-    const eventDeqDoc = doc(db, 'event', where('event_code', '==', code));
+  const dequeue = async (song_id) => {
+    const eventDeqDoc = doc(db, 'event', docId);
+
     await updateDoc(eventDeqDoc, {
-      songs: arrayRemove(songDeleteData)
+      queue: arrayRemove(song_id)
     });
   }
 
@@ -38,28 +32,42 @@ const FirestoreProvider = ({ children }) => {
     DB FUNCTIONS FOR PLAYER
 
   */
+  const getCurrentSkipCount = async () => {
+    const eventRef = doc(db, 'event', docId);
+
+    const skipcount_value = doc.value.skip_count;
+    return skipcount_value;
+  }
 
   // Updates the current playing song
-  const updateCurrentPlayingSong = async (code, song) => {
-    const eventRef = doc(db, 'event', where('event_code', '==', code));
+  const updateCurrentPlayingSong = async (song_id) => {
+    const eventRef = doc(db, 'event', docId);
 
     await updateDoc(eventRef, {
-      current_song: song
+      current_song: song_id
     });
   }
 
   // Increment skip count by one
-  const addSkipCount = async (code) => {
-    const eventRef = doc(db, 'event', where('event_code', '==', code));
+  const addSkipCount = async () => {
+    const eventRef = doc(db, 'event', docId);
 
     await updateDoc(eventRef, {
       skip_count: increment(1)
     });
+
+    /*
+    const skip_value = getCurrentSkipCount();
+
+    if (skip_value >= max_value) {
+      resetSkipCount();
+    }
+    */
   }
 
   // Resets skip count to zero
-  const resetSkipCount = async (code) => {
-    const eventRef = doc(db, 'event', where('event_code', '==', code));
+  const resetSkipCount = async () => {
+    const eventRef = doc(db, 'event', docId);
 
     await updateDoc(eventRef, {
       skip_count: 0
@@ -119,17 +127,18 @@ const FirestoreProvider = ({ children }) => {
         code = generateCode();
       }
     }
-    
+    */
 
     const docRef = await addDoc(collection(db, 'event'), {
-      event_code: code,
+      event_code: number,
       host: phonenumber,
       user_count: 1,
       skip_count: 0,
       current_song: 'null',
+      queue: []
     });
     console.log("Document written with ID: ", docRef.id);
-    */
+    setDocId(docRef.id);
   }
 
   /*
@@ -152,8 +161,8 @@ const FirestoreProvider = ({ children }) => {
    *  Updated to Web version 9
    */
   // Leaves a event
-  const leaveEvent = async (host, code) => {
-    const eventDoc = doc(db, 'event', where('event_code', '==', code));
+  const leaveEvent = async (host) => {
+    const eventDoc = doc(db, 'event', docId);
 
     if (host) {
       await deleteDoc(eventDoc);
@@ -181,7 +190,10 @@ const FirestoreProvider = ({ children }) => {
         findEvent,
         createEvent,
         joinEvent,
-        leaveEvent
+        leaveEvent,
+        enqueue,
+        dequeue
+
       }}>
       {children}
     </DBContext.Provider>
