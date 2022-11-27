@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ResponseType, useAuthRequest } from 'expo-auth-session';
+import { DBContext } from "./FirestoreProvider";
 
 const PLAY = 'https://api.spotify.com/v1/me/player/play';
 const PAUSE = 'https://api.spotify.com/v1/me/player/pause';
@@ -50,6 +51,10 @@ const discovery = {
 
 const SpotifyProvider = ({ children }) => {
 
+  const {
+    updateCurrentPlayingSong
+  } = React.useContext(DBContext);
+
   const [backgroundImage, setBackgroundImage] = React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [modalVisible, setModalVisible] = React.useState(false);
   const [done, setDone] = React.useState(false);
@@ -91,8 +96,8 @@ const SpotifyProvider = ({ children }) => {
       console.log('Token - ' + access_token);
 
       setTimeout(async () => {
-        await currentlyPlaying()
-      }, 200);
+        await currentlyPlaying();
+      }, 500);
     }
   }, [response]);
 
@@ -198,6 +203,9 @@ const SpotifyProvider = ({ children }) => {
       fetchNewSong(response.progress_ms, response.item.duration_ms)
       setBackgroundImage(response.item.album.images[0].url);
       setSong(response.item)
+
+      updateCurrentPlayingSong(response.item.uri);
+      console.log(response.item.uri);
     }).catch(e => {
       console.log('Error SpotifyProvider() => currentlyPlaying()')
       console.log(e);
@@ -212,8 +220,6 @@ const SpotifyProvider = ({ children }) => {
       await currentlyPlaying()
     }, (duration_ms - current_ms) + 100);
   }
-
-
 
   return (
     // the Provider gives access to the context to its children
