@@ -8,6 +8,7 @@ const NEXT = 'https://api.spotify.com/v1/me/player/next';
 const PREVIOUS = 'https://api.spotify.com/v1/me/player/previous';
 const CURRENTLY_PLAYING = 'https://api.spotify.com/v1/me/player/currently-playing';
 const SEARCH = 'https://api.spotify.com/v1/search';
+const GET_TRACK = 'http://api.spotify.com/v1/tracks';
 
 const IMAGE = {
   "album": {
@@ -78,7 +79,7 @@ const SpotifyProvider = ({ children }) => {
         'user-read-private',
       ],
       usePKCE: false,
-      redirectUri: 'exp://192.168.1.146:19000'
+      redirectUri: 'exp://172.20.10.2:19000'
       // redirectUri: 'https://google.com'
       // redirectUri: 'https://munozcodes.com/.well-known/apple-app-site-association'
       // redirectUri: 'https://www.munozcodes.com',
@@ -221,6 +222,20 @@ const SpotifyProvider = ({ children }) => {
     }, (duration_ms - current_ms) + 100);
   }
 
+  const getTrack = async (track_id) => {
+    const res = await fetch(GET_TRACK + track_id, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    })
+      .then((response) => response.json())
+      .then((response) => {
+
+      });
+  }
+
   return (
     // the Provider gives access to the context to its children
     <SpotifyContext.Provider
@@ -245,7 +260,8 @@ const SpotifyProvider = ({ children }) => {
         progressMs,
         duration,
         setProgressMs,
-        setDuration
+        setDuration,
+        getTrack
       }}>
       {children}
     </SpotifyContext.Provider>
