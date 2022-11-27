@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ProgressViewIOSComponent, Easing, KeyboardAvoidingView, Image } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SpotifyContext } from '../providers/SpotifyProvider';
+import { DBContext } from '../providers/FirestoreProvider';
 import Progressbar from './Progressbar';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,9 +15,6 @@ const Item = ({ item, onPress, backgroundColor, textColor }) => (
       <Text style={[styles.title, textColor]}>{item.name}</Text>
       <Text style={[styles.artists, textColor]}>{item.album.artists[0].name}</Text>
     </View>
-    {
-      //console.log('Item - ', item.album.artists[0].name)
-    }
   </TouchableOpacity>
 );
 
@@ -30,6 +28,19 @@ const eventmodal = (props) => {
     animationValue: new Animated.Value(100),
     viewState: true
   });
+
+
+  const {
+    updateCurrentPlayingSong,
+    addSkipCount,
+    resetSkipCount,
+    findEvent,
+    createEvent,
+    joinEvent,
+    leaveEvent,
+    enqueue,
+    dequeue
+  } = React.useContext(DBContext);
 
   const {
     play,
@@ -94,6 +105,9 @@ const eventmodal = (props) => {
   const voteSkip = async () => {
     console.log('eventmodal => voteSkip()')
     await skip();
+
+    addSkipCount();
+    // Change skip() for host only
   }
 
   const searchConst = async () => {
@@ -125,9 +139,10 @@ const eventmodal = (props) => {
         item={item}
         onPress={async () => {
           setSelectedId(item.id)
-          await play(item.id);
-          console.log("Result code - ", res.status);
-          console.log('Song id - ', item.id);
+          //await play(item.id);
+          await enqueue(item.id);
+
+          console.log('Song added to queue: ', item.id);
         }}
         backgroundColor={{ backgroundColor }}
         textColor={{ color }}
@@ -155,7 +170,6 @@ const eventmodal = (props) => {
                 style={styles.input}
                 placeholder='Enter a song'
                 value={searchSong}
-                // onChangeText={setSearchSong} />
                 onChangeText={searchOnChange} />
             </Animated.View>
 
