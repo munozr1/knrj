@@ -66,7 +66,7 @@ const Home = (props) => {
   const resetEvent = () => {
     setBackgroundImage(IMAGE);
 
-    leaveEvent(event.hosting, event.event_code);
+    leaveEvent(event.hosting);
     setEvent({});
 
     setDone(false);
@@ -88,7 +88,7 @@ const Home = (props) => {
 
     if (eventExists) {
       setCode(code);
-      joinEvent(code);
+      joinEvent();
 
       setDone(true);
       setModalVisible(false);
