@@ -1,14 +1,15 @@
 import * as React from "react";
 import { ResponseType, useAuthRequest } from 'expo-auth-session';
-import { createNavigationContainerRef } from "@react-navigation/native";
+import { DBContext } from "./FirestoreProvider";
 
 const PLAY = 'https://api.spotify.com/v1/me/player/play';
 const PAUSE = 'https://api.spotify.com/v1/me/player/pause';
 const NEXT = 'https://api.spotify.com/v1/me/player/next';
 const PREVIOUS = 'https://api.spotify.com/v1/me/player/previous';
 const CURRENTLY_PLAYING = 'https://api.spotify.com/v1/me/player/currently-playing';
-
 const SEARCH = 'https://api.spotify.com/v1/search';
+const GET_TRACK = 'http://api.spotify.com/v1/tracks';
+
 const IMAGE = {
   "album": {
     "artists": [
@@ -51,6 +52,10 @@ const discovery = {
 
 const SpotifyProvider = ({ children }) => {
 
+  const {
+    updateCurrentPlayingSong
+  } = React.useContext(DBContext);
+
   const [backgroundImage, setBackgroundImage] = React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
   const [modalVisible, setModalVisible] = React.useState(false);
   const [done, setDone] = React.useState(false);
@@ -67,14 +72,14 @@ const SpotifyProvider = ({ children }) => {
         'user-read-currently-playing',
         'user-read-recently-played',
         'user-read-playback-state',
-        'user-top-read',
         'user-modify-playback-state',
+        'user-top-read',
         'streaming',
         'user-read-email',
         'user-read-private',
       ],
       usePKCE: false,
-      redirectUri: 'exp://192.168.1.146:19000'
+      redirectUri: 'exp://172.20.10.2:19000'
       // redirectUri: 'https://google.com'
       // redirectUri: 'https://munozcodes.com/.well-known/apple-app-site-association'
       // redirectUri: 'https://www.munozcodes.com',
@@ -91,40 +96,22 @@ const SpotifyProvider = ({ children }) => {
       setModalVisible(false);
       console.log('Token - ' + access_token);
 
-      if (access_token) {
-        currentlyPlaying();
-      }
+      setTimeout(async () => {
+        await currentlyPlaying();
+      }, 500);
     }
   }, [response]);
 
-
   const handleApiResponse = (resp) => {
     /*
-    // console.log('handleApiResponse()=> resp: ',resp)
-    let response = JSON.stringify(resp);
-    switch(resp.status)
-    {
+    console.log('handleApiResponse()=> resp: ',resp)
+    const response = JSON.stringify(resp);
+    switch(resp.status) {
     case 200: 
       // console.log(resp.responseText);
       console.log('200: ', response)
       // await setTimeout(currentlyPlaying, 2000);
       break;
-    case 204: 
-      // await setTimeout(currentlyPlaying, 2000);
-      console.log('204: ', response)
-      break;
-    case 401: 
-      console.log('401: ', response)
-      // await refreshAccessToken()
-      break;
-    case 405: 
-      console.log('405: ', response)
-      // await refreshAccessToken()
-      break;
-    case 404:
-        console.log('404: ', response)
-        // await refreshAccessToken()
-        break;
     default:
       console.log(response);
       // alert(resp.responseText);
@@ -132,22 +119,39 @@ const SpotifyProvider = ({ children }) => {
     */
   }
 
-  const play = async (token, song) => {
-    await fetch(PLAY, {
+  const pause = async () => {
+    const res = await fetch(PAUSE, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/josn',
+        'Authorization': 'Bearer ' + token
+      }
+    })
+  }
+
+  const resumePlay = async () => {
+    const res = await fetch(PLAY, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/josn',
         'Authorization': 'Bearer ' + token
       },
-      body: JSON.stringify({
-        "position_ms": 0,
-        "context_uri": song
-      })
-    }).then(handleApiResponse).catch((e) => {
-      //TODO handle error
-      console.log(e);
-      throw new Error(e);
-    })
+      "position_ms": 0,
+    });
+  }
+
+  const play = async (song_id) => {
+    const res = await fetch(PLAY, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/josn',
+        'Authorization': 'Bearer ' + token
+      },
+      data: JSON.stringify({
+        "uris": ["spotify:track:" + song_id]
+      }),
+      "position_ms": 0,
+    });
   }
 
   const enqueue = async (song) => {
@@ -200,6 +204,9 @@ const SpotifyProvider = ({ children }) => {
       fetchNewSong(response.progress_ms, response.item.duration_ms)
       setBackgroundImage(response.item.album.images[0].url);
       setSong(response.item)
+
+      updateCurrentPlayingSong(response.item.uri);
+      console.log(response.item.uri);
     }).catch(e => {
       console.log('Error SpotifyProvider() => currentlyPlaying()')
       console.log(e);
@@ -215,13 +222,25 @@ const SpotifyProvider = ({ children }) => {
     }, (duration_ms - current_ms) + 100);
   }
 
-
+  const getTrack = async (track_id) => {
+    const res = await fetch(GET_TRACK + track_id, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    });
+    const json = await res.json();
+    return json;
+  }
 
   return (
     // the Provider gives access to the context to its children
     <SpotifyContext.Provider
       value={{
         play,
+        resumePlay,
+        pause,
         skip,
         search,
         token,
@@ -239,7 +258,8 @@ const SpotifyProvider = ({ children }) => {
         progressMs,
         duration,
         setProgressMs,
-        setDuration
+        setDuration,
+        getTrack
       }}>
       {children}
     </SpotifyContext.Provider>

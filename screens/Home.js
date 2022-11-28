@@ -9,7 +9,6 @@ import { AuthStateContext } from '../providers/AuthProvider';
 import { DBContext } from '../providers/FirestoreProvider';
 import { IMAGE, SpotifyContext } from '../providers/SpotifyProvider';
 
-
 const Home = (props) => {
 
   const {
@@ -31,23 +30,23 @@ const Home = (props) => {
   } = React.useContext(SpotifyContext);
 
   const {
+    code,
+    setCode,
     findEvent,
     createEvent,
     joinEvent,
     leaveEvent
-  } = React.useContext(DBContext)
+  } = React.useContext(DBContext);
 
   const [event, setEvent] = React.useState({});
   const [bgColor, setbgColor] = React.useState('');
 
   const hostInstead = () => {
     setEvent({ ...event, hosting: true })
-    console.log('Showing Host Modal');
   }
 
   const joinInstead = () => {
     setEvent({ ...event, ...{ hosting: false } });
-    console.log('Showing Join Modal');
   }
 
   const spotifyToken = (token) => {
@@ -76,6 +75,11 @@ const Home = (props) => {
     console.log('Resetting event');
   }
 
+  const createNewEvent = async () => {
+    //createEvent($authState.phoneNumber);
+    createEvent('14692970295')
+  }
+
   const verifyEventCode = async (code) => {
     const eventExists = await findEvent(code);
     console.log('eventExists - ', eventExists);
@@ -83,7 +87,7 @@ const Home = (props) => {
     console.log('Auth Number - ', $authState.phoneNumber);
 
     if (eventExists) {
-      setEvent({ ...event, ...{ event_code: code } });
+      setCode(code);
       joinEvent(code);
 
       setDone(true);
@@ -94,7 +98,8 @@ const Home = (props) => {
   }
 
   const modalTimeout = async () => {
-    console.log('modalTimeout() => done: ', done);
+    //console.log('modalTimeout() => done: ', done);
+
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (!done)
@@ -104,35 +109,32 @@ const Home = (props) => {
     })
   }
 
-  //timeout for modal animation slide up
+  // Timeout for modal animation slide up
   React.useEffect(() => {
-
-    /*
-    if (!$authState.authenticated) {
-      let code = createEvent('14692970295');
-      console.log('Code - ', code);
-      event.event_code = code;
-    }
-    */
-
-    if ($authState.authenticated && event.hosting && $spotifyState) {
-      //setEvent({...event, ...{event_code: createEvent($authState.phoneNumber)}});
-      const code = createEvent($authState.phoneNumber);
-      console.log('Code - ', code);
-      event.event_code = code;
-
-      console.log('Event created - ' + $authState.phoneNumber);
-      console.log('Event - ', event);
-    }
+    console.log(event);
 
     setModalVisible(false);
-    if (!done)
+    if (!done) {
       modalTimeout();
-  }, [event, $spotifyState])
+    }
+  }, [event]);
+
+  React.useEffect(() => {
+    setEvent({ ...event, ...{ event_code: code } });
+  }, [code]);
+
+  React.useEffect(() => {
+    console.log('Spotify Logged In: ', $spotifyState);
+
+    setModalVisible(false);
+    if (!done) {
+      modalTimeout();
+    }
+  }, [$spotifyState]);
 
   React.useEffect(() => {
 
-  }, [song])
+  }, [song]);
 
   const backgroundFade = React.useRef(new Animated.Value(0)).current;
 
@@ -175,15 +177,15 @@ const Home = (props) => {
 
         </AlbumCover>
 
-          <KeyboardAvoidingView
-            style={styles.bottomView}
-            behavior='padding'
-          >
-            <EventModal
-              song={song}
-              event={event}
-            ></EventModal>
-          </KeyboardAvoidingView >
+        <KeyboardAvoidingView
+          style={styles.bottomView}
+          behavior='padding'
+        >
+          <EventModal
+            song={song}
+            event={event}
+          ></EventModal>
+        </KeyboardAvoidingView >
 
 
         <Modal
@@ -205,12 +207,13 @@ const Home = (props) => {
                   label={'Connect with Spotify'}
                   setSpotifyToken={spotifyToken}
                   done={setDone}
+                  onClick={createNewEvent}
                 ></SpotifyLogin>
               </KeyboardAvoidingView>
               : null
           }
           {
-            ($authState.authenticated && !event.joined && !event.hosting) ?
+            (!$authState.authenticated && !event.joined && !event.hosting) ?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
                 behavior='padding'
@@ -226,6 +229,7 @@ const Home = (props) => {
               : null
           }
           {
+            /*
             (!$authState.authenticated) ?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
@@ -234,6 +238,7 @@ const Home = (props) => {
                 <LoginModal ></LoginModal>
               </KeyboardAvoidingView>
               : null
+              */
           }
         </Modal>
       </ImageBackground>

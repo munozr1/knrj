@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ProgressViewIOSComponent, Easing, KeyboardAvoidingView, Image } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SpotifyContext } from '../providers/SpotifyProvider';
+import { DBContext } from '../providers/FirestoreProvider';
 import Progressbar from './Progressbar';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,24 +15,37 @@ const Item = ({ item, onPress, backgroundColor, textColor }) => (
       <Text style={[styles.title, textColor]}>{item.name}</Text>
       <Text style={[styles.artists, textColor]}>{item.album.artists[0].name}</Text>
     </View>
-    {
-      //console.log('Item - ', item.album.artists[0].name)
-    }
   </TouchableOpacity>
 );
 
 const eventmodal = (props) => {
 
+  const [pauseClicked, setPausedClicked] = useState(false);
   const [searchSong, setSearchSong] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [state, setState] = useState({
-      animationValue: new Animated.Value(100),
-      viewState: true
+    animationValue: new Animated.Value(100),
+    viewState: true
   });
+
+
+  const {
+    updateCurrentPlayingSong,
+    addSkipCount,
+    resetSkipCount,
+    findEvent,
+    createEvent,
+    joinEvent,
+    leaveEvent,
+    enqueue,
+    dequeue
+  } = React.useContext(DBContext);
 
   const {
     play,
+    resumePlay,
+    pause,
     skip,
     search,
     currentlyPlaying,
@@ -44,7 +58,7 @@ const eventmodal = (props) => {
     animation: new Animated.Value(0)
   }
 
- 
+
   const toggleAnimation = () => {
 
     if (state.viewState == true) {
@@ -91,6 +105,9 @@ const eventmodal = (props) => {
   const voteSkip = async () => {
     console.log('eventmodal => voteSkip()')
     await skip();
+
+    addSkipCount();
+    // Change skip() for host only
   }
 
   const searchConst = async () => {
@@ -108,7 +125,7 @@ const eventmodal = (props) => {
     await currentlyPlaying();
   }
 
-  const showSearch= ()=>{
+  const showSearch = () => {
     setSearchClicked(!searchClicked);
     toggleAnimation();
   }
@@ -120,9 +137,12 @@ const eventmodal = (props) => {
     return (
       <Item
         item={item}
-        onPress={() => {
+        onPress={async () => {
           setSelectedId(item.id)
-          console.log('Song id - ', selectedId);
+          //await play(item.id);
+          await enqueue(item.id);
+
+          console.log('Song added to queue: ', item.id);
         }}
         backgroundColor={{ backgroundColor }}
         textColor={{ color }}
@@ -144,13 +164,12 @@ const eventmodal = (props) => {
           <>
             <Animated.View style={[
               styles.searchInputContainer,
-              {height: state.animationValue}
-              ]}>
+              { height: state.animationValue }
+            ]}>
               <TextInput
                 style={styles.input}
                 placeholder='Enter a song'
                 value={searchSong}
-                // onChangeText={setSearchSong} />
                 onChangeText={searchOnChange} />
             </Animated.View>
 
@@ -168,13 +187,8 @@ const eventmodal = (props) => {
             ]}>
               <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}>
                 <Ionicons name="close" size={30} style={[{
-                  marginRight: 50,
-                  marginBottom: 3
-                }]} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={searchConst}>
-                <Ionicons name="search" size={30} style={[{
-                  marginLeft: 50,
+                  marginLeft: 25,
+                  marginRight: 25,
                   marginBottom: 3
                 }]} />
               </TouchableOpacity>
@@ -222,6 +236,23 @@ const eventmodal = (props) => {
                 }]}
               >
                 <Ionicons name="search" size={38} style={[{
+                  marginRight: 50,
+                  marginBottom: 5
+                }]} />
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={async () => {
+                if (pauseClicked) {
+                  await resumePlay();
+                } else {
+                  await pause();
+                }
+                setPausedClicked(!pauseClicked);
+              }}
+                style={[{
+                }]}
+              >
+                <Ionicons name={pauseClicked ? "play" : "pause"} size={38} style={[{
                   marginRight: 50,
                   marginBottom: 5
                 }]} />
