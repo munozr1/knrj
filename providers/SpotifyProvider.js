@@ -229,11 +229,9 @@ const SpotifyProvider = ({ children }) => {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       }
-    })
-      .then((response) => response.json())
-      .then((response) => {
-
-      });
+    });
+    const json = await res.json();
+    return json;
   }
 
   return (
