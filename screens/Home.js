@@ -196,9 +196,9 @@ const Home = (props) => {
         >
 
           {
-            // ($authState.authenticated && event.hosting && !$spotifyState.token) ?
+            ($authState.authenticated && event.hosting && !$spotifyState.token) ?
             // (!$spotifyState.user && !$spotifyState.token) ?
-            (true) ?
+            // (true) ?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
               >

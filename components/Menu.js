@@ -26,6 +26,7 @@ const menu = (props) => {
     setTimeout(() => {
       props.leave();
     }, 200);
+    //TODO if host remove event from firebase
   }
   const logout = async () => {
     fadeOut();
