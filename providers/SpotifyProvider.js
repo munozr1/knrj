@@ -123,7 +123,7 @@ const SpotifyProvider = ({ children }) => {
     const res = await fetch(PAUSE, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/josn',
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       }
     })
@@ -133,7 +133,7 @@ const SpotifyProvider = ({ children }) => {
     const res = await fetch(PLAY, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/josn',
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       },
       "position_ms": 0,
@@ -141,17 +141,20 @@ const SpotifyProvider = ({ children }) => {
   }
 
   const play = async (song_id) => {
+    console.log('SpotifyProvider: play()');
     const res = await fetch(PLAY, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/josn',
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       },
       data: JSON.stringify({
-        "uris": ["spotify:track:" + song_id]
+        "uri": [encodeURI("spotify:track:" + song_id)],
+        "position_ms": 0,
       }),
-      "position_ms": 0,
     });
+    const json = await res.json();
+    return json;
   }
 
   const enqueue = async (song) => {
