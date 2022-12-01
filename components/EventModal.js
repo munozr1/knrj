@@ -3,27 +3,15 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ProgressViewIOSCom
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SpotifyContext } from '../providers/SpotifyProvider';
 import { DBContext } from '../providers/FirestoreProvider';
+import SearchModal from './SearchModal';
 import Progressbar from './Progressbar';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList } from 'react-native-gesture-handler';
 
-const Item = ({ item, onPress, backgroundColor, textColor }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
-    <Image style={styles.tinyLogo} source={item.album.images[2]} />
-    <View style={[styles.itemTwo]}>
-      <Text style={[styles.title, textColor]}>{item.name}</Text>
-      <Text style={[styles.artists, textColor]}>{item.album.artists[0].name}</Text>
-    </View>
-  </TouchableOpacity>
-);
-
 const eventmodal = (props) => {
 
   const [pauseClicked, setPausedClicked] = useState(false);
-  const [searchSong, setSearchSong] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
   const [state, setState] = useState({
     animationValue: new Animated.Value(100),
     viewState: true
@@ -57,7 +45,6 @@ const eventmodal = (props) => {
   const progress = {
     animation: new Animated.Value(0)
   }
-
 
   const toggleAnimation = () => {
 
@@ -110,16 +97,6 @@ const eventmodal = (props) => {
     // Change skip() for host only
   }
 
-  const searchConst = async () => {
-    console.log('eventmodal => search()');
-    console.log('Song Entered - ', searchSong);
-
-    if (searchSong != "") {
-      const res = await search(searchSong);
-      setSearchResults(res.tracks.items);
-    }
-  }
-
   const currentSongPlaying = async () => {
     console.log('eventmodal() => currentSongPlaying()');
     await currentlyPlaying();
@@ -130,30 +107,9 @@ const eventmodal = (props) => {
     toggleAnimation();
   }
 
-  const renderItem = ({ item }) => {
-    const backgroundColor = item.id === selectedId ? "transparent" : "white";
-    const color = item.id === selectedId ? 'black' : 'black';
-
-    return (
-      <Item
-        item={item}
-        onPress={async () => {
-          setSelectedId(item.id)
-          //await play(item.id);
-          await enqueue(item.id);
-
-          console.log('Song added to queue: ', item.id);
-        }}
-        backgroundColor={{ backgroundColor }}
-        textColor={{ color }}
-      />
-    );
-  };
-
-  const searchOnChange = (song) => {
-    setSearchSong(song);
-    searchConst();
-  }
+  React.useEffect(() => {
+    console.log(searchClicked);
+  }, [searchClicked]);
 
   return (
     <SafeAreaView style={[searchClicked ? styles.searchContainer : styles.container, styles.shadow, {
@@ -162,37 +118,7 @@ const eventmodal = (props) => {
       {
         (searchClicked) ?
           <>
-            <Animated.View style={[
-              styles.searchInputContainer,
-              { height: state.animationValue }
-            ]}>
-              <TextInput
-                style={styles.input}
-                placeholder='Enter a song'
-                value={searchSong}
-                onChangeText={searchOnChange} />
-            </Animated.View>
-
-            <SafeAreaView style={styles.searchResultsContainer}>
-              <FlatList
-                data={searchResults}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-                extraData={selectedId}
-              />
-            </SafeAreaView>
-            <View style={[
-              styles.iconsCenter,
-              styles.bottomView
-            ]}>
-              <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}>
-                <Ionicons name="close" size={30} style={[{
-                  marginLeft: 25,
-                  marginRight: 25,
-                  marginBottom: 3
-                }]} />
-              </TouchableOpacity>
-            </View>
+            <SearchModal close={() => setSearchClicked(!searchClicked)} />
           </>
           :
           <>
@@ -218,23 +144,7 @@ const eventmodal = (props) => {
               styles.iconsCenter,
               styles.bottomView
             ]}>
-
-
-              <TouchableOpacity onPress={props.voteBack}
-                style={[{
-                }]}
-              >
-                <Ionicons name="play-skip-back-outline" size={38} style={[{
-                  marginRight: 50,
-                  marginBottom: 5
-                }]} />
-              </TouchableOpacity>
-
-
-              <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}
-                style={[{
-                }]}
-              >
+              <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}>
                 <Ionicons name="search" size={38} style={[{
                   marginRight: 50,
                   marginBottom: 5
@@ -313,25 +223,9 @@ const styles = StyleSheet.create({
   searchContainer: {
     backgroundColor: "white",
     borderRadius: 17,
-    height: 350,
+    height: 500,
     marginBottom: 25,
-    opacity: .9
-  },
-  searchInputContainer: {
-    backgroundColor: "white",
-    borderRadius: 0,
-    borderWidth: 0,
-    height: 50,
-    marginTop: 5,
-    marginBottom: 0,
-    opacity: 1,
-    padding: 0,
-  },
-  searchResultsContainer: {
-    flex: 1,
-    marginTop: 0,
-    marginBottom: 50,
-    width: 325,
+    opacity: 1
   },
   label: {
     textAlign: "center",
@@ -396,33 +290,6 @@ const styles = StyleSheet.create({
     color: 'black',
     // fontWeight: 900
   },
-  item: {
-    padding: 10,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    fontSize: 15,
-    flexDirection: 'row',
-  },
-  itemTwo: {
-    padding: 0,
-    marginVertical: 0,
-    marginHorizontal: 0,
-    fontSize: 15,
-    flexDirection: 'column',
-  },
-  tinyLogo: {
-    width: 50,
-    height: 50,
-    marginRight: 20
-  },
-  title: {
-    paddingTop: 7,
-    textAlign: 'left'
-  },
-  artists: {
-    paddingTop: 0,
-    textAlign: 'left'
-  }
 })
 
 
