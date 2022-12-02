@@ -19,6 +19,21 @@ const FirestoreProvider = ({ children }) => {
     });
   }
 
+  const queue = async () => {
+    const docRef = doc(db, "event", docId);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      console.log("Song data:" , docSnap.data());
+      return docSnap.get('queue');
+    }
+    else
+    {
+      console.log("No Songs!");
+    }
+   }
+   
+
   const dequeue = async (song_id) => {
     const eventDeqDoc = doc(db, 'event', docId);
 
@@ -192,6 +207,7 @@ const FirestoreProvider = ({ children }) => {
         joinEvent,
         leaveEvent,
         enqueue,
+        queue,
         dequeue
 
       }}>

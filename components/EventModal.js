@@ -4,6 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { SpotifyContext } from '../providers/SpotifyProvider';
 import { DBContext } from '../providers/FirestoreProvider';
 import SearchModal from './SearchModal';
+import QueueModal from './QueueModal';
 import Progressbar from './Progressbar';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,6 +28,7 @@ const eventmodal = (props) => {
     joinEvent,
     leaveEvent,
     enqueue,
+    queue,
     dequeue
   } = React.useContext(DBContext);
 
@@ -88,6 +90,7 @@ const eventmodal = (props) => {
 
   // Should default to false 
   const [searchClicked, setSearchClicked] = useState(false);
+  const [queueClicked, setQueueClicked] = useState(false);
 
   const voteSkip = async () => {
     console.log('eventmodal => voteSkip()')
@@ -111,8 +114,12 @@ const eventmodal = (props) => {
     console.log(searchClicked);
   }, [searchClicked]);
 
+  React.useEffect(() => {
+    console.log(queueClicked);
+  }, [queueClicked]);
+
   return (
-    <SafeAreaView style={[searchClicked ? styles.searchContainer : styles.container, styles.shadow, {
+    <SafeAreaView style={[searchClicked ? styles.searchContainer : (queueClicked ? styles.queueContainer : styles.container), styles.shadow, {
       alignItems: 'center',
     }]}>
       {
@@ -128,6 +135,15 @@ const eventmodal = (props) => {
                 {props.song.album.artists[0].name}
               </Text>
             </View>
+            
+            {
+             (queueClicked) ?
+             //
+             <> 
+              <QueueModal close={() => setQueueClicked(!queueClicked)} />
+            </>
+             :
+             <>
             <View style={styles.Parentdiv}>
               <Animated.View style={[styles.Childdiv, {
                 width: progress.animation.interpolate({
@@ -146,6 +162,13 @@ const eventmodal = (props) => {
             ]}>
               <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}>
                 <Ionicons name="search" size={38} style={[{
+                  marginRight: 50,
+                  marginBottom: 5
+                }]} />
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setQueueClicked(!queueClicked)}>
+                <Ionicons name="list-circle-outline" size={38} style={[{
                   marginRight: 50,
                   marginBottom: 5
                 }]} />
@@ -180,6 +203,9 @@ const eventmodal = (props) => {
             </View>
           </>
       }
+       </>
+      }
+      
     </SafeAreaView>
   )
 };
@@ -222,6 +248,13 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     backgroundColor: "white",
+    borderRadius: 17,
+    height: 500,
+    marginBottom: 25,
+    opacity: 1
+  },
+  queueContainer: {
+    backgroundColor: "red",
     borderRadius: 17,
     height: 500,
     marginBottom: 25,
