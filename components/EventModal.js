@@ -94,17 +94,17 @@ const eventmodal = (props) => {
   }
 
   React.useEffect(() => {
-    console.log(searchClicked);
+    console.log('Search - ', searchClicked);
   }, [searchClicked]);
 
   React.useEffect(() => {
-    console.log(queueClicked);
+    console.log('Queue - ', queueClicked);
   }, [queueClicked]);
 
   return (
     <View>
       {
-        (!queueClicked || !searchClicked) ?
+        (!queueClicked && !searchClicked) ?
           <>
             <View style={styles.container}>
               <View>
@@ -149,8 +149,6 @@ const eventmodal = (props) => {
                   }
                   setPausedClicked(!pauseClicked);
                 }}
-                  style={[{
-                  }]}
                 >
                   <Ionicons name={pauseClicked ? "play" : "pause"} size={38} style={[{
                     marginRight: 50,
@@ -160,8 +158,6 @@ const eventmodal = (props) => {
 
 
                 <TouchableOpacity onPress={voteSkip}
-                  style={[{
-                  }]}
                 >
                   <Ionicons name="play-skip-forward-outline" size={38} style={[{
                     marginBottom: 5
