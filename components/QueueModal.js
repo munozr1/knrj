@@ -1,40 +1,33 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Image, Text, TextInput, FlatList, TouchableOpacity, SafeAreaView} from 'react-native';
-import { SpotifyContext } from '../providers/SpotifyProvider';
+import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
 import { DBContext } from '../providers/FirestoreProvider';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { BlurView } from "expo-blur"
 
 const QueueTouchable = ({ item, textColor, backgroundColor, onPress }) => (
     <TouchableOpacity onPress={onPress} style={[styles.songCard, backgroundColor]}>
         <View style={[styles.itemTwo]}>
-            <Text style={[styles.title, textColor]}>{}</Text>
-            {
-            console.log(item)
-            }
+            <Text style={[styles.title, textColor]}>{item}</Text>
         </View>
     </TouchableOpacity>
 );
 
-const queuemodal = async (props) => {
+const queuemodal = (props) => {
 
     const [queueResults, setQueueResults] = useState([]);
-    const [selectedId, setSelectedId] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     const { queue } = React.useContext(DBContext);
-    
-    const queueData = async () => {
+
+    const loadQueueData = async () => {
         console.log('eventmodal => queue()');
-        console.log('Show Queue');
-         if (queue != "") {
-          const res = await queue();
-          setQueueResults(res);
-        }
-      }
+
+        const res = await queue();
+        setQueueResults(res);
+    }
 
     const renderQueueItem = ({ item }) => {
-        const backgroundColor = item.id === selectedId ? "transparent" : "white";
-        const color = item.id === selectedId ? 'black' : 'black';
+        const backgroundColor = item === selectedItem ? "transparent" : "white";
+        const color = item === selectedItem ? 'black' : 'black';
 
         return (
             <QueueTouchable
@@ -42,6 +35,8 @@ const queuemodal = async (props) => {
                 textColor={{ color }}
                 backgroundColor={{ backgroundColor }}
                 onPress={async () => {
+                    setSelectedItem(item);
+                    console.log(item);
                 }}
             />
         );
@@ -49,28 +44,25 @@ const queuemodal = async (props) => {
 
     return (
         <>
-            {queueData()}
-             <View style={styles.queueContainer}>
+            <View style={styles.resultsContainer}>
                 <FlatList
                     data={queueResults}
                     renderItem={renderQueueItem}
-                    keyExtractor={(item) => item.id}
-                    //extraData={selectedId}
+                    keyExtractor={(item) => item}
+                    extraData={selectedItem}
                 />
-
-                <View style={[styles.footer]}>
-                    <TouchableOpacity onPress={props.close}>
-                        <Ionicons name="close" size={30} style={[{
-                            marginLeft: 25,
-                            marginRight: 25,
-                            marginBottom: 2
-                        }]}
-                        />
-                    </TouchableOpacity>
-                </View>
             </View>
-            
 
+            <View style={[styles.footer]}>
+                <TouchableOpacity onPress={props.close}>
+                    <Ionicons name="close" size={30} style={[{
+                        marginLeft: 25,
+                        marginRight: 25,
+                        marginBottom: 2
+                    }]}
+                    />
+                </TouchableOpacity>
+            </View>
         </>
     );
 };
@@ -78,37 +70,11 @@ const queuemodal = async (props) => {
 export default queuemodal;
 
 const styles = StyleSheet.create({
-    input: {
-        padding: 10,
-        height: 35,
-        marginTop: 12,
-        marginLeft: 5,
-        marginRight: 5,
-        width: 300,
-        textAlign: 'left',
-        fontSize: 20,
-        borderRadius: 15,
-        backgroundColor: 'ghostwhite',
-        opacity: 1
+    resultsContainer: {
+        flex: 1,
+        marginBottom: 33,
+        width: '100%',
     },
-    textContainer: {
-        backgroundColor: "white",
-        borderRadius: 0,
-        borderWidth: 0,
-        height: 50,
-        marginTop: 5,
-        marginBottom: 0,
-        opacity: 1,
-        padding: 0,
-    },
-    queueContainer: {
-        backgroundColor: "red",
-        borderRadius: 17,
-        height: 500,
-        marginBottom: 5,
-        marginBottom: 25,
-        opacity: 1
-      },
     songCard: {
         padding: 5,
         marginVertical: 8,
@@ -142,26 +108,10 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     footer: {
-        flex: 1,
-        flexDirection: "row",
         alignItems: 'center',
-        justifyContent: 'center',
         position: 'absolute',
         bottom: 0,
         width: '100%',
-        backgroundColor: 'white'
-    },
-    container: {
         borderRadius: 17,
-        height: 130,
-        marginBottom: 25,
-        opacity: .9
-      },
-    shadow: {
-        shadowOffset: { width: 1, height: 1 },
-        shadowColor: 'black',
-        shadowOpacity: 1 / 3,
-        elevation: 1,
-        backgroundColor: "white", // invisible color
-      },
+    },
 });

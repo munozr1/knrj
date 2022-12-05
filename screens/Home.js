@@ -1,4 +1,4 @@
-import { View, StyleSheet, KeyboardAvoidingView, Keyboard, Modal, Image, ImageBackground, TouchableOpacity, SafeAreaView, Animated } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Keyboard, Modal, ImageBackground, Animated } from 'react-native';
 import * as React from "react";
 import SpotifyLogin from '../components/SpotifyLogin';
 import CodeModal from '../components/CodeModal';
@@ -155,12 +155,7 @@ const Home = (props) => {
   };
 
   return (
-    <View style={{
-      // flex: 1,
-      // flexDirection: 'column'
-    }}
-    >
-
+    <View>
       <ImageBackground
         style={[styles.background, {
           backgroundColor: bgColor,
@@ -173,9 +168,7 @@ const Home = (props) => {
           resetAuth={resetAuth}
           resetEvent={resetEvent}
           bgImage={song.album.images[0].url}
-        >
-
-        </AlbumCover>
+        />
 
         <KeyboardAvoidingView
           style={styles.bottomView}
@@ -184,21 +177,17 @@ const Home = (props) => {
           <EventModal
             song={song}
             event={event}
-          ></EventModal>
+          />
         </KeyboardAvoidingView >
 
 
         <Modal
           animationType='slide'
           visible={modalVisible}
-          // visible={false}
           transparent
         >
-
           {
-            //($authState.authenticated && event.hosting && !$spotifyState.token) ?
-            // (!$spotifyState.user && !$spotifyState.token) ?
-             (true) ?
+            (true) ?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
               >
@@ -208,7 +197,7 @@ const Home = (props) => {
                   setSpotifyToken={spotifyToken}
                   done={setDone}
                   onClick={createNewEvent}
-                ></SpotifyLogin>
+                />
               </KeyboardAvoidingView>
               : null
           }
@@ -224,7 +213,7 @@ const Home = (props) => {
                   verify={verifyEventCode}
                   secondAction={hostInstead}
                   secondLabel={'Host Instead'}
-                ></CodeModal>
+                />
               </KeyboardAvoidingView>
               : null
           }
@@ -235,7 +224,7 @@ const Home = (props) => {
                 style={styles.modalStyles}
                 behavior='padding'
               >
-                <LoginModal ></LoginModal>
+                <LoginModal />
               </KeyboardAvoidingView>
               : null
               */
@@ -260,29 +249,20 @@ let styles = StyleSheet.create({
     bottom: 0,
   },
   bottomView: {
-    position: 'absolute', //Here is the trick
-    bottom: 0, //Here is the trick
-    // marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
-    // marginLeft: 2,
-    //marginRight:2,
+    position: 'absolute',
+    marginBottom: 20,
+    bottom: 0,
     width: '97%'
   },
   modalStyles: {
-    position: 'absolute', //Here is the trick
-    bottom: 0, //Here is the trick
-    // marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
-    // marginLeft: 2,
-    //marginRight:2,
+    position: 'absolute',
+    bottom: 0,
     width: '100%'
   },
   background: {
-    // position: 'absolute',
     height: '100%',
     width: '100%',
     resizeMode: 'stretch',
-    // top:-100,
-    // left:0
-
   }
 })
 

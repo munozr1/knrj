@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ProgressViewIOSComponent, Easing, KeyboardAvoidingView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Easing } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SpotifyContext } from '../providers/SpotifyProvider';
 import { DBContext } from '../providers/FirestoreProvider';
 import SearchModal from './SearchModal';
 import QueueModal from './QueueModal';
-import Progressbar from './Progressbar';
 import Animated from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { FlatList } from 'react-native-gesture-handler';
 
 const eventmodal = (props) => {
 
@@ -20,28 +17,15 @@ const eventmodal = (props) => {
 
 
   const {
-    updateCurrentPlayingSong,
     addSkipCount,
-    resetSkipCount,
-    findEvent,
-    createEvent,
-    joinEvent,
-    leaveEvent,
-    enqueue,
-    queue,
-    dequeue
   } = React.useContext(DBContext);
 
   const {
-    play,
     resumePlay,
     pause,
     skip,
-    search,
     currentlyPlaying,
     duration,
-    progressMs,
-    song
   } = React.useContext(SpotifyContext);
 
   const progress = {
@@ -88,7 +72,6 @@ const eventmodal = (props) => {
     // console.log('progress.current: ', progress.current)
   }, [duration]);
 
-  // Should default to false 
   const [searchClicked, setSearchClicked] = useState(false);
   const [queueClicked, setQueueClicked] = useState(false);
 
@@ -119,94 +102,98 @@ const eventmodal = (props) => {
   }, [queueClicked]);
 
   return (
-    <SafeAreaView style={[searchClicked ? styles.searchContainer : (queueClicked ? styles.queueContainer : styles.container), styles.shadow, {
-      alignItems: 'center',
-    }]}>
+    <View>
+      {
+        (!queueClicked || !searchClicked) ?
+          <>
+            <View style={styles.container}>
+              <View>
+                <Text style={styles.label} numberOfLines={1}>{props.song.name}</Text>
+                <Text style={styles.secondLabel} numberOfLines={1}>
+                  {props.song.album.artists[0].name}
+                </Text>
+              </View>
+              <View style={styles.Parentdiv}>
+                <Animated.View style={[styles.Childdiv, {
+                  width: progress.animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0%', '100%'],
+                  })
+                }]}>
+                  <Text style={[styles.progresstext]}></Text>
+                </Animated.View>
+              </View>
+              <View style={[
+                styles.iconsCenter,
+                styles.bottomView
+              ]}>
+                <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}>
+                  <Ionicons name="search" size={38} style={[{
+                    marginRight: 50,
+                    marginBottom: 5
+                  }]} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => setQueueClicked(!queueClicked)}>
+                  <Ionicons name="list-circle-outline" size={38} style={[{
+                    marginRight: 50,
+                    marginBottom: 5
+                  }]} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={async () => {
+                  if (pauseClicked) {
+                    await resumePlay();
+                  } else {
+                    await pause();
+                  }
+                  setPausedClicked(!pauseClicked);
+                }}
+                  style={[{
+                  }]}
+                >
+                  <Ionicons name={pauseClicked ? "play" : "pause"} size={38} style={[{
+                    marginRight: 50,
+                    marginBottom: 5
+                  }]} />
+                </TouchableOpacity>
+
+
+                <TouchableOpacity onPress={voteSkip}
+                  style={[{
+                  }]}
+                >
+                  <Ionicons name="play-skip-forward-outline" size={38} style={[{
+                    marginBottom: 5
+                  }]} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
+          :
+          null
+      }
+      {
+        (queueClicked) ?
+          <>
+            <View style={styles.queueContainer}>
+              <QueueModal close={() => setQueueClicked(!queueClicked)} />
+            </View>
+          </>
+          :
+          null
+      }
       {
         (searchClicked) ?
           <>
-            <SearchModal close={() => setSearchClicked(!searchClicked)} />
+            <View style={styles.searchContainer}>
+              <SearchModal close={() => setSearchClicked(!searchClicked)} />
+            </View>
           </>
           :
-          <>
-            <View>
-              <Text style={styles.label} numberOfLines={1}>{props.song.name}</Text>
-              <Text style={styles.secondLabel} numberOfLines={1}>
-                {props.song.album.artists[0].name}
-              </Text>
-            </View>
-            
-            {
-             (queueClicked) ?
-             //
-             <> 
-              <QueueModal close={() => setQueueClicked(!queueClicked)} />
-            </>
-             :
-             <>
-            <View style={styles.Parentdiv}>
-              <Animated.View style={[styles.Childdiv, {
-                width: progress.animation.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0%', '100%'],
-                })
-              }]}>
-                <Text style={[styles.progresstext]}></Text>
-              </Animated.View>
-            </View>
-            <View>
-            </View>
-            <View style={[
-              styles.iconsCenter,
-              styles.bottomView
-            ]}>
-              <TouchableOpacity onPress={() => setSearchClicked(!searchClicked)}>
-                <Ionicons name="search" size={38} style={[{
-                  marginRight: 50,
-                  marginBottom: 5
-                }]} />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => setQueueClicked(!queueClicked)}>
-                <Ionicons name="list-circle-outline" size={38} style={[{
-                  marginRight: 50,
-                  marginBottom: 5
-                }]} />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={async () => {
-                if (pauseClicked) {
-                  await resumePlay();
-                } else {
-                  await pause();
-                }
-                setPausedClicked(!pauseClicked);
-              }}
-                style={[{
-                }]}
-              >
-                <Ionicons name={pauseClicked ? "play" : "pause"} size={38} style={[{
-                  marginRight: 50,
-                  marginBottom: 5
-                }]} />
-              </TouchableOpacity>
-
-
-              <TouchableOpacity onPress={voteSkip}
-                style={[{
-                }]}
-              >
-                <Ionicons name="play-skip-forward-outline" size={38} style={[{
-                  marginBottom: 5
-                }]} />
-              </TouchableOpacity>
-            </View>
-          </>
+          null
       }
-       </>
-      }
-      
-    </SafeAreaView>
+    </View>
   )
 };
 
@@ -220,85 +207,40 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     opacity: 1,
   },
-  input: {
-    padding: 10,
-    height: 35,
-    marginTop: 12,
-    marginLeft: 5,
-    marginRight: 5,
-    width: 300,
-    textAlign: 'left',
-    fontSize: 20,
-    borderRadius: 15,
-    backgroundColor: 'ghostwhite',
-    opacity: 1
-  },
-  shadow: {
-    shadowOffset: { width: 1, height: 1 },
-    shadowColor: 'black',
-    shadowOpacity: 1 / 3,
-    elevation: 1,
-    backgroundColor: "white", // invisible color
-  },
   container: {
-    borderRadius: 17,
+    backgroundColor: "white",
     height: 130,
-    marginBottom: 25,
-    opacity: .9
+    borderRadius: 17,
   },
   searchContainer: {
     backgroundColor: "white",
-    borderRadius: 17,
     height: 500,
-    marginBottom: 25,
-    opacity: 1
+    borderRadius: 17,
   },
   queueContainer: {
-    backgroundColor: "red",
-    borderRadius: 17,
+    backgroundColor: "white",
     height: 500,
-    marginBottom: 25,
-    opacity: 1
+    borderRadius: 17,
   },
   label: {
     textAlign: "center",
     padding: "0%",
     fontWeight: '800',
-    opacity: .9,
     fontSize: 20,
-    marginTop: 20,
+    marginTop: 15,
     marginBottom: 2,
-    maxWidth: '80%',
-    // opacity: '100%'
   },
   secondLabel: {
     textAlign: "center",
     padding: "0%",
     fontWeight: '500',
-    // borderColor: 'red',
-    // borderWidth: 1
-    // color: 'grey',
-    // marginBottom: '%'
   },
   optionalLable: {
     borderWidth: 1
   },
-  botLabel: {
-    marginTop: 120,
-    width: '100%',
-  },
-  hiddenCodeInput: {
-    position: 'absolute',
-    height: 0,
-    width: 0,
-    opacity: 0,
-  },
   bottomView: {
-    position: 'absolute', //Here is the trick
-    bottom: 0, //Here is the trick
-    // marginTop: '50%',//TODO temp, should be on bottom then on click it should animate 50%
-    // marginLeft: 2,
-    //marginRight:2,
+    position: 'absolute',
+    bottom: 0,
     width: '97%',
     marginBottom: '3%'
   },

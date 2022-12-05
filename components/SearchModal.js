@@ -3,7 +3,6 @@ import { StyleSheet, View, Image, Text, TextInput, FlatList, TouchableOpacity } 
 import { SpotifyContext } from '../providers/SpotifyProvider';
 import { DBContext } from '../providers/FirestoreProvider';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { BlurView } from "expo-blur"
 
 const SongTouchable = ({ item, textColor, backgroundColor, onPress }) => (
     <TouchableOpacity onPress={onPress} style={[styles.songCard, backgroundColor]}>
@@ -64,7 +63,7 @@ const searchmodal = (props) => {
             <View style={[styles.textContainer]}>
                 <TextInput
                     style={styles.input}
-                    placeholder='Enter a song'
+                    placeholder='Search for a song...'
                     value={searchSong}
                     onChangeText={updateSearch}
                 />
@@ -77,20 +76,18 @@ const searchmodal = (props) => {
                     keyExtractor={(item) => item.id}
                     extraData={selectedId}
                 />
-
-                <BlurView intensity={1} style={[styles.footer]}>
-                    <TouchableOpacity onPress={props.close}>
-                        <Ionicons name="close" size={30} style={[{
-                            marginLeft: 25,
-                            marginRight: 25,
-                            marginBottom: 2
-                        }]}
-                        />
-                    </TouchableOpacity>
-                </BlurView>
             </View>
 
-
+            <View style={[styles.footer]}>
+                <TouchableOpacity onPress={props.close}>
+                    <Ionicons name="close" size={30} style={[{
+                        marginLeft: 25,
+                        marginRight: 25,
+                        marginBottom: 2
+                    }]}
+                    />
+                </TouchableOpacity>
+            </View>
         </>
     );
 };
@@ -101,31 +98,24 @@ const styles = StyleSheet.create({
     input: {
         padding: 10,
         height: 35,
-        marginTop: 12,
+        marginTop: 5,
         marginLeft: 5,
         marginRight: 5,
-        width: 300,
-        textAlign: 'left',
+        width: '97%',
+        textAlign: 'center',
         fontSize: 20,
-        borderRadius: 15,
+        borderRadius: 17,
         backgroundColor: 'ghostwhite',
-        opacity: 1
     },
     textContainer: {
-        backgroundColor: "white",
-        borderRadius: 0,
-        borderWidth: 0,
-        height: 50,
-        marginTop: 5,
-        marginBottom: 0,
-        opacity: 1,
-        padding: 0,
+        height: 45,
+        alignContent: 'center',
+        borderRadius: 17,
     },
     resultsContainer: {
         flex: 1,
-        marginTop: 0,
-        marginBottom: 5,
-        width: '97%',
+        marginBottom: 33,
+        width: '100%',
     },
     songCard: {
         padding: 5,
@@ -133,7 +123,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         fontSize: 15,
         flexDirection: 'row',
-        backgroundColor: 'green',
     },
     itemTwo: {
         padding: 0,
@@ -156,17 +145,13 @@ const styles = StyleSheet.create({
         fontSize: 17
     },
     artists: {
-        paddingTop: 0,
         textAlign: 'center'
     },
     footer: {
-        flex: 1,
-        flexDirection: "row",
         alignItems: 'center',
-        justifyContent: 'center',
         position: 'absolute',
         bottom: 0,
         width: '100%',
-        backgroundColor: 'white'
+        borderRadius: 17,
     },
 });

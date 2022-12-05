@@ -1,6 +1,6 @@
 import * as React from "react";
 import { app } from './AuthProvider';
-import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, addDoc, deleteDoc, updateDoc, increment, decrement, arrayUnion, arrayRemove } from "firebase/firestore";
+import { getFirestore, collection, onSnapshot, query, where, getDocs, getDoc, doc, addDoc, deleteDoc, updateDoc, increment, decrement, arrayUnion, arrayRemove } from "firebase/firestore";
 
 const db = getFirestore(app);
 const DBContext = React.createContext();
@@ -22,17 +22,16 @@ const FirestoreProvider = ({ children }) => {
   const queue = async () => {
     const docRef = doc(db, "event", docId);
     const docSnap = await getDoc(docRef);
-    
+
     if (docSnap.exists()) {
-      console.log("Song data:" , docSnap.data());
+      console.log("Song data:", docSnap.data());
       return docSnap.get('queue');
     }
-    else
-    {
+    else {
       console.log("No Songs!");
     }
-   }
-   
+  }
+
 
   const dequeue = async (song_id) => {
     const eventDeqDoc = doc(db, 'event', docId);
