@@ -66,11 +66,14 @@ const searchmodal = (props) => {
         }
     }
 
+    
+
     const renderItem = ({ item }) => {
         const backgroundColor = item.id === selectedId ? "transparent" : "white";
         const color = item.id === selectedId ? 'black' : 'black';
 
         return (
+            <View style={styles.popupContainer}>
             <SongTouchable
                 item={item}
                 selected={item.id === selectedId}
@@ -85,22 +88,23 @@ const searchmodal = (props) => {
                 onPressQueue={async () => {
                     await enqueue(item.id);
                     popupModal();
-                    <View style={styles.container}>
-                        <Modal isVisible={isQueueModal}>
-                            <View style={styles.modalContainer}>
-                                <Image
-                                    style={styles.imageContainer}
-                                    source={{ uri: item.album.images[1] }}
-                                />
-                                <Text style={styles.textContainer}>{item.name} added to queue!</Text>
-                            </View>
-                        </Modal>
-                    </View>
+                    
+                }}/>
+                    <Modal isVisible={isQueueModal}>
+                        <View style={styles.modalContainer}>
+                            <Image
+                                style={styles.imageContainer}
+                                source={{ uri: item.album.images[1] }}
+                            />
+                            <Text style={styles.songTextContainer}>{item.name} added to queue!</Text>
+                        </View>
+                    </Modal>
+                
 
                     console.log('Song added to queue:', item.id);
-                }}
-            >
-            </SongTouchable>
+            
+            
+            </View>
         );
     };
 
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
         width: '100%',
         borderRadius: 17,
     },
-    container:
+    popupContainer:
     {
         flex: 1,
         alignItems: "center",
@@ -220,7 +224,7 @@ const styles = StyleSheet.create({
         borderWidth: 5,
         borderColor: "#3388FF"
     },
-    textContainer:
+    songTextContainer:
     {
         fontSize: 16,
         fontWeight: "bold",
