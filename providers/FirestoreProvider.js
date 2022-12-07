@@ -24,11 +24,11 @@ const FirestoreProvider = ({ children }) => {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      console.log("Song data:", docSnap.data());
+      console.log("Song data:", docSnap.get('queue'));
       return docSnap.get('queue');
     }
     else {
-      console.log("No Songs!");
+      console.log("No such event exist!");
     }
   }
 
@@ -47,10 +47,14 @@ const FirestoreProvider = ({ children }) => {
 
   */
   const getCurrentSkipCount = async () => {
-    const eventRef = doc(db, 'event', docId);
+    const docRef = doc(db, 'event', docId);
+    const docSnap = await getDoc(docRef);
 
-    const skipcount_value = doc.value.skip_count;
-    return skipcount_value;
+    if (docSnap.exists()) {
+      return docSnap.get('skip_count');
+    } else {
+      return 0;
+    }
   }
 
   // Updates the current playing song
@@ -70,13 +74,10 @@ const FirestoreProvider = ({ children }) => {
       skip_count: increment(1)
     });
 
-    /*
     const skip_value = getCurrentSkipCount();
-
     if (skip_value >= max_value) {
       resetSkipCount();
     }
-    */
   }
 
   // Resets skip count to zero
@@ -102,18 +103,10 @@ const FirestoreProvider = ({ children }) => {
    */
   // Find an event given a code
   const findEvent = async (code) => {
-    let count = 0;
+    const query = query(collection(db, 'event'), where('event_code', '==', code));
+    const querySnapshot = await getDocs(query);
 
-    const q = query(collection(db, 'event'), where('event_code', '==', code));
-
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      count++;
-      console.log(doc.id, " => ", doc.data());
-    })
-
-    console.log('count: ', count);
-    return (count > 0) ? true : false;
+    return querySnapshot.size > 0;
   }
 
   // Generates a random 4 digit code
@@ -133,15 +126,10 @@ const FirestoreProvider = ({ children }) => {
   const createEvent = async (phonenumber) => {
     const number = generateCode();
 
-    setCode(number);
-
-    /*
-    if (!findEvent(code)) {
-      while (!findEvent(code)) {
-        code = generateCode();
-      }
+    if (findEvent(number)) {
+      while (findEvent(number)) number = generateCode();
     }
-    */
+    setCode(number);
 
     const docRef = await addDoc(collection(db, 'event'), {
       event_code: number,
@@ -208,7 +196,6 @@ const FirestoreProvider = ({ children }) => {
         enqueue,
         queue,
         dequeue
-
       }}>
       {children}
     </DBContext.Provider>
