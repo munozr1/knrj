@@ -1,15 +1,35 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Image, Text, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Image, Text, TextInput, FlatList, TouchableOpacity, Modal } from 'react-native';
 import { SpotifyContext } from '../providers/SpotifyProvider';
 import { DBContext } from '../providers/FirestoreProvider';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-const SongTouchable = ({ item, textColor, backgroundColor, onPress }) => (
+const SongTouchable = ({ item, selected, textColor, backgroundColor, onPress, onPressPlay, onPressQueue }) => (
     <TouchableOpacity onPress={onPress} style={[styles.songCard, backgroundColor]}>
         <Image style={styles.albumLogo} source={item.album.images[1]} />
         <View style={[styles.itemTwo]}>
             <Text style={[styles.title, textColor]}>{item.name}</Text>
             <Text style={[styles.artists, textColor]}>{item.album.artists[0].name}</Text>
+
+            {
+                (selected) ?
+                    <View style={{ flex: 1, flexDirection: 'row', paddingTop: 6 }}>
+                        <TouchableOpacity onPress={onPressPlay}>
+                            <Ionicons name={"play"} size={25} style={[{
+                                marginRight: 30,
+                                marginBottom: 3
+                            }]} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={onPressQueue}>
+                            <Ionicons name={"add"} size={28} style={[{
+                                marginRight: 30,
+                                marginBottom: 3
+                            }]} />
+                        </TouchableOpacity>
+                    </View>
+                    :
+                    null
+            }
         </View>
     </TouchableOpacity>
 );
@@ -19,9 +39,17 @@ const searchmodal = (props) => {
     const [searchSong, setSearchSong] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
+    const [isQueueModal, setQueueModal] = useState(false);
 
     const { enqueue } = React.useContext(DBContext);
     const { play, search } = React.useContext(SpotifyContext);
+
+    const popupModal = () => {
+        setQueueModal(true);
+        setTimeout(() => {
+            setQueueModal(false);
+        }, 3000);
+    }
 
     const updateSearch = (song) => {
         setSearchSong(song);
@@ -45,16 +73,34 @@ const searchmodal = (props) => {
         return (
             <SongTouchable
                 item={item}
+                selected={item.id === selectedId}
                 textColor={{ color }}
                 backgroundColor={{ backgroundColor }}
                 onPress={async () => {
-                    setSelectedId(item.id)
-                    //const res = await play(item.id);
-                    await enqueue(item.id);
-
-                    console.log('Song added to queue: ', item.id);
+                    setSelectedId(item.id);
                 }}
-            />
+                onPressPlay={async () => {
+                    await play(item.id)
+                }}
+                onPressQueue={async () => {
+                    await enqueue(item.id);
+                    popupModal();
+                    <View style={styles.container}>
+                        <Modal isVisible={isQueueModal}>
+                            <View style={styles.modalContainer}>
+                                <Image
+                                    style={styles.imageContainer}
+                                    source={{ uri: item.album.images[1] }}
+                                />
+                                <Text style={styles.textContainer}>{item.name} added to queue!</Text>
+                            </View>
+                        </Modal>
+                    </View>
+
+                    console.log('Song added to queue:', item.id);
+                }}
+            >
+            </SongTouchable>
         );
     };
 
@@ -123,6 +169,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         fontSize: 15,
         flexDirection: 'row',
+        shadowColor: 'black',
     },
     itemTwo: {
         padding: 0,
@@ -154,4 +201,36 @@ const styles = StyleSheet.create({
         width: '100%',
         borderRadius: 17,
     },
+    container:
+    {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#66000000"
+    },
+    modalContainer:
+    {
+        width: "100%",
+        backgroundColor: "white",
+        paddingHorizontal: 2,
+        paddingVertical: 100,
+        borderRadius: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 5,
+        borderColor: "#3388FF"
+    },
+    textContainer:
+    {
+        fontSize: 16,
+        fontWeight: "bold",
+        marginTop: 20,
+        marginBottom: 20,
+    },
+    imageContainer:
+    {
+        height: 60,
+        width: 60,
+    },
+
 });

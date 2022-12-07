@@ -10,14 +10,16 @@ import Animated from 'react-native-reanimated';
 const eventmodal = (props) => {
 
   const [pauseClicked, setPausedClicked] = useState(false);
+  const [playClicked, setPlayClicked] = useState(false);
   const [state, setState] = useState({
     animationValue: new Animated.Value(100),
     viewState: true
   });
 
-
   const {
     addSkipCount,
+    enqueue
+
   } = React.useContext(DBContext);
 
   const {
@@ -26,6 +28,7 @@ const eventmodal = (props) => {
     skip,
     currentlyPlaying,
     duration,
+    play
   } = React.useContext(SpotifyContext);
 
   const progress = {

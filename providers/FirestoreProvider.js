@@ -103,8 +103,8 @@ const FirestoreProvider = ({ children }) => {
    */
   // Find an event given a code
   const findEvent = async (code) => {
-    const query = query(collection(db, 'event'), where('event_code', '==', code));
-    const querySnapshot = await getDocs(query);
+    const q = query(collection(db, 'event'), where('event_code', '==', code));
+    const querySnapshot = await getDocs(q);
 
     return querySnapshot.size > 0;
   }
@@ -125,10 +125,6 @@ const FirestoreProvider = ({ children }) => {
   // Creates event in database
   const createEvent = async (phonenumber) => {
     const number = generateCode();
-
-    if (findEvent(number)) {
-      while (findEvent(number)) number = generateCode();
-    }
     setCode(number);
 
     const docRef = await addDoc(collection(db, 'event'), {

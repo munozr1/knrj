@@ -79,7 +79,7 @@ const SpotifyProvider = ({ children }) => {
         'user-read-private',
       ],
       usePKCE: false,
-      redirectUri: 'exp://172.20.10.2:19000'
+      redirectUri: 'exp://192.168.1.146:19000'
       // redirectUri: 'https://google.com'
       // redirectUri: 'https://munozcodes.com/.well-known/apple-app-site-association'
       // redirectUri: 'https://www.munozcodes.com',
@@ -98,25 +98,11 @@ const SpotifyProvider = ({ children }) => {
 
       setTimeout(async () => {
         await currentlyPlaying();
-      }, 500);
+      }, 4000);
     }
   }, [response]);
 
   const handleApiResponse = (resp) => {
-    /*
-    console.log('handleApiResponse()=> resp: ',resp)
-    const response = JSON.stringify(resp);
-    switch(resp.status) {
-    case 200: 
-      // console.log(resp.responseText);
-      console.log('200: ', response)
-      // await setTimeout(currentlyPlaying, 2000);
-      break;
-    default:
-      console.log(response);
-      // alert(resp.responseText);
-    }
-    */
   }
 
   const pause = async () => {

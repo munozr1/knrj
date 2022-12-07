@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { DBContext } from '../providers/FirestoreProvider';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -13,7 +13,8 @@ const QueueTouchable = ({ item, textColor, backgroundColor, onPress }) => (
 
 const queuemodal = (props) => {
 
-    const [queueResults, setQueueResults] = useState([]);
+    const [queueResults, setQueueResults] = useState(null);
+    const [resultsLoaded, setResultsLoaded] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
 
     const { queue } = React.useContext(DBContext);
@@ -23,9 +24,10 @@ const queuemodal = (props) => {
 
         const res = await queue();
         setQueueResults(res);
+        setResultsLoaded(true);
     }
 
-    const renderQueueItem = ({ item }) => {
+    const renderQueueItem = async ({ item }) => {
         const backgroundColor = item === selectedItem ? "transparent" : "white";
         const color = item === selectedItem ? 'black' : 'black';
 
@@ -42,8 +44,26 @@ const queuemodal = (props) => {
         );
     };
 
+    React.useEffect(() => {
+        if (resultsLoaded) return;
+
+        loadQueueData();
+    }, [resultsLoaded]);
+
     return (
         <>
+            <View style={[styles.header]}>
+                <Text style={{
+                    textAlign: 'center',
+                    paddingTop: 8,
+                    fontSize: 17,
+                    fontWeight: '700',
+                }}
+                >
+                    Queue
+                </Text>
+            </View>
+
             <View style={styles.resultsContainer}>
                 <FlatList
                     data={queueResults}
@@ -74,6 +94,8 @@ const styles = StyleSheet.create({
         flex: 1,
         marginBottom: 33,
         width: '100%',
+        marginTop: 30,
+        paddingTop: 10,
     },
     songCard: {
         padding: 5,
@@ -81,7 +103,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         fontSize: 15,
         flexDirection: 'row',
-        backgroundColor: 'green',
     },
     itemTwo: {
         padding: 0,
@@ -106,6 +127,13 @@ const styles = StyleSheet.create({
     artists: {
         paddingTop: 0,
         textAlign: 'center'
+    },
+    header: {
+        alignContent: 'center',
+        position: 'absolute',
+        borderRadius: 17,
+        height: 35,
+        width: '100%',
     },
     footer: {
         alignItems: 'center',
