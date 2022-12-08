@@ -79,11 +79,12 @@ const eventmodal = (props) => {
   const [queueClicked, setQueueClicked] = useState(false);
 
   const voteSkip = async () => {
-    console.log('eventmodal => voteSkip()')
-    await skip();
-
-    addSkipCount();
-    // Change skip() for host only
+      console.log('eventmodal => voteSkip()')
+      await skip()
+      // addSkipCount();
+      // console.log("Error: EventModal => voteSkip()")
+      // throw e;
+    
   }
 
   const currentSongPlaying = async () => {

@@ -54,7 +54,8 @@ const discovery = {
 const SpotifyProvider = ({ children }) => {
 
   const {
-    updateCurrentPlayingSong
+    updateCurrentPlayingSong,
+    updateEventToken
   } = React.useContext(DBContext);
 
   const [backgroundImage, setBackgroundImage] = React.useState('https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228');
@@ -91,16 +92,10 @@ const SpotifyProvider = ({ children }) => {
 const logIntoSpotify = async (response) => {
     if (response?.type === 'success') {
       const { access_token } = response.params;
-      $setSpotifyState(true);
-      // if(access_token)
-      //   setToken(access_token);
-      setDone(true);
-      setModalVisible(false);
-      console.log('logIntoSpotify() => Token - ' + access_token);
-
-      setTimeout(async () => {
-        await currentlyPlaying();
-      }, 1000);
+      // setDone(true);
+      // setModalVisible(false);
+      //cannot use immediately
+      setToken(access_token);
     }else{
       console.log('Failed to log in: ', response);
       throw new Error('Failed to log in');
@@ -153,16 +148,23 @@ const logIntoSpotify = async (response) => {
 
   const skip = async () => {
     console.log('SpotifyProvider => skip()')
+    try{
     await fetch(NEXT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       }
-    }).then(handleApiResponse);
-    setTimeout(async () => {
-      await currentlyPlaying()
-    }, 200);
+    }).then(async () => {
+      setTimeout(async () => {
+        await currentlyPlaying()
+      }, 200);
+    });
+  }catch(e){
+    console.log("Error skipping song: ", e)
+    throw e;
+  }
+    
 
   }
 
@@ -193,12 +195,9 @@ const logIntoSpotify = async (response) => {
         'Authorization': 'Bearer ' + token
       }
     }).then(async (response) => response.json()).then(async (response) => {
-      // console.log('response =-=-=>',response.progress_ms);
-      console.log('response =-=-=>',response);
       try{
-        // console.
-        await addSongFromQueue(response.progress_ms, response.item.duration_ms)
-        // await fetchNewSong(response.progress_ms, response.item.duration_ms)
+        // await addSongFromQueue(response.progress_ms, response.item.duration_ms)
+        await fetchNewSong(response.progress_ms, response.item.duration_ms)
         setBackgroundImage(response.item.album.images[0].url);
         setSong(response.item)
         if(response.item.uri)
@@ -213,15 +212,42 @@ const logIntoSpotify = async (response) => {
       throw e;
     })
   }
+  const currentSong = async (token) => {
+    let track;
+    await fetch(CURRENTLY_PLAYING, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    }).then(async (response) => response.json()).then(async (response) => {
+      try{
+        if(response.item.uri)
+          track = response.item.uri;
+      }catch(e){
+        console.log('Error SpotifyProvider() => currentlyPlaying() => fetchNewSong()', e)
+        throw e;
+      }
+    }).catch(e => {
+      console.log('Error SpotifyProvider() => currentlyPlaying()', e)
+      throw e;
+    })
+    return track;
+  }
 
-  // const fetchNewSong = async (current_ms, duration_ms) => {
-  //   setDuration(duration_ms);
-  //   setProgressMs(current_ms);
-  //   setTimeout(async () => {
-  //     console.log('SpotifyProvider() => fetchNewSong()')
-  //     await currentlyPlaying()
-  //   }, (duration_ms - current_ms) + 100);
-  // }
+  const fetchNewSong = async (current_ms, duration_ms) => {
+    try{
+      setDuration(duration_ms);
+      setProgressMs(current_ms);
+      setTimeout(async () => {
+        console.log('SpotifyProvider() => fetchNewSong()')
+        await currentlyPlaying()
+      }, (duration_ms - current_ms) + 100);
+    }catch(e){
+      console.log('Error SpotifyProvider() => fetchNewSong()', e)
+      throw e;
+    }
+  }
 
 
   const addSongFromQueue = async (current_ms, duration_ms) => {
@@ -272,7 +298,10 @@ const logIntoSpotify = async (response) => {
         setProgressMs,
         setDuration,
         getTrack,
-        logIntoSpotify
+        logIntoSpotify,
+        setToken,
+        currentlyPlaying,
+        currentSong
       }}>
       {children}
     </SpotifyContext.Provider>

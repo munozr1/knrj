@@ -10,6 +10,7 @@ const FirestoreProvider = ({ children }) => {
   const max_value = 5;
   const [code, setCode] = React.useState(0);
   const [docId, setDocId] = React.useState(null);
+  const [firestoreEvent, setFirestoreEvent] = React.useState({});
 
   const enqueue = async (song_id) => {
     const eventDeqDoc = doc(db, 'event', docId);
@@ -21,6 +22,7 @@ const FirestoreProvider = ({ children }) => {
     });
 
   }
+
 
   const queue = async () => {
     if(docId == null){
@@ -64,8 +66,9 @@ const FirestoreProvider = ({ children }) => {
       console.log("Firestore Provider => getCurrentSkipCount() => getDoc(): ", err)
     });
 
+    // return docSnap.get('skip_count');
     if (docSnap.exists()) {
-      return docSnap.get('skip_count');
+      return docSnap.data().skip_count;
     } else {
       return 0;
     }
@@ -88,12 +91,14 @@ const FirestoreProvider = ({ children }) => {
 
 
   const updateEventToken = async (token) => {
-    if(!token || token === null)
+    if(!token || token === null){
+      console.log("Firestore Provider => updateEventToken(): token is null");
       return;
+    }
     try{
       const eventRef = doc(db, 'event', docId);
       await updateDoc(eventRef, {
-        token: token
+        spotify_token: token
       });
     }catch(err){
       console.log("Firestore Provider => updateEventToken(): ", err)
@@ -133,14 +138,27 @@ const FirestoreProvider = ({ children }) => {
 
   */
 
-  const findDocById = async (collection, code) => {
+  const findEventByCode = async ( code) => {
     try {
-      // const doc = await db.collection(collection).doc(docId).get();
-      const doc = await db.collection(collection).where('event_code', '==', code).get();
-      return doc.id;
-    } catch (error) {
-      console.error("Firestore Provider =>findDocById() => Error finding document with ID: ",code, error);
-      return null;
+      //query for event with host number
+      let docSnap;
+      const q = query(collection(db, 'event'), where('event_code', '==',Number(code) ));
+      // const querySnapshot = 
+      await getDocs(q).then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          console.log('findEventByCode () => getDocs() => docId: ', querySnapshot.docs[0].id);
+          docSnap = querySnapshot.docs[0].data();
+          // setDocId(querySnapshot.docs[0].id);
+        }
+        // console.log('alreadyHosting() => getDocs(): ', docSnap);
+      });
+
+      if (!docSnap)
+        return null;
+      return docSnap;
+    } catch (err) {
+      console.log('Firestore Provider => findEventByCode() => Error: ', err);
+      throw err;
     }
 }
 
@@ -151,7 +169,7 @@ const FirestoreProvider = ({ children }) => {
    */
   // Find an event given a code
   const findEvent = async (code) => {
-      const id = findDocById('event', code);
+      const id = findEventByCode('event', code);
       setDocId(id);
   }
 
@@ -194,15 +212,16 @@ const FirestoreProvider = ({ children }) => {
    *  Updated to Web version 9
    */
   // Creates event in database
-  const createEvent = async (phonenumber) => {
+  const createEvent = async (phonenumber, token, track) => {
     // generate a event code that does not yet exist
     let event = {};
     try {
       const hosting = await alreadyHosting(phonenumber)
       if (hosting) {
         console.log('createEvent() => already hosting', hosting);
-        // setDocId(hosting.id);
         setCode(hosting.event_code);
+        const eventRef = doc(db, 'event', docId);
+        subscribeToEvent(eventRef);
         return hosting
       }
     } catch (error) {
@@ -223,9 +242,9 @@ const FirestoreProvider = ({ children }) => {
         host: phonenumber,
         user_count: 1,
         skip_count: 0,
-        current_song: 'null',
+        current_song: track,
         queue: [],
-        spotify_token: 'token_not_set'
+        spotify_token: token
       }).then(data=>{
         event = data;
         console.log('createEvent() => addDoc(): ', data.id);
@@ -235,10 +254,13 @@ const FirestoreProvider = ({ children }) => {
         throw err;
       });
       console.log('event created: ', event);
+      const eventRef = doc(db, 'event', docId);
+      subscribeToEvent(eventRef);
     } catch (error) {
       console.log("Firestore Provider => createEvent() => Error adding document: ", error);
       throw error;
     }
+      
       return JSON.parse(JSON.stringify(event));
   }
 
@@ -247,11 +269,37 @@ const FirestoreProvider = ({ children }) => {
    */
   // Joins a event 
   const joinEvent = async (code) => {
-    const eventDoc = doc(db, 'event', where('event_code', '==', code));
-    await incrementField('user_count', eventDoc).catch(err => {
-      console.log("Firestore Provider => joinEvent(): ", err)
-      throw err;
+    console.log("Joining event: ", code, typeof(code));
+    const q = query(collection(db, 'event'), where('event_code', '==', Number(code)));
+
+    await getDocs(q).then((querySnapshot) => {
+      if (!querySnapshot.empty) {
+        setDocId(querySnapshot.docs[0].id);
+        console.log('joinEvent() => getDocs() => docId: ', querySnapshot.docs[0].id);
+      }
+    });
+
+    console.log('docId: ', docId);
+    const docRef = await doc(db, 'event', docId);
+    await incrementField('user_count', docRef).catch(err => {
+        console.log("Firestore Provider => joinEvent(): ", err)
+        throw err;
       });
+
+      setTimeout(() => {
+        subscribeToEvent(docRef);
+      }, 2000);
+  }
+
+
+  const subscribeToEvent = async (ref) => {
+    const unsub = onSnapshot(ref, (doc) => {
+      console.log("Current data: ", doc.data());
+      if(doc.data()){
+        setFirestoreEvent(doc.data());
+        setCode(doc.data().event_code);
+      }
+    });
   }
 
   
@@ -302,13 +350,15 @@ const FirestoreProvider = ({ children }) => {
         addSkipCount,
         resetSkipCount,
         findEvent,
+        findEventByCode,
         createEvent,
         joinEvent,
         leaveEvent,
         enqueue,
         queue,
         dequeue,
-        updateEventToken
+        updateEventToken,
+        firestoreEvent
       }}>
       {children}
     </DBContext.Provider>

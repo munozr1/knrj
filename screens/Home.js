@@ -8,6 +8,7 @@ import EventModal from '../components/EventModal'
 import { AuthStateContext } from '../providers/AuthProvider';
 import { DBContext } from '../providers/FirestoreProvider';
 import { IMAGE, SpotifyContext } from '../providers/SpotifyProvider';
+import { doc } from 'firebase/firestore';
 
 const Home = (props) => {
 
@@ -22,28 +23,34 @@ const Home = (props) => {
     done,
     setDone,
     $spotifyState,
-    $setSpotifyAuthState,
+    // $setSpotifyAuthState,
     modalVisible,
     setModalVisible,
     song,
     setBackgroundImage,
     logIntoSpotify,
-    token
+    token,
+    setToken,
+    currentlyPlaying,
+    currentSong
   } = React.useContext(SpotifyContext);
 
   const {
     code,
     setCode,
-    findEvent,
+    findEventByCode,
     createEvent,
     joinEvent,
     leaveEvent,
     updateCurrntlyPlayingSong,
-    updateEventToken
+    updateEventToken,
+    firestoreEvent
   } = React.useContext(DBContext);
 
   const [event, setEvent] = React.useState({hosting: true});
   const [bgColor, setbgColor] = React.useState('');
+
+
 
   const hostInstead = () => {
     // createEvent($authState.phoneNumber);
@@ -55,7 +62,8 @@ const Home = (props) => {
   }
 
   const spotifyToken = (token) => {
-    $setSpotifyAuthState({ ...$spotifyState, ...{ token } })
+    // $setSpotifyAuthState({ ...$spotifyState, ...{ token } })
+    setToken(token);
   }
 
   const resetAuth = () => {
@@ -83,38 +91,39 @@ const Home = (props) => {
   }
 
   const createNewEvent = async (response) => {
-    //createEvent($authState.phoneNumber);
-    //TODO get current user phone number
     console.log("Creating new event: ", $authState.phoneNumber);
     // newly created event
     let e;
     try {
-      await logIntoSpotify(response);
-      e = await createEvent($authState.phoneNumber);
+      // await logIntoSpotify(response);
+      const track = await currentSong(response.params.access_token);
+      console.log('track: ', track);
+      // e = await createEvent($authState.phoneNumber, response.params.access_token, track);
+      e = await createEvent("+2147794304", response.params.access_token, track);
       // set the event state
-      if(e)
-        setEvent(e);
+      if(e){
+        setEvent({...e, ...event, ...{hosting: true}});
+        setDone(true);
+        setModalVisible(false);
+        setToken(response.params.access_token);
+      }
     } catch (err) {
       console.log('Home.js - createNewEvent() - Error: ', err);
       throw e;
     }
+    
   }
 
 
   const verifyEventCode = async (code) => {
-    const eventExists = await findEvent(code);
-    console.log('eventExists - ', eventExists);
-    console.log('Join Code - ', code);
-    console.log('Auth Number - ', $authState.phoneNumber);
+    const eventExists = await findEventByCode(code);
 
-    if (eventExists) {
-      setCode(code);
-      joinEvent();
-
+    if (eventExists && code) {
+      setCode(Number(code));
+      await joinEvent(code);
       setDone(true);
       setModalVisible(false);
     }
-    // console.log(event)
     Keyboard.dismiss();
   }
 
@@ -132,10 +141,18 @@ const Home = (props) => {
 
 
   React.useEffect(() => {
-    // if(token)
-      updateEventToken(token);
+    if(token){
+      // updateEventToken(token);
+      currentlyPlaying();
+    }
     return;
   }, [token]);
+
+  // React.useEffect(() => {
+  //   setEvent({ ...event, ...firestoreEvent })
+  //   setToken(firestoreEvent.spotify_token);
+  //   currentlyPlaying()
+  // }, [firestoreEvent]);
 
   // React.useEffect(() => {
   //   updateCurrntlyPlayingSong(song);
@@ -155,6 +172,7 @@ const Home = (props) => {
   React.useEffect(() => {
     setEvent({ ...event, ...{ event_code: code } });
   }, [code]);
+
 
   React.useEffect(() => {
     console.log('Spotify Logged In: ', $spotifyState);
@@ -195,18 +213,18 @@ const Home = (props) => {
         <Modal
           animationType='slide'
           visible={modalVisible}
-          transparent
+          // transparent
         >
           {
             // (true) ?
-            ($authState.authenticated && event.hosting && !$spotifyState.token)?
+            // ($authState.authenticated && event.hosting && !token)?
+            (event.hosting && !token)?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
               >
                 <SpotifyLogin
                   back={joinInstead}
                   label={'Connect with Spotify'}
-                  setSpotifyToken={spotifyToken}
                   done={setDone}
                   onClick={createNewEvent}
                 />
@@ -214,7 +232,7 @@ const Home = (props) => {
               : null
           }
           {
-            ($authState.authenticated && !event.joined && !event.hosting) ?
+            ($authState.authenticated && !event.code && !event.hosting) ?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
                 behavior='padding'
@@ -229,7 +247,7 @@ const Home = (props) => {
               </KeyboardAvoidingView>
               : null
           }
-          {
+          {/* {
             (!$authState.authenticated) ?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
@@ -238,7 +256,7 @@ const Home = (props) => {
                 <LoginModal />
               </KeyboardAvoidingView>
               : null
-          }
+          } */}
         </Modal>
       </ImageBackground>
     </View>
