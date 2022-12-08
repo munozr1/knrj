@@ -91,11 +91,11 @@ const SpotifyProvider = ({ children }) => {
 
 const logIntoSpotify = async (response) => {
     if (response?.type === 'success') {
-      const { access_token } = response.params;
-      // setDone(true);
-      // setModalVisible(false);
+      // const { access_token } = response.params;
+      setDone(true);
+      setModalVisible(false);
       //cannot use immediately
-      setToken(access_token);
+      // setToken(access_token);
     }else{
       console.log('Failed to log in: ', response);
       throw new Error('Failed to log in');

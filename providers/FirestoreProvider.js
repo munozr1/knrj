@@ -218,10 +218,13 @@ const FirestoreProvider = ({ children }) => {
     try {
       const hosting = await alreadyHosting(phonenumber)
       if (hosting) {
-        console.log('createEvent() => already hosting', hosting);
+        console.log('createEvent() => already hostingg', hosting.event_code, docId);
         setCode(hosting.event_code);
         const eventRef = doc(db, 'event', docId);
-        subscribeToEvent(eventRef);
+        if(eventRef)
+          subscribeToEvent(eventRef);
+        else
+          console.log('createEvent() => already hosting => eventRef is null');
         return hosting
       }
     } catch (error) {

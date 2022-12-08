@@ -95,7 +95,7 @@ const Home = (props) => {
     // newly created event
     let e;
     try {
-      // await logIntoSpotify(response);
+      await logIntoSpotify(response);
       const track = await currentSong(response.params.access_token);
       console.log('track: ', track);
       // e = await createEvent($authState.phoneNumber, response.params.access_token, track);
@@ -173,15 +173,18 @@ const Home = (props) => {
     setEvent({ ...event, ...{ event_code: code } });
   }, [code]);
 
-
   React.useEffect(() => {
     console.log('Spotify Logged In: ', $spotifyState);
+  }, [event]);
 
-    setModalVisible(false);
-    if (!done) {
-      modalTimeout();
-    }
-  }, [$spotifyState]);
+  // React.useEffect(() => {
+  //   console.log('Spotify Logged In: ', $spotifyState);
+
+  //   setModalVisible(false);
+  //   if (!done) {
+  //     modalTimeout();
+  //   }
+  // }, [$spotifyState]);
 
   return (
     <View>
@@ -217,8 +220,8 @@ const Home = (props) => {
         >
           {
             // (true) ?
-            // ($authState.authenticated && event.hosting && !token)?
-            (event.hosting && !token)?
+            ($authState.authenticated && event.hosting && !token)?
+            // (event.hosting && !token)?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
               >
@@ -247,7 +250,7 @@ const Home = (props) => {
               </KeyboardAvoidingView>
               : null
           }
-          {/* {
+          {
             (!$authState.authenticated) ?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
@@ -256,7 +259,7 @@ const Home = (props) => {
                 <LoginModal />
               </KeyboardAvoidingView>
               : null
-          } */}
+          }
         </Modal>
       </ImageBackground>
     </View>
