@@ -10,7 +10,7 @@ const codemodal = (props) => {
   const ref = React.useRef();
 
   const focusHiddenInput= () => {
-    console.log('focusing hidden input...');
+    // console.log('focusing hidden input...');
     ref?.current?.focus();
   };
 

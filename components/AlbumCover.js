@@ -9,6 +9,7 @@ import Menu from './Menu'
 const albumcover = (props) => {
   const [ event, setEvent] = React.useState({});
   const [showMenu, setShowMenu] = React.useState(false);
+  
 
   let state = {
     opacity: new Animated.Value(0),

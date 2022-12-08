@@ -21,9 +21,9 @@ const spotifylogin = (props) => {
           <Text style={styles.secondLabel}>{'Join Instead'}</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={{ width: 170 }} onPress={() => {
-        promptAsync();
-        props.onClick();
+      <TouchableOpacity style={{ width: 170 }} onPress={async () => {
+        const p = await promptAsync();
+        props.onClick(p);
       }}>
         <Text style={styles.label}>{props.label}</Text>
       </TouchableOpacity>

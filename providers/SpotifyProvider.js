@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ResponseType, useAuthRequest } from 'expo-auth-session';
 import { DBContext } from "./FirestoreProvider";
+import { async } from "@firebase/util";
 
 const PLAY = 'https://api.spotify.com/v1/me/player/play';
 const PAUSE = 'https://api.spotify.com/v1/me/player/pause';
@@ -79,7 +80,7 @@ const SpotifyProvider = ({ children }) => {
         'user-read-private',
       ],
       usePKCE: false,
-      redirectUri: 'exp://192.168.1.146:19000'
+      redirectUri: 'exp://172.20.10.2:19000'
       // redirectUri: 'https://google.com'
       // redirectUri: 'https://munozcodes.com/.well-known/apple-app-site-association'
       // redirectUri: 'https://www.munozcodes.com',
@@ -87,29 +88,31 @@ const SpotifyProvider = ({ children }) => {
     discovery
   );
 
-  React.useEffect(() => {
+const logIntoSpotify = async (response) => {
     if (response?.type === 'success') {
       const { access_token } = response.params;
       $setSpotifyState(true);
-      setToken(access_token);
+      // if(access_token)
+      //   setToken(access_token);
       setDone(true);
       setModalVisible(false);
-      console.log('Token - ' + access_token);
+      console.log('logIntoSpotify() => Token - ' + access_token);
 
       setTimeout(async () => {
         await currentlyPlaying();
-      }, 4000);
+      }, 1000);
+    }else{
+      console.log('Failed to log in: ', response);
+      throw new Error('Failed to log in');
     }
-  }, [response]);
-
-  const handleApiResponse = (resp) => {
   }
+
 
   const pause = async () => {
     const res = await fetch(PAUSE, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/josn',
         'Authorization': 'Bearer ' + token
       }
     })
@@ -119,7 +122,7 @@ const SpotifyProvider = ({ children }) => {
     const res = await fetch(PLAY, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/josn',
         'Authorization': 'Bearer ' + token
       },
       "position_ms": 0,
@@ -127,20 +130,17 @@ const SpotifyProvider = ({ children }) => {
   }
 
   const play = async (song_id) => {
-    console.log('SpotifyProvider: play()');
     const res = await fetch(PLAY, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/josn',
         'Authorization': 'Bearer ' + token
       },
       data: JSON.stringify({
-        "uri": [encodeURI("spotify:track:" + song_id)],
-        "position_ms": 0,
+        "uris": ["spotify:track:" + song_id]
       }),
+      "position_ms": 0,
     });
-    const json = await res.json();
-    return json;
   }
 
   const enqueue = async (song) => {
@@ -182,33 +182,56 @@ const SpotifyProvider = ({ children }) => {
   }
 
   const currentlyPlaying = async () => {
+    if(!token){
+      console.log('No token - ', token);
+      return;
+    }
     await fetch(CURRENTLY_PLAYING, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       }
-    }).then((response) => response.json()).then((response) => {
-      //console.log('response =-=-=>',response.progress_ms);
-      fetchNewSong(response.progress_ms, response.item.duration_ms)
-      setBackgroundImage(response.item.album.images[0].url);
-      setSong(response.item)
-
-      updateCurrentPlayingSong(response.item.uri);
-      console.log(response.item.uri);
+    }).then(async (response) => response.json()).then(async (response) => {
+      // console.log('response =-=-=>',response.progress_ms);
+      console.log('response =-=-=>',response);
+      try{
+        // console.
+        await addSongFromQueue(response.progress_ms, response.item.duration_ms)
+        // await fetchNewSong(response.progress_ms, response.item.duration_ms)
+        setBackgroundImage(response.item.album.images[0].url);
+        setSong(response.item)
+        if(response.item.uri)
+          await updateCurrentPlayingSong(response.item.uri);
+        // console.log(response.item.uri);
+      }catch(e){
+        console.log('Error SpotifyProvider() => currentlyPlaying() => fetchNewSong()', e)
+        throw e;
+      }
     }).catch(e => {
-      console.log('Error SpotifyProvider() => currentlyPlaying()')
-      console.log(e);
+      console.log('Error SpotifyProvider() => currentlyPlaying()', e)
+      throw e;
     })
   }
 
-  const fetchNewSong = (current_ms, duration_ms) => {
-    setDuration(duration_ms);
-    setProgressMs(current_ms);
-    setTimeout(async () => {
-      console.log('SpotifyProvider() => fetchNewSong()')
-      await currentlyPlaying()
-    }, (duration_ms - current_ms) + 100);
+  // const fetchNewSong = async (current_ms, duration_ms) => {
+  //   setDuration(duration_ms);
+  //   setProgressMs(current_ms);
+  //   setTimeout(async () => {
+  //     console.log('SpotifyProvider() => fetchNewSong()')
+  //     await currentlyPlaying()
+  //   }, (duration_ms - current_ms) + 100);
+  // }
+
+
+  const addSongFromQueue = async (current_ms, duration_ms) => {
+    console.log('SpotifyProvider() => addSongFromQueue()');
+    // setDuration(duration_ms);
+    // setProgressMs(current_ms);
+    // setTimeout(async () => {
+    //   console.log('SpotifyProvider() => fetchNewSong()')
+      
+    // }, (duration_ms - current_ms) - 500);
   }
 
   const getTrack = async (track_id) => {
@@ -248,7 +271,8 @@ const SpotifyProvider = ({ children }) => {
         duration,
         setProgressMs,
         setDuration,
-        getTrack
+        getTrack,
+        logIntoSpotify
       }}>
       {children}
     </SpotifyContext.Provider>

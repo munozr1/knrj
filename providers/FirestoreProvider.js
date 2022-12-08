@@ -1,6 +1,6 @@
 import * as React from "react";
 import { app } from './AuthProvider';
-import { getFirestore, collection, onSnapshot, query, where, getDocs, getDoc, doc, addDoc, deleteDoc, updateDoc, increment, decrement, arrayUnion, arrayRemove } from "firebase/firestore";
+import { getFirestore, collection, onSnapshot, query, where, getDocs, getDoc, doc, addDoc, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove } from "firebase/firestore";
 
 const db = getFirestore(app);
 const DBContext = React.createContext();
@@ -16,12 +16,22 @@ const FirestoreProvider = ({ children }) => {
 
     await updateDoc(eventDeqDoc, {
       queue: arrayUnion(song_id)
+    }).catch(err =>{
+      console.log("Firestore Provider => enqueue() => updateDoc()", err)
     });
+
   }
 
   const queue = async () => {
+    if(docId == null){
+      console.log("Firesotre Provider => queue() => docId is null");
+      return;
+    }
     const docRef = doc(db, "event", docId);
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(docRef).catch(err =>{
+      console.log("Firestore Provider => queue() => getDoc()", err)
+    });
+
 
     if (docSnap.exists()) {
       console.log("Song data:", docSnap.get('queue'));
@@ -38,6 +48,8 @@ const FirestoreProvider = ({ children }) => {
 
     await updateDoc(eventDeqDoc, {
       queue: arrayRemove(song_id)
+    }).catch(err =>{
+      console.log("Firestore Provider => dequeu()", err)
     });
   }
 
@@ -48,7 +60,9 @@ const FirestoreProvider = ({ children }) => {
   */
   const getCurrentSkipCount = async () => {
     const docRef = doc(db, 'event', docId);
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(docRef).catch(err => {
+      console.log("Firestore Provider => getCurrentSkipCount() => getDoc(): ", err)
+    });
 
     if (docSnap.exists()) {
       return docSnap.get('skip_count');
@@ -59,12 +73,34 @@ const FirestoreProvider = ({ children }) => {
 
   // Updates the current playing song
   const updateCurrentPlayingSong = async (song_id) => {
-    const eventRef = doc(db, 'event', docId);
-
-    await updateDoc(eventRef, {
-      current_song: song_id
-    });
+    if(!song_id)
+      return;
+    try{
+      const eventRef = doc(db, 'event', docId);
+      await updateDoc(eventRef, {
+        current_song: song_id
+      });
+    }catch(err){
+      console.log("Firestore Provider => updateCurrentPlayingSong(): ", err)
+      throw err;
+    }
   }
+
+
+  const updateEventToken = async (token) => {
+    if(!token || token === null)
+      return;
+    try{
+      const eventRef = doc(db, 'event', docId);
+      await updateDoc(eventRef, {
+        token: token
+      });
+    }catch(err){
+      console.log("Firestore Provider => updateEventToken(): ", err)
+      throw err;
+    }
+  }
+
 
   // Increment skip count by one
   const addSkipCount = async () => {
@@ -95,18 +131,28 @@ const FirestoreProvider = ({ children }) => {
 
       DB FUNCTIONS FOR EVENTS
 
-
   */
+
+  const findDocById = async (collection, code) => {
+    try {
+      // const doc = await db.collection(collection).doc(docId).get();
+      const doc = await db.collection(collection).where('event_code', '==', code).get();
+      return doc.id;
+    } catch (error) {
+      console.error("Firestore Provider =>findDocById() => Error finding document with ID: ",code, error);
+      return null;
+    }
+}
+
+
 
   /*
    *  Updated to Web version 9
    */
   // Find an event given a code
   const findEvent = async (code) => {
-    const q = query(collection(db, 'event'), where('event_code', '==', code));
-    const querySnapshot = await getDocs(q);
-
-    return querySnapshot.size > 0;
+      const id = findDocById('event', code);
+      setDocId(id);
   }
 
   // Generates a random 4 digit code
@@ -115,8 +161,33 @@ const FirestoreProvider = ({ children }) => {
     var max = 9999;
     var code = Math.floor(Math.random() * (max - min + 1) + min);
 
-    console.log('Event Code Generated: ' + code);
+    // console.log('Event Code Generated: ' + code);
     return code;
+  }
+
+  const alreadyHosting = async (number) => {
+    // console.log('alreadyHosting before try: ', number);
+    try{
+      //query for event with host number
+      let docSnap;
+      const q = query(collection(db, 'event'), where('host', '==', number));
+      // const querySnapshot = 
+      await getDocs(q).then((querySnapshot) => {
+        // console.log('alreadyHosting() => getDocs() => docId: ', querySnapshot.docs[0].id);
+        if(!querySnapshot.empty){
+          docSnap = querySnapshot.docs[0].data();
+          setDocId(querySnapshot.docs[0].id);
+        }
+        // console.log('alreadyHosting() => getDocs(): ', docSnap);
+      });
+
+      if(!docSnap)
+        return null;
+      return docSnap;
+    }catch(err){
+      console.log('Firestore Provider => alreadyHosting() => Error: ', err);
+      throw err;
+    }
   }
 
   /*
@@ -124,19 +195,51 @@ const FirestoreProvider = ({ children }) => {
    */
   // Creates event in database
   const createEvent = async (phonenumber) => {
-    const number = generateCode();
-    setCode(number);
+    // generate a event code that does not yet exist
+    let event = {};
+    try {
+      const hosting = await alreadyHosting(phonenumber)
+      if (hosting) {
+        console.log('createEvent() => already hosting', hosting);
+        // setDocId(hosting.id);
+        setCode(hosting.event_code);
+        return hosting
+      }
+    } catch (error) {
+      console.log('Firestore Provider => createEvent() => alreadyHosting() => Error: ', error);
+      throw error;
 
-    const docRef = await addDoc(collection(db, 'event'), {
-      event_code: number,
-      host: phonenumber,
-      user_count: 1,
-      skip_count: 0,
-      current_song: 'null',
-      queue: []
-    });
-    console.log("Document written with ID: ", docRef.id);
-    setDocId(docRef.id);
+    }
+    
+    try{
+
+      const number = generateCode();
+      //set code state for app to use
+      setCode(number);
+
+      //create new record in event collection in firebase
+      await addDoc(collection(db, 'event'), {
+        event_code: number,
+        host: phonenumber,
+        user_count: 1,
+        skip_count: 0,
+        current_song: 'null',
+        queue: [],
+        spotify_token: 'token_not_set'
+      }).then(data=>{
+        event = data;
+        console.log('createEvent() => addDoc(): ', data.id);
+        setDocId(data.id);
+      }).catch(err => {
+        console.log("Firestore Provider => createEvent() docRef() => Error adding document: ", err);
+        throw err;
+      });
+      console.log('event created: ', event);
+    } catch (error) {
+      console.log("Firestore Provider => createEvent() => Error adding document: ", error);
+      throw error;
+    }
+      return JSON.parse(JSON.stringify(event));
   }
 
   /*
@@ -145,34 +248,47 @@ const FirestoreProvider = ({ children }) => {
   // Joins a event 
   const joinEvent = async (code) => {
     const eventDoc = doc(db, 'event', where('event_code', '==', code));
+    await incrementField('user_count', eventDoc).catch(err => {
+      console.log("Firestore Provider => joinEvent(): ", err)
+      throw err;
+      });
+  }
 
-    const sub = onSnapshot(eventDoc, (doc) => {
-      console.log('Current data: ', doc.data());
-    });
+  
 
-    await updateDoc(eventDoc, {
-      user_count: increment(1)
-    });
+  const incrementField = async (field, ref) => {
+    // Get a reference to the Firestore document
+    // const docRef = firebase.firestore().collection(collection).doc(docId);
+    const d = (await getDoc(ref)).data();
+    await updateDoc(ref, {
+      [field]: d[field]+1
+    })
+  }
+  const decrementField = async (field, ref) => {
+    // Get a reference to the Firestore document
+    // const docRef = firebase.firestore().collection(collection).doc(docId);
+    const d = (await getDoc(ref)).data();
+    await updateDoc(ref, {
+      [field]: d[field]- 1
+    })
   }
 
   /*
    *  Updated to Web version 9
    */
   // Leaves a event
-  const leaveEvent = async (host) => {
-    const eventDoc = doc(db, 'event', docId);
-
-    if (host) {
-      await deleteDoc(eventDoc);
-    } else {
-      const unsubscribe = onSnapshot(collection(db, 'event'), () => {
-        // Respond to data
-      });
-      unsubscribe();
-
-      await updateDoc(eventDoc, {
-        user_count: decrement(1)
-      });
+  const leaveEvent = async (hosting) => {
+    console.log('hosting: ', hosting);
+    try {
+      console.log('leaving event: ', code);
+      console.log('leaving docId: ', docId);
+      const docRef = doc(db, 'event', docId);
+      await decrementField('user_count', docRef);
+      // if(!hosting)
+      //   await deleteDoc(docRef);
+    } catch (error) {
+      console.log("Firestore Provider => leaveEvent() => Error: ", error);
+      throw error;
     }
   }
 
@@ -191,11 +307,11 @@ const FirestoreProvider = ({ children }) => {
         leaveEvent,
         enqueue,
         queue,
-        dequeue
+        dequeue,
+        updateEventToken
       }}>
       {children}
     </DBContext.Provider>
-  );
-};
+  );};
 
 export { DBContext, FirestoreProvider };

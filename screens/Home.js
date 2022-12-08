@@ -27,6 +27,8 @@ const Home = (props) => {
     setModalVisible,
     song,
     setBackgroundImage,
+    logIntoSpotify,
+    token
   } = React.useContext(SpotifyContext);
 
   const {
@@ -35,13 +37,16 @@ const Home = (props) => {
     findEvent,
     createEvent,
     joinEvent,
-    leaveEvent
+    leaveEvent,
+    updateCurrntlyPlayingSong,
+    updateEventToken
   } = React.useContext(DBContext);
 
-  const [event, setEvent] = React.useState({});
+  const [event, setEvent] = React.useState({hosting: true});
   const [bgColor, setbgColor] = React.useState('');
 
   const hostInstead = () => {
+    // createEvent($authState.phoneNumber);
     setEvent({ ...event, hosting: true })
   }
 
@@ -63,22 +68,38 @@ const Home = (props) => {
     console.log('Resetting auth');
   }
 
-  const resetEvent = () => {
-    setBackgroundImage(IMAGE);
-
-    leaveEvent(event.hosting);
-    setEvent({});
-
-    setDone(false);
-    setModalVisible(true)
-
-    console.log('Resetting event');
+  const resetEvent = async () => {
+    try{
+      setBackgroundImage(IMAGE);
+      await leaveEvent(event.hosting);
+      setEvent({});
+      setDone(false);
+      setModalVisible(true)
+      console.log('Resetting event');
+    } catch (err) {
+      console.log('Home.js - resetEvent() - Error: ', err);
+      throw err;
+    }
   }
 
-  const createNewEvent = async () => {
+  const createNewEvent = async (response) => {
     //createEvent($authState.phoneNumber);
-    createEvent('14692970295')
+    //TODO get current user phone number
+    console.log("Creating new event: ", $authState.phoneNumber);
+    // newly created event
+    let e;
+    try {
+      await logIntoSpotify(response);
+      e = await createEvent($authState.phoneNumber);
+      // set the event state
+      if(e)
+        setEvent(e);
+    } catch (err) {
+      console.log('Home.js - createNewEvent() - Error: ', err);
+      throw e;
+    }
   }
+
 
   const verifyEventCode = async (code) => {
     const eventExists = await findEvent(code);
@@ -93,7 +114,7 @@ const Home = (props) => {
       setDone(true);
       setModalVisible(false);
     }
-    console.log(event)
+    // console.log(event)
     Keyboard.dismiss();
   }
 
@@ -109,9 +130,21 @@ const Home = (props) => {
     })
   }
 
+
+  React.useEffect(() => {
+    // if(token)
+      updateEventToken(token);
+    return;
+  }, [token]);
+
+  // React.useEffect(() => {
+  //   updateCurrntlyPlayingSong(song);
+  //   return;
+  // }, [song]);
+
   // Timeout for modal animation slide up
   React.useEffect(() => {
-    console.log(event);
+    // console.log(event);
 
     setModalVisible(false);
     if (!done) {
@@ -131,28 +164,6 @@ const Home = (props) => {
       modalTimeout();
     }
   }, [$spotifyState]);
-
-  React.useEffect(() => {
-
-  }, [song]);
-
-  const backgroundFade = React.useRef(new Animated.Value(0)).current;
-
-  const backgroundFadeIn = () => {
-    Animated.timing(backgroundFade, {
-      toValue: 1,
-      duration: 2000
-    }).start()
-  }
-
-
-  const backgroundFadeOut = () => {
-    // Will change fadeAnim value to 0 in 3 seconds
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 2000
-    }).start();
-  };
 
   return (
     <View>
@@ -187,7 +198,8 @@ const Home = (props) => {
           transparent
         >
           {
-            (true) ?
+            // (true) ?
+            ($authState.authenticated && event.hosting && !$spotifyState.token)?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
               >
@@ -202,7 +214,7 @@ const Home = (props) => {
               : null
           }
           {
-            (!$authState.authenticated && !event.joined && !event.hosting) ?
+            ($authState.authenticated && !event.joined && !event.hosting) ?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
                 behavior='padding'
@@ -218,7 +230,6 @@ const Home = (props) => {
               : null
           }
           {
-            /*
             (!$authState.authenticated) ?
               <KeyboardAvoidingView
                 style={styles.modalStyles}
@@ -227,7 +238,6 @@ const Home = (props) => {
                 <LoginModal />
               </KeyboardAvoidingView>
               : null
-              */
           }
         </Modal>
       </ImageBackground>

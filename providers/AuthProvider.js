@@ -29,7 +29,7 @@ const AuthStateProvider = ({ children }) => {
   const sendVerificationCode = async (phoneNumber, ref) => {
     //add phone number extenstion -> only in the us for now
     phoneNumber = '+1'+phoneNumber;
-    console.log(phoneNumber);
+    // console.log(phoneNumber);
 
     try {
       const phoneProvider = new PhoneAuthProvider(auth);
@@ -39,7 +39,7 @@ const AuthStateProvider = ({ children }) => {
       );
       setVerificationId(verificationId);
       $setAuthState({...$authState, ...{phoneNumber, codeSent: true}});
-      console.log('Successfully sent code to user: ', phoneNumber);
+      // console.log('Successfully sent code to user: ', phoneNumber);
     } catch (err) {
       console.log(`err with ${phoneNumber} :`,err);
     }
@@ -47,11 +47,11 @@ const AuthStateProvider = ({ children }) => {
 
 
   const confirmVerificationCode = async (verificationCode) => {
-    console.log("......Confirming Verification Code")
+    // console.log("......Confirming Verification Code")
     try {
       const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
       const user = await signInWithCredential(auth, credential);
-      console.log({ text: 'Phone authentication successful 👍', user });
+      // console.log({ text: 'Phone authentication successful 👍', user });
     } catch (err) {
       console.log({ text: `Error: ${err.message}`, color: 'red' });
     }
